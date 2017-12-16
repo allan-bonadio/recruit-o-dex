@@ -32,7 +32,7 @@ body {
 	font-size: 12px;
 }
 
-/******************************* EditRec panel */
+/******************************* control panel */
 
 #control-panel {
 	position: fixed;
@@ -90,9 +90,18 @@ section.button-area {
 section.button-area button.save-button { color: green; }
 section.button-area button.reset-button { color: red; }
 
+section.scrape-drawer {
+	clear: left;
+	display: block;
+}
+
+section.scrape-drawer textarea.scrape-pit {
+	float: left;
+}
+
 /********************************************** crudCurtain */
 
-div.crudCurtain {
+div.crud-curtain {
 	display: none;
 	position: fixed;
 	z-index: 20;
