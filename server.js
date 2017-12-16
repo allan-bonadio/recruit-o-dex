@@ -1,3 +1,10 @@
+#!/usr/bin/env node
+/*
+** server -- the MongoDB and server for the RecruitMan page
+**
+** Copyright (C) 2017 Allan Bonadio   All Rights Reserved
+*/
+
 // the mongo interface
 
 /**************************************************** http interface */
@@ -81,7 +88,7 @@ app.post('/one', function (req, res) {
 
 
 
-
+// actually start the server
 app.listen(portNum, function() {
 	console.info("Server now accepting connections on http://localhost:"+ portNum +
 		'\n\n\n');
@@ -94,17 +101,23 @@ app.listen(portNum, function() {
 
 /**************************************************** mongo interface */
 
-var ObjectID = require('mongodb').ObjectID;
+var ObjectID = require('mongodb').ObjectID;  // function we'll need to make record IDs
+var MongoClient = require('mongodb').MongoClient;  // the channel
 
-// var idString = '4e4e1638c85e808431000003';
-// collection.findOne({_id: new ObjectID(idString)}, console.log)  // ok
-// collection.findOne({_id: idString}, console.log)  // wrong! callback gets undefined
-
-
-
-
-
-var MongoClient = require('mongodb').MongoClient;
+// take care of Mongo details, I just want to write the code for col.find() or similar
+// to do: convert the other functions to use this
+function AskMongo(inquirer) {
+	MongoClient.connect(mongoUrl, function(err, db) {
+		if (err) {
+			console.error(err);
+			process.exit(9);
+		}
+	
+		var col = db.collection('recruiters');
+		inquirer(col);
+		db.close();
+	});
+}
 
 function getAllRecords(callback) {
 	MongoClient.connect(mongoUrl, function(err, db) {
@@ -218,4 +231,38 @@ function addOneRecord(record, callback) {
 	});
 }
 
+/************************************************************** Already Applied To */
+
+let fs = require('fs');
+
+// generate a list of companies in the db. ANd store it in the alreadyappliedto.txt file.
+function generateAAT() {
+	AskMongo(function(col) {
+		// find, in the recruiters collection, all records, but just take the company names, sort, and then...
+		col
+				.find({}, {company_name: 1})  // just the company name
+				.collation({locale: "en"})      //  case-insensitive
+				.sort({company_name:1})  // sort on the only field
+				.toArray(function(err, docs) {
+			if (err) {
+				console.error(err);
+				process.exit(33);
+			}
+	
+			var content = docs
+						.map(doc => doc.company_name)
+						.filter(cname => cname)
+						.join('\n');
+			fs.writeFile('/usr/local/nginx/resume/alreadyappliedto.txt', content, function(err) {
+				if (err) {
+					console.error(err);
+					process.exit(31);
+				}
+			});
+		});
+	});
+}
+
+// i guess we run it once every time the server starts up.
+generateAAT();
 
