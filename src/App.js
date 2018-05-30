@@ -9,7 +9,7 @@ import logo from './logo.svg';
 import './App.css';
 import $ from "jquery";
 import _ from "lodash";
-import {ControlPanel, theRecForm, theJsonRec, CrudCurtain, selectedSerial, setSelectedRecord} from './ControlPanel'
+import {ControlPanel, theControlPanel, theRecForm, theJsonRec, CrudCurtain, selectedSerial, setSelectedRecord, startNewRec} from './ControlPanel'
 import {getBySerial, allRecruiters} from './Model';
 
 
@@ -68,50 +68,6 @@ class Main extends Component {
 		</div>;
 	}
 	
-	/****************************************************** drag around cpanel */
-// 
-// 	// click down on the control panel - so user can drag it around
-// 	mouseDown(ev) {
-// 		// a click on the panel, not in its text blanks
-// 		let nn = ev.target.nodeName;
-// 		if (nn != 'INPUT' && nn != 'TEXTAREA') {
-// 			this.lastX = ev.clientX;
-// 			this.lastY = ev.clientY;
-// 		
-// 			$(document.body).on('mousemove', this.mouseMove).on('mouseup mouseleave', this.mouseUp);
-// 
-// 			//ev.preventDefault();
-// 			//ev.stopPropagation();
-// 		}
-// 	}
-// 	
-// 	mouseMove(ev) {
-// 		// through react
-// // 		let o = this.state;
-// // 		this.setState({
-// // 			cPanelX: o.cPanelX + ev.clientX - this.lastX, 
-// // 			cPanelY: o.cPanelY + ev.clientY - this.lastY,
-// // 		});
-// 
-// 		// through normal means
-// 		this.cPanelX += ev.clientX - this.lastX;
-// 		this.cPanelY += ev.clientY - this.lastY;
-// 		$('#control-panel').css({left: this.cPanelX + 'px', top: this.cPanelY + 'px'})
-// 
-// 		// ready for next nudge
-// 		this.lastX = ev.clientX;
-// 		this.lastY = ev.clientY;
-// 		
-// 		ev.stopPropagation();
-// 	}
-// 	
-// 	mouseUp(ev) {
-// 		this.mouseMove(ev);
-// 		
-// 		// turn off event handlers and that'll disable dragging.  That's all, no cleanup needed.
-// 		$(document.body).off('mousemove', this.mouseMove).off('mouseup mouseleave', this.mouseUp);
-// 	}
-// 
 }
 
 
@@ -120,12 +76,6 @@ class Main extends Component {
 
 // these are the actual React components
 export var allSummaries = [];
-
-// try this, SummaryRec as a functional component
-function SummaryRec2(props) {
-		console.log("render SummaryRec2");
-
-}
 
 // each recruiter/job in the Global List
 class SummaryRec extends Component {
@@ -141,8 +91,6 @@ class SummaryRec extends Component {
 	
 	
 	render() {
-		console.log("render SummaryRec");
-
 		if (! this.state) {
 			// state not set yet
 			return "Please wait...";
@@ -159,9 +107,11 @@ class SummaryRec extends Component {
 		// for each field, make a <div with the current value in it
 		// note crashes if no state
 		let sr = this;
-		let Field = (props) => <div className={'summary-field '+ props.name}>{sr.state.record[props.name]}</div>;
+		let Field = (props) => <div className={'summary-field '+ props.name}>	
+			{sr.state.record[props.name]}
+		</div>;
 
-		return <section className='summary' onClick={clickHandler} serial={this.state.serial}>
+		return <section className='summary' onClick={clickHandler} serial={this.state.serial} key={this.state.serial}>
 			<Field name='company_name' />
 			<Field name='recruiter_name' />
 			<br clear="left" />
@@ -183,13 +133,34 @@ class SummaryRec extends Component {
 	}
 }
 
+export let theGlobalList;
+
 // list of all recruiters, for click selecting
 class GlobalList extends Component {
+	constructor(props) {
+		super(props);
+		theGlobalList = this;
+	}
+	
 	render() {
 		console.log("render GlobalList");
-		return  allRecruiters.map(function(rec, ix) {
+		
+		// header cell with image and New button
+		let titleCell = <section className='summary title-cell' key='title-cell'>
+			<h1>
+				Recruit-O-Dex
+				&nbsp; &nbsp; &nbsp;
+				<button type='button' onClick={startNewRec} >New<br/>Rec</button>
+			</h1>
+		</section>;
+
+		// all the other cells with records in them
+		let list = allRecruiters.map(function(rec, ix) {
 			return <SummaryRec key={ix.toString()} serial={ix} record={rec}></SummaryRec>;
 		});
+		
+		list.unshift(titleCell);
+		return list;
 	}
 }
 

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+
+here=`dirname $0`
+
+# must start mongo for server to work
+echo ":::::::::::::::::::::::::::::::::::: Starting up mongo DB"
+/dvl/mongo/mongodb-osx-x86_64-3.4.6/run
+sleep 2
+
+# must start server for webapp to run
+echo ":::::::::::::::::::::::::::::::::::: Starting up server"
+./server.js &
+sleep 2
+
+# now run it
+echo ":::::::::::::::::::::::::::::::::::: Starting up React Monster"
+npm start

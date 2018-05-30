@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import {putOne, postOne} from './Model';
-import {allSummaries} from './App';
+import {allSummaries, theGlobalList} from './App';
 import $ from "jquery";
 import _ from "lodash";
 
@@ -147,103 +147,179 @@ export class ControlPanel extends Component {
 }
 
 
+/********************************************************************** event fields */
+
+// one row of the events table
+function EventRow(props) {
+	let event = props.event;
+	return <tr key={event.key}>
+		<td>{event.what}</td>
+		<td>{event.when}</td>
+		<td>{event.notes}</td>
+	</tr>;
+}
+
+// the single bar, last row in the Events table, that lets users enter new events
+class EventAddBar extends Component {
+	constructor(props) {
+		super(props);
+		
+		// Set defaults.  date for date input control
+		function twoDigit(n) { return String(n + 100).substr(1) }
+		let today = new Date();
+		this.state = {
+			what: '', 
+			when: today.getFullYear() +'-'+ twoDigit(today.getMonth()+1) +'-'+ twoDigit(today.getDate()),
+			notes: '',
+			// key added at creation time
+		}
+		
+		this.addClick = this.addClick.bind(this);
+		this.uponChange = this.uponChange.bind(this);
+		this.addNewEvent = props.addNewEvent;
+	}
+	
+	// a keystroke or other change to that new event
+	uponChange(ev) {
+		var chobj = {};
+		chobj[ev.target.name] = ev.target.value;
+		this.setState(chobj);
+		ev.stopPropagation();
+	}
+	
+	// add this event to the list of events
+	addClick(ev) {
+		this.addNewEvent(this.state.what, this.state.when, this.state.notes);
+	}
+	
+	render() {
+		return <tr>
+			<td><input name='what' list='event-whats' size='12' value={this.what} placeholder='choose' onChange={this.uponChange} />
+				<datalist id='event-whats'>
+					<option value='hr phint' />Phone Interview, HR
+					<option value='tech phint' />Phone Interview, technical
+					<option value='onsite' />On-Site Interview
+				</datalist>
+			</td>
+			<td><input type='date' name='when' value={this.state.when} min='2017-01-01' max='2030-01-01' onChange={this.uponChange} /></td>
+			<td><textarea name='notes' value={this.state.notes} placeholder='enter notes' onChange={this.uponChange} /></td>
+			<td><button type='button' onClick={this.addClick} >Add</button></td>
+		</tr>
+	}
+}
+
+class EventTable extends Component {
+	constructor(props) {
+		super(props);
+		this.addNewEvent = this.addNewEvent.bind(this);
+	}
+	
+	// called by the Add bar to add it.  We do not hold the events list, we just display it.  Pass it up to really change
+	addNewEvent(what, when, notes) {
+		// events is a new feature; failover
+		let newEvents = [];
+		if (this.props.events)
+			newEvents = _.clone(this.props.events);
+		
+		when = (new Date(when)).toLocaleDateString();
+		newEvents.push({what: what, when: when, notes: notes, key: newEvents.length+1});
+		this.props.changeEvents(newEvents);
+	}
+	
+	render() {
+		// generate the rows
+		let rows =  this.props.events ? this.props.events.map(event => <EventRow key={event.key} event={event} />) : [];
+	
+		// assemble final table, with Add row at end
+		return <div>
+			<table>
+				<tbody>
+					{rows}
+					<EventAddBar addNewEvent={this.addNewEvent} />
+				</tbody>
+			</table>
+		</div>;
+	}
+}
+
 /********************************************************************** Recruiter form pane */
 export var theRecForm;
+
+// a function-based component: just renders a text field and its label
+function RecField(props) {
+	let fieldname = props.fieldname;
+	let dval = props.rec[fieldname] || '';
+	//console.log(":: field %s depicted with value %s", fieldname, dval);
+	
+	// form the <input or <textarea
+	let entryElement;
+	if (props.element != 'textarea')
+		entryElement = <input value={dval} name={fieldname} onChange={() => {}} />;
+	else
+		entryElement = <textarea value={dval} name={fieldname} />;
+
+	return <div>
+		<label className="edit-label">{props.label}</label>
+		<div className={'edit-blank '+ fieldname}>
+			{entryElement}
+		</div>
+	</div>;
+}
+
 
 // a small table of recruiter info, fixed field names
 export class RecForm extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {record: {recruiter_name:'',  recruiter_email:'',  recruiter_phone:'',  
-					agency:'',  company_name:'',  status:'',  notes:''}, display: 'none'};
+					agency:'',  company_name:'',  status:'active',  notes:''}, display: 'none'};
 		this.typeInBlank = this.typeInBlank.bind(this);
+		this.changeEvents = this.changeEvents.bind(this);
 		window.recForm = this;
 		theRecForm = this;
 	}
 	
 	// keystroke handler - for all the text boxes in the form
 	typeInBlank(ev) {
-		////console.log("form key stroke detected");
+		var targ = ev.target;
 		
 		// appends or replaces one field only
 		var rec = _.clone(this.state.record);
-		rec[ev.target.name] = ev.target.value;
+		rec[targ.name] = targ.value;
+		theControlPanel.setCPRecord(rec)
+		userChangedRecord();
+	}
+
+	// called by the Event Table when there's a change
+	changeEvents(newEvents) {
+		var rec = _.clone(this.state.record);
+		rec.events = newEvents;
 		theControlPanel.setCPRecord(rec)
 		userChangedRecord();
 	}
 
 	// set this to have the tree passed in as state
 	setRecordState(tree) {
-		this.setState({record: tree}, function() {
-			////console.log("Statae now is ", theRecForm.state);
-		});
+		this.setState({record: tree});
 	}
 	
 	// render the form with all the blanks and data populated in them
 	render() {
-		// takes attributes label=, fieldname=
-		function RecField(props) {
-			return <div>
-				<label className="edit-label">{props.label}</label>
-				<div className={'edit-blank '+ props.fieldname}>
-					<input value={rec[props.fieldname] || ''} name={props.fieldname} onChange={theRecForm.typeInBlank} />
-				</div>
-			</div>;
+		let rec = this.state.record;
 
-		}
+		return <section className='edit-col edit-form' onChange={this.typeInBlank}>
 
-		////console.log("render RecForm");
-		var rec = this.state.record;
-		return <section className='edit-col edit-form' >
-
-			<RecField label='Recruiter:' fieldname='recruiter_name' />
-			<RecField label='email:' fieldname='recruiter_email' />
-			<RecField label='phone:' fieldname='recruiter_phone' />
-			<RecField label='agency:' fieldname='agency' />
-			<RecField label='company:' fieldname='company_name' />
-			<RecField label='status:' fieldname='status' />
+			<RecField rec={rec} label='Recruiter:' fieldname='recruiter_name' />
+			<RecField rec={rec} label='email:' fieldname='recruiter_email' />
+			<RecField rec={rec} label='phone:' fieldname='recruiter_phone' />
+			<RecField rec={rec} label='agency:' fieldname='agency' />
+			<RecField rec={rec} label='company:' fieldname='company_name' />
+			<RecField rec={rec} label='status:' fieldname='status' />
 			
-			<label className="edit-label">notes:</label>
-			<div className="edit-blank notes">
-				<textarea value={rec.notes || ''} name="notes" onChange={this.typeInBlank} ></textarea>
-			</div>
+			<RecField rec={rec} label='notes:' fieldname='notes' element='textarea' />
+			
+			<EventTable events={rec.events} changeEvents={this.changeEvents} />
 		</section>;
-	}
-	
-	// delete this after dec 2017
-	theOldVersion() {
-		let rec = {};
-		return <div>
-			<label className="edit-label">Recruiter:</label>
-			<div className="edit-blank recruiter_name">
-				<input value={rec.recruiter_name || ''} name="recruiter_name" onChange={this.typeInBlank} />
-			</div>
-			
-			<label className="edit-label">email:</label>
-			<div className="edit-blank recruiter_email">
-				<input value={rec.recruiter_email || ''} name="recruiter_email" onChange={this.typeInBlank} />
-			</div>
-			
-			<label className="edit-label">phone:</label>
-			<div className="edit-blank recruiter_phone">
-				<input value={rec.recruiter_phone || ''} name="recruiter_phone" onChange={this.typeInBlank} />
-			</div>
-			
-			<label className="edit-label">agency:</label>
-			<div className="edit-blank agency">
-				<input value={rec.agency || ''} name="agency" onChange={this.typeInBlank} />
-			</div>
-
-			<label className="edit-label">company:</label>
-			<div className="edit-blank company_name">
-				<input value={rec.company_name || ''} name="company_name" onChange={this.typeInBlank} />
-			</div>
-			
-			<label className="edit-label">status:</label>
-			<div className="edit-blank status">
-				<input value={rec.status || ''} name="status" onChange={this.typeInBlank} />
-			</div>
-		</div>
 	}
 	
 	componentDidCatch(error, info) {
@@ -258,10 +334,7 @@ export class RecForm extends Component {
 
 // format this object as json, but instead of total tightness, try to indent it nicely
 export function stringifyJson(obj) {
-	let jsonText = JSON.stringify(obj)
-		.replace(/,"/g, ',\n\t"')
-		.replace(/\{"/g, '{\n\t"')
-		.replace(/\}$/, '\n}');
+	let jsonText = JSON.stringify(obj, null, '\t');
 	return jsonText;
 }
 
@@ -363,7 +436,7 @@ export class ButtonArea extends Component {
 		</section>;
 	}
 	
-	// a click event on Save
+	// a click event on Save, save existing rec
 	saveHandler(ev) {
 		////console.log("saveHandler starting...");
 		
@@ -425,6 +498,7 @@ export class ButtonArea extends Component {
 				cleanChanges();
 				
 				allSummaries.push(rec);
+				////theGlobal
 				
 				//setSelectedRecord(originalBeforeChanges);
 				theScrapeDrawer.setState({display: 'none'});
@@ -437,9 +511,10 @@ export class ButtonArea extends Component {
 
 export let theCrudCurtain = null;
 
+// the white translucent sheet behind the control panel; signifies you're changing a record
 export class CrudCurtain extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {display: 'none'};
 		theCrudCurtain = this;
 	}
@@ -581,7 +656,7 @@ export class ScrapeDrawer extends Component {
 		theControlPanel.setCPRecord(fields);
 	}
 	
-	// a click event on Save
+	// a click event on Save, to save newly created rec
 	confirmHandler(ev) {
 		////console.log("saveHandler starting...");
 		
@@ -608,5 +683,15 @@ export class ScrapeDrawer extends Component {
 		});
 	}
 
+}
+
+// start editing a new blank record.  Called when user clicks New Rec.
+export function startNewRec() {
+	cleanChanges();
+	
+	theControlPanel.setAdd();
+	//setSelectedRecord(-1, {});
+	
+	theScrapeDrawer.setState({display: 'block'});
 }
 
