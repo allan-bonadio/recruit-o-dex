@@ -14,5 +14,5 @@ echo ":::::::::::::::::::::::::::::::::::: Starting up server"
 sleep 2
 
 # now run it
-echo ":::::::::::::::::::::::::::::::::::: Starting up React Monster"
+echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
 npm start

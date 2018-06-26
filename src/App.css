@@ -60,19 +60,24 @@ label.edit-label {
 }
 
 div.edit-blank {
-	width: 20em;
+	width: 21em;
 	float: left;
 }
 
 div.edit-blank input, div.edit-blank textarea {
 	width: 100%;
 	font-size: 16px;
-	margin: 3px;
+	
+	margin: 5px;
+	border-width: 0;
 }
 
 textarea.json-edit {
 	width: 27em;
 	height: 18em;
+	
+	margin: 5px;
+	border-width: 0;
 }
 
 div.json-errors {
@@ -83,12 +88,19 @@ div.json-errors {
 
 section.button-area {
 	float: left;
-	width: 5em;
+	width: 7em;
 	height: 20em;
 }
 
-section.button-area button.save-button { color: green; }
-section.button-area button.reset-button { color: red; }
+section.button-area button.main-button {
+	font-size: 141.42%;
+	border-radius: 5px;
+	border: outset 1px #aaa;
+	margin-top: 2em;
+}
+section.button-area button.save-button { color: #00c; background: #eef; }
+section.button-area button.add-button { color: #080; background: #efe; }
+section.button-area button.cancel-button { color: #800; background: #fee; }
 
 section.scrape-drawer {
 	clear: left;

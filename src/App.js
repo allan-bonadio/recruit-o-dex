@@ -5,39 +5,17 @@
 */
 
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import $ from "jquery";
-import _ from "lodash";
-import {ControlPanel, theControlPanel, theRecForm, theJsonRec, CrudCurtain, selectedSerial, setSelectedRecord, startNewRec} from './ControlPanel'
+
+import {ControlPanel, CrudCurtain, setSelectedRecord, startNewRec} from './ControlPanel'
 import {getBySerial, allRecruiters} from './Model';
 
-
-
-// let curRecruiter = {
-// 	// just for testing
-// 	"_id" : "59c1410e23f647bb25a33d6d",	  // ObjectId("59c1410e23f647bb25a33d6d"),
-// 	"recruiter_name" : "David Sibrian",
-// 	"recruiter_email" : "dsibrian@jivaroinc.com",
-// 	"recruiter_phone" : "(408) 733-5082",
-// 	"recruiter_cell" : "",
-// 	"agency" : "Jivaro",
-// 	"company_name" : "SixUp",
-// 	"first_contact" : "9/18/17",
-// 	"status" : "active",
-// 	"notes" : " don't know co name."
-// };
-// 
-// 
 
 class App extends Component {
 	render() {
 		return (
 			<div className="App">
-				<header className="App-header" style={{display: 'none'}}>
-					<img src={logo} className="App-logo" alt="logo" />
-					<h1 className="App-title">Welcome to React</h1>
-				</header>
 				<Main></Main>
 				<CrudCurtain></CrudCurtain>
 			</div>
@@ -48,17 +26,6 @@ export default App;
 
 
 class Main extends Component {
-	constructor() {
-		super();
-		//MainInstance = this;
-// 		this.mouseDown = this.mouseDown.bind(this);
-// 		this.mouseMove = this.mouseMove.bind(this);
-// 		this.mouseUp = this.mouseUp.bind(this);
-// 		
-// 		this.state = {cPanelX: 100, cPanelY: 200};  // for doing through react
-// 		this.cPanelX = 100; this.cPanelY = 200;  // for doing it quickly
-	}
-	
 	render() {
 		// append this to the control panel to do it through react.  but it's slower.
 		// style={{left: this.state.cPanelX +'px', top: this.state.cPanelY +'px'}}
@@ -77,7 +44,7 @@ class Main extends Component {
 // these are the actual React components
 export var allSummaries = [];
 
-// each recruiter/job in the Global List
+// each recruiter/job cell, shown in the Global List, the front page
 class SummaryRec extends Component {
 	constructor(props) {
 		super(props);

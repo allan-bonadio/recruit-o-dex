@@ -1,3 +1,30 @@
+# recruit-o-dex app
+
+## subsystems
+* server.js - ajax server that talks to mongo.  standalone file run on nodejs.
+* MongoDB - typical installation
+* webapp, consisting of
+	* ReactJS
+	* my code
+	* webpack, standard with react
+
+
+## To Run
+### once to install
+do 
+npm install
+
+### each time to run
+To start it, run ./run, which will start up mongo, the server & the app in the right order.  And open a Chrome window onto the webapp
+
+### Concurrency
+
+Do not have two mongoDB daemons or server.js daemons running at once.  Must be one each.  The webapp can be shown on multiple tabs, just as long as they're talking to the same server.
+
+
+
+# react boilerplate
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
