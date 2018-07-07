@@ -6,13 +6,14 @@
 
 import React, { Component } from 'react';
 import {putOne, postOne} from './Model';
-import {allSummaries} from './App';
+import {allSummaries, theGlobalList} from './App';
 import {ScrapeDrawer, theScrapeDrawer} from './ScrapeDrawer';
 //import {EventTable} from './EventTable';
 import {RecForm, theRecForm} from './RecForm';
 import {JsonForm, theJsonForm} from './JsonForm';
 import $ from "jquery";
 import _ from "lodash";
+import {getAll} from './Model';
 
 
 /********************************************************************** Control Panel root */
@@ -25,6 +26,7 @@ export class ControlPanel extends Component {
 	constructor() {
 		super();
 		theControlPanel = this;
+		window.theControlPanel = this;
 		
 		this.mouseDown = this.mouseDown.bind(this);
 		this.mouseMove = this.mouseMove.bind(this);
@@ -71,6 +73,7 @@ export class ControlPanel extends Component {
 		theCrudCurtain.hide();
 		theControlPanel.hide();
 		theButtonArea.startIdling();
+		theControlPanel.adding = theControlPanel.editing = false;
 		return this;
 	}
 	
@@ -79,9 +82,12 @@ export class ControlPanel extends Component {
 	// This funciton sets internal vars and populates text blanks. 
 	setEdit(rec) {
 		// rec is presumed to be a raw record in the Global List.  It will not be changed, just cloned.
-		theControlPanel.setCPRecord(rec).show();
 		theCrudCurtain.show();
 		theButtonArea.startEditing();
+		theControlPanel.adding = false;
+		theControlPanel.editing = true;
+		$('#control-panel').removeClass('adding');
+		theControlPanel.setCPRecord(rec).show();
 		return this;
 	}
 	
@@ -90,9 +96,12 @@ export class ControlPanel extends Component {
 		// the template for a new Recruiter
 		let initial = {status: 'applied', created: (new Date()).toISOString().replace(/T/, '.')};
 		
-		theControlPanel.setCPRecord(initial).show();
 		theCrudCurtain.show();
 		theButtonArea.startAdding();
+		theControlPanel.adding = true;
+		theControlPanel.editing = false;
+		$('#control-panel').addClass('adding');
+		theControlPanel.setCPRecord(initial).show();
 		return this;
 	}
 	
@@ -239,13 +248,18 @@ export class ButtonArea extends Component {
 			if (result == 'success') {  // eslint-disable-line
 				cleanChanges();
 				
-				allSummaries.push(rec);
+				////allSummaries.push(rec);
 				////theGlobal
 				
 				//setSelectedRecord(originalBeforeChanges);
 				theScrapeDrawer.setState({display: 'none'});
 
 				theControlPanel.setIdle();
+				
+				// change the screen
+				getAll((newRecs) => {
+					theGlobalList.update(newRecs)
+				});
 
 			}
 		});
@@ -265,10 +279,13 @@ export class CrudCurtain extends Component {
 	}
 	
 	render() {
-		return <div className='crud-curtain' style={{display: this.state.display}}></div>;
+		// clicking on the CrudCurtain does a Save
+		return <div className='crud-curtain' 
+			onClick={theControlPanel.editing ? theButtonArea.saveHandler : theButtonArea.addHandler}
+			style={{display: this.state.display}}></div>;
 	}
 	
-	show() { this.setState({display: 'block'}) }
+ 	show() { this.setState({display: 'block'}) }
 	hide() { this.setState({display: 'none'}) }
 }
 

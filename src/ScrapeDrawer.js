@@ -90,7 +90,8 @@ export class ScrapeDrawer extends Component {
 		////console.log("scraping results:");
 		////console.log(JSON.stringify(fields, undefined, '\t'));
 		
-		// now try to jam it into the rest of the panes
+		// now try to jam it into the rest of the panes, keeping previous data
+		fields = Object.assign({}, theRecForm.state.record, fields)
 		theControlPanel.setCPRecord(fields);
 	}
 	

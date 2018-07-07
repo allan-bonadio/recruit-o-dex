@@ -6,12 +6,15 @@
 
 import $ from "jquery";
 
+// ultimately this will have all the data in it
+export let allRecruiters = [];
+
 // download the whole thing
 export function getAll(callback) {
 	$.get({
 		url: 'http://localhost:5555/getall', 
 		success: function(data, status, jqxhr) {
-			allRecruiters =data;
+			allRecruiters = data;
 			callback(allRecruiters);
 		},
 		error: function(jqxhr, status, message) {
@@ -38,7 +41,7 @@ export function putOne(record, callback) {
 			callback('success', jqxhr.status);
 		},
 		error: function(jqxhr, status, message) {
-			console.error("Error loading data: %d %s %s", jqxhr.status, status, message);
+			console.error("Error loading data: %s %s %s", jqxhr.status, status, message);
 			callback('failure', jqxhr.status);
 		},
 	});
@@ -55,15 +58,12 @@ export function postOne(record, callback) {
 			callback('success', jqxhr.status);
 		},
 		error: function(jqxhr, status, message) {
-			console.error("Error loading data: %d %s %s", jqxhr.status, status, message);
+			console.error("Error loading data: %s %s %s", jqxhr.status, status, message);
 			callback('failure', jqxhr.status);
 		},
 	});
 }
 	
-// ultimately this will have all the data in it
-export let allRecruiters = [];
-
 
 
 

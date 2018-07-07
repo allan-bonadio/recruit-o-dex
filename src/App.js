@@ -9,35 +9,20 @@ import './App.css';
 import $ from "jquery";
 
 import {ControlPanel, CrudCurtain, setSelectedRecord, startNewRec} from './ControlPanel'
-import {getBySerial, allRecruiters} from './Model';
+import {getBySerial} from './Model';
 
 
-class App extends Component {
-	render() {
-		return (
-			<div className="App">
-				<Main></Main>
-				<CrudCurtain></CrudCurtain>
+export function App() {
+	return (
+		<div className="App">
+			<div>
+				<ControlPanel></ControlPanel>
+				<GlobalList></GlobalList>
 			</div>
-		);
-	}
+			<CrudCurtain></CrudCurtain>
+		</div>
+	);
 }
-export default App;
-
-
-class Main extends Component {
-	render() {
-		// append this to the control panel to do it through react.  but it's slower.
-		// style={{left: this.state.cPanelX +'px', top: this.state.cPanelY +'px'}}
-		return <div>
-			<ControlPanel></ControlPanel>
-			<GlobalList></GlobalList>
-		</div>;
-	}
-	
-}
-
-
 
 /********************************************************************** Global List */
 
@@ -106,6 +91,7 @@ export let theGlobalList;
 class GlobalList extends Component {
 	constructor(props) {
 		super(props);
+		this.state = {recs: []};
 		theGlobalList = this;
 	}
 	
@@ -122,12 +108,17 @@ class GlobalList extends Component {
 		</section>;
 
 		// all the other cells with records in them
-		let list = allRecruiters.map(function(rec, ix) {
+		let list = this.state.recs.map(function(rec, ix) {
 			return <SummaryRec key={ix.toString()} serial={ix} record={rec}></SummaryRec>;
 		});
 		
 		list.unshift(titleCell);
 		return list;
+	}
+	
+	// trigger a repaint, using this list of raw data from mongo
+	update(newList) {
+		this.setState({recs: newList});
 	}
 }
 
