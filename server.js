@@ -5,104 +5,120 @@
 ** Copyright (C) 2017 Allan Bonadio   All Rights Reserved
 */
 
-// the mongo interface
+let fs = require('fs');
 
-/**************************************************** http interface */
+
+
+
+/**************************************************** starting up */
 let express = require('express');
-let app = express();
+
+// the mongo interface
 let portNum = 5555;
 let mongoUrl = "mongodb://localhost/jobs";
 
-
-// this parses our json.  and it knows where to get the raw text.  recommended plugin.
-var bodyParser = require('body-parser');
-app.use(bodyParser.json());
-
-// Cross Origin Request System
-let cors = require('cors');
-app.use(cors())
-app.options('*', cors())
+var ObjectID = require('mongodb').ObjectID;  // function we'll need to make record IDs
+var MongoClient = require('mongodb').MongoClient;  // the channel
 
 
-app.get('/getall', function (req, res) {
-	getAllRecords(function(records) {
-		res.json(records);  // an array
+// run when starting up and every few hours after that
+generateAAT();
+setInterval(generateAAT, 3 * 3600e3);
+
+setupServer();
+
+// the end.
+
+/**************************************************** http interface */
+
+function setupServer() {
+	let app = express();
+
+	// this parses our json.  and it knows where to get the raw text.  recommended plugin.
+	var bodyParser = require('body-parser');
+	app.use(bodyParser.json());
+
+	// Cross Origin Request System
+	let cors = require('cors');
+	app.use(cors())
+	app.options('*', cors())
+
+
+	// pass it a body on a PUT or POST request.  returns true if it failed.
+	function isBodyBad(req, res) {
+		if (! req.body) {
+			res.status(415).send("no body sent");
+			console.error(">> isBodyBad no body sent");
+			return true;
+		}
+		var noFields = true;
+		for (var k in req.body)
+			noFields = false;
+		if (noFields) {
+			res.status(422).send("no data in body");
+			console.error(">> isBodyBad no data in body");
+			return true;
+		}
+		console.log(">> isBodyBad ... OK!  it's not.");
+		return false;  // ok
+	}
+
+
+	app.get('/getall', function (req, res) {
+		getAllRecords(function(records) {
+			res.json(records);  // an array
+		});
+	})
+
+	// put.  update.  
+	app.put('/one/:id', function (req, res) {
+		console.log("|| app.put /one: req started");    // too much text     , req);
+		console.log("|| %s %s %s", req.method, req.hostname, req.path);
+		console.log("    req.params: %j", req.params);
+		console.log("    req.body: %j", req.body);
+		//console.log("    req.headers: %j", req.headers);
+		//console.log("|| the whole req: ", req, '------');
+	
+		if (isBodyBad(req, res))
+			return;
+	
+		delete req.body._id;
+		saveOneRecord(req.body, req.params.id, function(results) {
+			console.log("    saveOneRecord() gave me results %j", results);
+			res.sendStatus(204);
+		});
+	})
+
+	// add.  insert.  post.  
+	app.post('/one', function (req, res) {
+		console.log("|| app.post /one: req started");    // too much text     , req);
+		console.log("|| %s %s %s", req.method, req.hostname, req.path);
+		console.log("    req.params: %j", req.params);
+		console.log("    req.body: %j", req.body);
+		//console.log("    req.headers: %j", req.headers);
+	
+		if (isBodyBad(req, res))
+			return;
+	
+		addOneRecord(req.body, function(overall, results) {
+			console.log("    addOneRecord() gave me results ‹%s› %j", overall, results);
+			res.sendStatus(201);
+		});
+	})
+
+
+
+	// actually start the server
+	app.listen(portNum, function() {
+		console.info("Server now accepting connections on http://localhost:"+ portNum +
+			'\n\n\n');
 	});
-})
-
-// pass it a body on a PUT or POST request.  returns true if it failed.
-function isBodyBad(req, res) {
-	if (! req.body) {
-		res.status(415).send("no body sent");
-		console.error(">> isBodyBad no body sent");
-		return true;
-	}
-	var noFields = true;
-	for (var k in req.body)
-		noFields = false;
-	if (noFields) {
-		res.status(422).send("no data in body");
-		console.error(">> isBodyBad no data in body");
-		return true;
-	}
-	console.log(">> isBodyBad ... OK!  it's not.");
-	return false;  // ok
 }
-
-
-// put.  update.  
-app.put('/one/:id', function (req, res) {
-	console.log("|| app.put /one: req started");    // too much text     , req);
-	console.log("|| %s %s %s", req.method, req.hostname, req.path);
-	console.log("    req.params: %j", req.params);
-	console.log("    req.body: %j", req.body);
-	//console.log("    req.headers: %j", req.headers);
-	//console.log("|| the whole req: ", req, '------');
-	
-	if (isBodyBad(req, res))
-		return;
-	
-	delete req.body._id;
-	saveOneRecord(req.body, req.params.id, function(results) {
-		console.log("    saveOneRecord() gave me results %j", results);
-		res.sendStatus(204);
-	});
-})
-
-// add.  insert.  post.  
-app.post('/one', function (req, res) {
-	console.log("|| app.post /one: req started");    // too much text     , req);
-	console.log("|| %s %s %s", req.method, req.hostname, req.path);
-	console.log("    req.params: %j", req.params);
-	console.log("    req.body: %j", req.body);
-	//console.log("    req.headers: %j", req.headers);
-	
-	if (isBodyBad(req, res))
-		return;
-	
-	addOneRecord(req.body, function(overall, results) {
-		console.log("    addOneRecord() gave me results ‹%s› %j", overall, results);
-		res.sendStatus(201);
-	});
-})
-
-
-
-// actually start the server
-app.listen(portNum, function() {
-	console.info("Server now accepting connections on http://localhost:"+ portNum +
-		'\n\n\n');
-});
-
-
 
 
 
 
 /**************************************************** mongo interface */
-
-var ObjectID = require('mongodb').ObjectID;  // function we'll need to make record IDs
-var MongoClient = require('mongodb').MongoClient;  // the channel
 
 // take care of Mongo details, I just want to write the code for col.find() or similar
 // to do: convert the other functions to use this
@@ -233,11 +249,13 @@ function addOneRecord(record, callback) {
 
 /************************************************************** Already Applied To */
 
-let fs = require('fs');
-
 // generate a list of companies in the db. ANd store it in the alreadyappliedto.txt file.
 function generateAAT() {
+	console.log("============");
+	console.log("generateAAT()");
+	console.log("============");
 	AskMongo(function(col) {
+		
 		// find, in the recruiters collection, all records, but just take the company names, sort, and then...
 		col
 				.find({}, {company_name: 1})  // just the company name
@@ -253,16 +271,11 @@ function generateAAT() {
 						.map(doc => doc.company_name)
 						.filter(cname => cname)
 						.join('\n');
-			fs.writeFile('/usr/local/nginx/resume/alreadyappliedto.txt', content, function(err) {
-				if (err) {
-					console.error(err);
-					process.exit(31);
-				}
-			});
+			
+			// and get it out there before something else fails
+			fs.writeFileSync('/usr/local/nginx/resume/alreadyappliedto.txt', content);
+			fs.chmodSync('/usr/local/nginx/resume/alreadyappliedto.txt', 0o666);
 		});
 	});
 }
-
-// i guess we run it once every time the server starts up.
-generateAAT();
 
