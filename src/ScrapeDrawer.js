@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import {allSummaries} from './App';
-import {theControlPanel, cleanChanges, originalBeforeChanges, selectedSerial}
+import {connect} from 'react-redux';
+import $ from "jquery";
+import _ from "lodash";
+
+import {theControlPanel}
 	from './ControlPanel';
 import {theRecForm} from './RecForm';
-import {postOne} from './Model';
-import $ from "jquery";
+////import {store} from './App';
 
 /********************************************************************** Scraping */
 // Scan the scrape pit for specific patterns
@@ -68,13 +70,14 @@ export var theScrapeDrawer;
 export class ScrapeDrawer extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {display: 'none'};
 		theScrapeDrawer = this;
+		this.scrapeHandler = this.scrapeHandler.bind(this);
 	}
 	
 	render() {
 		////console.log("render ScrapeDrawer");
-		return <section className='scrape-drawer' style={{display: this.state.display}}>
+		return <section className='scrape-drawer' 
+					style={{display: this.props.selectedSerial < 0 ? 'display' : 'none'}}>
 			scrape pit.  paste clues here.<br/>
 			<textarea className='scrape-pit' cols='50' rows='10' onChange={this.scrapeHandler}>
 			</textarea>
@@ -90,36 +93,57 @@ export class ScrapeDrawer extends Component {
 		////console.log("scraping results:");
 		////console.log(JSON.stringify(fields, undefined, '\t'));
 		
-		// now try to jam it into the rest of the panes, keeping previous data
-		fields = Object.assign({}, theRecForm.state.record, fields)
-		theControlPanel.setCPRecord(fields);
+		// for each field being changed, modify the rec for it and dispatch the cmd
+debugger;////
+		var rec = _.cloneDeep(this.props.selectedRecord);
+		for (let f in fields) {
+			var val = fields[f];
+			
+			// don't bother to do an official change unless it's really different
+			if (rec[f] !== val) {
+				rec[f] = val;
+				this.props.dispatch({type: 'CHANGE_TO_RECORD', fieldName: f, newValue: val});
+			}
+		}
+
+// 
+// 		// now try to jam it into the rest of the panes, keeping previous data
+// 		fields = Object.assign({}, theRecForm.state.record, fields)
+// 		theControlPanel.setCPRecord(fields);
 	}
 	
-	// a click event on Save, to save newly created rec
-	confirmHandler(ev) {
-		////console.log("saveHandler starting...");
-		
-		// update
-		var rec = theRecForm.state.record;
-		postOne(rec, function(result, statusCode) {
-			////console.log("...saveHandler done");
-			if (result == 'success') {  // eslint-disable-line
-				cleanChanges();
-				
-				// keep the array object in place
-				// copy fields over remembering to remove fields that are absent
-				Object.assign(originalBeforeChanges, rec);
-				for (var j in originalBeforeChanges) {
-					if (! rec[j])
-						delete originalBeforeChanges[j]
-				}
-				
-				allSummaries[selectedSerial].setState({record: originalBeforeChanges});
-				
-				//setSelectedRecord(originalBeforeChanges);
-			}
-		});
-	}
+// 	a click event on Save, to save newly created rec
+// 	confirmHandler(ev) {
+// 		//console.log("saveHandler starting...");
+// 		
+// 		update
+// 		var rec = theRecForm.state.record;
+// 		postOne(rec, function(result, statusCode) {
+// 			//console.log("...saveHandler done");
+// 			if (result == 'success') {  // eslint-disable-line
+// 				cleanChanges(state);
+// 				
+// 				keep the array object in place
+// 				copy fields over remembering to remove fields that are absent
+// 				let sel = store.getState().selection;
+// 				Object.assign(sel.originalBeforeChanges, rec);
+// 				for (var j in sel.originalBeforeChanges) {
+// 					if (! rec[j])
+// 						delete sel.originalBeforeChanges[j]
+// 				}
+// 				
+// 				allSummaryRecs[sel.selectedSerial].setState({record: sel.originalBeforeChanges});
+// 				
+// 				editRecord(originalBeforeChanges);
+// 			}
+// 		});
+// 	}
 
 }
+
+function mapStateToProps(state) {
+	return state.selection;  // i don't think i really use these props
+}
+
+export default connect(mapStateToProps)(ScrapeDrawer);
 

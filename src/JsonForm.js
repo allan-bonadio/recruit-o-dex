@@ -2,8 +2,11 @@
 
 import React, { Component } from 'react';
 import $ from "jquery";
-import {theControlPanel, userChangedRecord} from './ControlPanel';
+import {connect} from 'react-redux';
+
+////import {userChangedRecord} from './ControlPanel';
 //import {theRecForm} from './RecForm';
+import {rxStore} from './Reducer';
 
 
 // format this object as json, but instead of total tightness, try to indent it nicely
@@ -15,14 +18,14 @@ export function stringifyJson(obj) {
 export var theJsonForm;
 
 // raw JSON, editable
-export class JsonForm extends Component {
+class JsonForm extends Component {
 	constructor(props) {
 		super(props);
 		
 		// the state is the whole record, plus the field jsonText.
 		// In states where the user's text doesn't parse, set jsonText to the text.
 		// that signals unparsable json and um something happens after...
-		this.state = {jsonText: null, jsonErrors: '', record: {}};
+		////this.state = {jsonText: null, jsonErrors: '', record: {}};
 		this.typeInJson = this.typeInJson.bind(this);
 		theJsonForm = this;
 	}
@@ -40,30 +43,45 @@ export class JsonForm extends Component {
 	// a change event (keystroke/cut/paste/) in the Json box
 	typeInJson(ev) {
 		////console.log("json key stroke detected");
+		let goodJson, goodTree;
 		
 		// if the JSON is good, echo this over to the edit box
 		try {
 			//let goodJson = $('textarea.json-edit').val();
-			var goodJson = ev.currentTarget.value;
-			goodJson = JSON.parse(goodJson);
+			goodJson = ev.currentTarget.value;
+			
+			// try parsing, and turn off the error message if it's good
+			goodTree = JSON.parse(goodJson);
 			$('div.json-errors').text('');
-			theControlPanel.setCPRecord(goodJson);
+			////theControlPanel.setCPRecord(goodJson);
+			
+			// now change the whole value of the record tree
+			rxStore.dispatch({type: 'CHANGE_TO_RECORD', 
+					fieldName: 'tree', newValue: goodTree});
 		} catch (ex) {
 			// don't update anything if a syntax error in the json (expected as the user types)
+			// so the text is transitional but becomes part of the state anyway
 			var message = ex.message || ex;
-			////console.warn("parse error parsing json: "+ message);
+			console.warn("parse error parsing json: "+ message);
+			
+			// figure out how to do this thru react someday
 			$('div.json-errors').text(message);
-			this.setBadState(goodJson, message);
+			////this.setBadState(goodJson, message);
+			
+			// some special treatment, save the malformed text instead of the tree
+			rxStore.dispatch({type: 'CHANGE_TO_RECORD', 
+					fieldName: 'json', newValue: goodJson, 
+					errorMessage: message});
 			// no changes to theRecForm
 		}
-		userChangedRecord();
+////		userChangedRecord();
 	}
 
 	render() {
 		////console.log("render JsonForm");
 		
 		// if jsonText is there, it's the true text, otherwise use whatever record we have
-		let text = this.state.jsonText || stringifyJson(this.state.record);
+		let text = rxStore.getState().jsonText || stringifyJson(rxStore.getState().record);
 		////console.log(`Text is '${text}', cuz `+ (this.state.jsonText ? 'uncompiled test' : 'compiled object'));
 		return <section className='edit-col' >
 			<textarea className="json-edit" onChange={this.typeInJson} 
@@ -74,3 +92,8 @@ export class JsonForm extends Component {
 	}
 }
 
+function mapStateToProps(state) {
+	return {record: state.selection.selectedRecord};
+}
+
+export default connect(mapStateToProps)(JsonForm);

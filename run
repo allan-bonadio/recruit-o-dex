@@ -15,4 +15,4 @@ sleep 2
 
 # now run it
 echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
-npm start
+PORT=3300 npm start

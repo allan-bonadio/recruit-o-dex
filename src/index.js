@@ -7,15 +7,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import {App, theGlobalList} from './App';
+import {App} from './App';
+import {setGlobalData} from './GlobalList';
 import {getAll} from './Model';
 ////import registerServiceWorker from './registerServiceWorker';
 
+ReactDOM.render(<App />, document.getElementById('root'));
+
 getAll(function(records) {
 	// when the data is loaded for the first time, start the app.
-	ReactDOM.render(<App />, document.getElementById('root'));
-	
-	theGlobalList.update(records)
+	setGlobalData(records)
 });
 //registerServiceWorker();
 
