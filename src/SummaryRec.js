@@ -80,15 +80,5 @@ class SummaryRec extends Component {
 // 	}
 }
 
-// function mapStateToProps(state) {
-// 	console.info("mapStateToProps: state", state);////
-// 	console.info("mapStateToProps: thisSerial", thisSerial);////
-// 	debugger;////
-// 	// the prop should be the record this cell represents
-// 	return {record: state.recs[thisSerial]};
-// 	////return {record: state.recs[this.serial]};
-// }
-// 
-// export default connect(mapStateToProps)(SummaryRec);
-
 export default SummaryRec;
+

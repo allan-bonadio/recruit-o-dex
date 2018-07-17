@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 
 ////import {startAddRecord} from './ControlPanel'
 import SummaryRec from './SummaryRec';
-import {store, getStateSelection} from './Reducer';
+//import {store, getStateSelection} from './Reducer';
 
 export let theGlobalList;
 

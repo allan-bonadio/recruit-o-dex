@@ -7,10 +7,9 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import $ from "jquery";
-import _ from "lodash";
+//import _ from "lodash";
 
 import ScrapeDrawer from './ScrapeDrawer';
-//import {EventTable} from './EventTable';
 import RecForm from './RecForm';
 import JsonForm from './JsonForm';
 import {rxStore, getStateSelection} from './Reducer';

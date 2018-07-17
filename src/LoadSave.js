@@ -8,9 +8,19 @@ import _ from "lodash";
 import $ from "jquery";
 
 import {putOne, postOne} from './Model';
-import {rxStore, getStateSelection} from './Reducer';
+import {rxStore} from './Reducer';
 import {getAll} from './Model';
 import {theGlobalList} from './GlobalList';
+
+// the prototype object for a selection, so I don't forget some fields
+let bareSelection = {
+	selectedRecord: null, 
+	selectedSerial: -1, 
+	didChange: false, 
+	saving: false,
+	selectedEngagement: {what: '', when: '', notes: '',},
+};
+Object.freeze(bareSelection);
 
 class LoadSave {
 
@@ -28,6 +38,7 @@ class LoadSave {
 
 		// the NEW selection to be handed in to state
 		let selection = {
+			...bareSelection,
 			originalBeforeChanges: action.record,  // this is in the big record list
 
 			// setting the selectedRecord will cause the control panel to appear
@@ -83,26 +94,7 @@ class LoadSave {
 	}
 
 	static saveEditDone(state, action) {
-		////cleanChanges(state);
-	
-		// keep the array object in place
-		// copy fields over remembering to remove fields that are absent
-		// ?? doesn't that mean just copy rec over?!?
-		////let sel = state.selection;
-		////let rec = sel.selectedRecord;
-		
-		//rec = Object.assign({}, sel.originalBeforeChanges, rec);
-// 		for (var j in sel.originalBeforeChanges) {
-// 			if (! rec[j])
-// 				delete sel.originalBeforeChanges[j]
-// 		}
-	
-		////theControlPanel.setIdle();
-		//startEditRecord(rxStore.originalBeforeChanges);
-		
 		state = {...state};
-		let sel = state.selection;
-		
 		
 // 		replace the newly edited thing
 // 		state.recs[sel.selectedSerial] = {...sel.selectedRecord};
@@ -113,12 +105,7 @@ class LoadSave {
 		});
 
 		// replace the whole selection
-		state.selection = {
-			selectedRecord: null, 
-			selectedSerial: -1, 
-			didChange: false, 
-			saving: false,
-		};
+		state.selection = {...bareSelection};
 		
 		return state;
 	}
@@ -144,14 +131,14 @@ class LoadSave {
 		$('#control-panel').addClass('adding');
 		//theControlPanel.setCPRecord(initial).show();
 	
-		// return the selection part of the state only
-	
-		state = {...state};
-		state.selection = {
-			selectedRecord: initial,
-			selectedSerial: -1,  // means Add
-			didChange: false,
-			saving: true,
+		// most important, make a selection pointing to the new prototype rec
+		state = {
+			...state,
+			selection: {
+				...state.selection,
+				selectedRecord: initial,
+				saving: true,
+			},
 		};
 		return state;
 	}
@@ -187,12 +174,7 @@ class LoadSave {
 		});
 
 		state = {...state};
-		state.selection = {
-			selectedRecord: null,
-			selectedSerial: -1,
-			didChange: false,
-			saving: false,
-		};
+		state.selection = {...bareSelection};
 		return state;
 
 
@@ -212,15 +194,7 @@ class LoadSave {
 			theGlobalList.update(newRecs)
 		});
 
-		state = {
-			...state,
-			selection: {
-				selectedRecord: null,
-				selectedSerial: -1,
-				didChange: false,
-				saving: false,
-			},
-		};
+		state = {...state, selection: {...bareSelection}};
 		return state;
 	}
 }

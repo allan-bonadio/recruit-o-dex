@@ -102,6 +102,11 @@ section.scrape-drawer textarea.scrape-pit {
 	float: left;
 }
 
+.engagement-add-bar {
+	border: 1px dotted black;
+	background: #4ce;
+}
+
 /********************************************** crudCurtain */
 
 div.crud-curtain {

@@ -2,8 +2,6 @@
 import { createStore } from 'redux';
 import _ from "lodash";
 
-import ControlPanel
-	from './ControlPanel';
 import LoadSave from './LoadSave';
 
 /****************************************************** Redux */
@@ -35,15 +33,6 @@ export function getStateSelection() {
 function reducer(state = initialState, action) {
 	console.log("|| reducer() action: ", action);
 	
-	/*
-	actions:
-	- keystrokes in RecForm
-	- keystrokes in JsonForm
-	- keystrokes in ScrapeDrawer
-	- keystrokes in EventTable
-	
-	*/
-
 	// redux starting up
 	if (/@@redux.INIT/.test(action.type))
 		return;
@@ -125,7 +114,10 @@ function reducer(state = initialState, action) {
 	case 'CHANGE_TO_RECORD':
 		// user typed, backspaced, cut or pasted inside one of those text blanks, or equivalent
 		state = _.cloneDeep(state);////state = {...state}
-		state.selection.selectedRecord[action.fieldName] = action.newValue;
+		let q = state.selection.selectedRecord;
+		if (action.fieldPrefix)
+			q = q[action.fieldPrefix];
+		q[action.fieldName] = action.newValue;
 		break;
 
 	

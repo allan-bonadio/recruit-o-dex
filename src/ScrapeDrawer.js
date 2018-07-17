@@ -3,9 +3,8 @@ import {connect} from 'react-redux';
 import $ from "jquery";
 import _ from "lodash";
 
-import {theControlPanel}
-	from './ControlPanel';
-import {theRecForm} from './RecForm';
+//import {theControlPanel} from './ControlPanel';
+//import {theRecForm} from './RecForm';
 ////import {store} from './App';
 
 /********************************************************************** Scraping */

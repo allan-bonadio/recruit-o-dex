@@ -4,7 +4,7 @@ import _ from "lodash";
 import {connect} from 'react-redux';
 
 ////import {userChangedRecord} from './ControlPanel';
-import {EventTable} from './EventTable';
+import {Engagements} from './Engagements';
 import {rxStore, getStateSelection} from './Reducer';
 
 export var theRecForm;
@@ -39,7 +39,7 @@ export class RecForm extends Component {
 // 					agency:'',  company_name:'',  job_desc_url: '', status: 'active',  notes:''}, 
 // 					display: 'none'};
 		this.typeInBlank = this.typeInBlank.bind(this);
-		this.changeEvents = this.changeEvents.bind(this);
+		this.changeEngagements = this.changeEngagements.bind(this);
 		window.recForm = this;
 		theRecForm = this;
 	}
@@ -57,9 +57,8 @@ export class RecForm extends Component {
 		rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: targ.name, newValue: targ.value});
 	}
 
-	// called by the Event Table when there's a change
-	// (not DOM events but job interview events)
-	changeEvents(newEvents) {
+	// called by the Engagements Table when there's a change
+	changeEngagements(newEvents) {
 		var rec = _.clone(this.state.record);
 		rec.events = newEvents;
 // 		theControlPanel.setCPRecord(rec)
@@ -76,7 +75,8 @@ export class RecForm extends Component {
 	// render the form with all the blanks and data populated in them
 	render() {
 		////redux let rec = this.state.record;
-		let rec = getStateSelection().selectedRecord;
+		let s = this.props.selection;
+		let rec = s.selectedRecord;
 		if (! rec)
 			return [];
 
@@ -92,7 +92,9 @@ export class RecForm extends Component {
 			
 			<RecField rec={rec} label='notes:' fieldName='notes' element='textarea' />
 			
-			<EventTable events={rec.events} changeEvents={this.changeEvents} />
+			<Engagements engagements={rec.engagements || rec.events} 
+						selectedEngagement={s.selectedEngagement}
+						changeEngagements={this.changeEngagements} />
 		</section>;
 	}
 	
@@ -102,7 +104,7 @@ export class RecForm extends Component {
 }
 
 function mapStateToProps(state) {
-	return {record: state.selection.selectedRecord};
+	return {selection: state.selection};
 }
 
 export default connect(mapStateToProps)(RecForm);
