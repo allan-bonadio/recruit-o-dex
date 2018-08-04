@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo "This kills all the servers in the right order."
+
+here=`dirname $0`
+
+# kill highest level
+echo ":::::::::::::::::::::::::::::::::::: killing React Server"
+pkill -2 -f 'react-scripts start'
+pkill -2 -f react-scripts/scripts/start.js
+sleep 2
+
+# kill server
+echo ":::::::::::::::::::::::::::::::::::: killing backend server"
+pkill -2 -f rodexServer.js
+sleep 2
+
+# I guess you can keep this running, whatever
+echo ":::::::::::::::::::::::::::::::::::: stopping mongo DB"
+# recommended way, kill -2 or sigint also is recommended
+pkill -2 -f mongod

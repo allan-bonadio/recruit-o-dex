@@ -1,14 +1,11 @@
 #!/usr/bin/env node
 /*
-** server -- the MongoDB and server for the RecruitMan page
+** server -- the MongoDB and server for the Recruit-o-dex page
 **
 ** Copyright (C) 2017 Allan Bonadio   All Rights Reserved
 */
 
 let fs = require('fs');
-
-
-
 
 /**************************************************** starting up */
 let express = require('express');
@@ -38,12 +35,6 @@ function setupServer() {
 	var bodyParser = require('body-parser');
 	app.use(bodyParser.json());
 
-	// Cross Origin Request System
-	let cors = require('cors');
-	app.use(cors())
-	app.options('*', cors())
-
-
 	// pass it a body on a PUT or POST request.  returns true if it failed.
 	function isBodyBad(req, res) {
 		if (! req.body) {
@@ -63,6 +54,11 @@ function setupServer() {
 		return false;  // ok
 	}
 
+	// Cross Origin Request System
+	let cors = require('cors');
+	app.use(cors());
+	
+	app.options('*', cors())
 
 	app.get('/getall', function (req, res) {
 		getAllRecords(function(records) {
@@ -251,6 +247,11 @@ function addOneRecord(record, callback) {
 
 // generate a list of companies in the db. ANd store it in the alreadyappliedto.txt file.
 function generateAAT() {
+	if (! process.env.ROX_AAT_TARGET) {
+		console.warn("process.env.ROX_AAT_TARGET undefined so no AAT file generated");
+		return;
+	}
+	
 	console.log("============");
 	console.log("generateAAT()");
 	console.log("============");
@@ -273,8 +274,8 @@ function generateAAT() {
 						.join('\n');
 			
 			// and get it out there before something else fails
-			fs.writeFileSync('/usr/local/nginx/resume/alreadyappliedto.txt', content);
-			fs.chmodSync('/usr/local/nginx/resume/alreadyappliedto.txt', 0o666);
+			fs.writeFileSync(process.env.ROX_AAT_TARGET, content);
+			fs.chmodSync(process.env.ROX_AAT_TARGET, 0o666);
 		});
 	});
 }
