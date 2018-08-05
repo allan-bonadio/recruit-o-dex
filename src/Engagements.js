@@ -89,13 +89,20 @@ export class Engagements extends Component {
 		//ev.stopPropagation();
 	}
 	
-	// add this engagement to the list of engagements
+	// add this engagement to the list of engagements for the currently selected record
 	addClick(ev) {
-		this.addNewEngagement(this.props.what, this.props.when, this.props.notes);
+		let p = this.props;
+		p.dispatch({
+					type: 'APPEND_ENGAGEMENT', 
+					what: p.what,
+					when: p.when,
+					notes: p.notes,
+				});
+		////this.addNewEngagement(p.what, p.when, p.notes);
 	}
 	
 	// called by the Add bar to add it.  We do not hold the engagements list, we just display it.  Pass it up to really change
-	addNewEngagement(what, when, notes) {
+	static addNewEngagement(what, when, notes) {
 		// engagements is a new feature; failover
 		let newEngagements = [];
 		if (this.props.engagements)

@@ -1,5 +1,8 @@
 # recruit-o-dex app
 
+This project is still early in development.  Sorry if it doesn't work for you.
+
+
 ## subsystems
 * server.js - ajax server that talks to mongo.  standalone file run on nodejs.
 * MongoDB - typical installation

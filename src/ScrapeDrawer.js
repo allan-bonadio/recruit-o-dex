@@ -21,13 +21,14 @@ function tryOneTidbit(regex, text, handler) {
 	}
 }
 
-var matchesPhoneNumber = /\s*\(?\d\d\d[-) ._]{1,2}\d\d\d[- ._]\d\d\d\d/;
+var matchesPhoneNumber = /\s*\(?\d\d\d[-) ._]{1,2}\d\d\d[- ._]\d\d\d\d([ Eext.]+\d+)?/;
 var matchesEmail = /^[-.\w]+@[-.\w]+$/;
 
 function scanOneInput(text) {
 	////console.log();
 	let recruiterBuild = {};  // collects the answers
 	
+	// various phone nums with prefix
 	tryOneTidbit(/(Office|P|Phone|T)[: ] ?([-\d() .]+)/ig, text, function(m) {
 		if (matchesPhoneNumber.test(m[2]))
 			recruiterBuild.recruiter_phone = m[2];
@@ -50,7 +51,16 @@ function scanOneInput(text) {
 			recruiterBuild.recruiter_fax = m[1];
 	});
 	
-	tryOneTidbit(/([-\w ,.]+) <([-\w@.]+)>/ig, text, function(m) {
+	// if we don't yet have a phone number, try harder to just recognize a phone with a looser RE
+	if (! recruiterBuild.recruiter_phone) {
+		// look for pattern 3digits 3digits 4digits, with anything in between, maybe with an extension
+		tryOneTidbit(/(\d\d\d).{1,3}(\d\d\d).(\d\d\d\d)\s*([ Eext.]+\d+)/ig, text, function(m) {
+			recruiterBuild.recruiter_phone = `(${m[1]}) ${m[2]} ${m[3]} ${m[4]}`;
+		});
+	}
+
+	// take apart an email address of the form ` "My Name" (myname@wherever)`
+	tryOneTidbit(/"?([-\w ,.()]+)"? <([-\w+@.]+)>/gi, text, function(m) {
 		if (matchesEmail.test(m[2])) {
 			recruiterBuild.recruiter_name = m[1];
 			recruiterBuild.recruiter_email = m[2];
@@ -69,18 +79,33 @@ export var theScrapeDrawer;
 export class ScrapeDrawer extends Component {
 	constructor(props) {
 		super(props);
-		theScrapeDrawer = this;
+		ScrapeDrawer.me = this;
 		this.scrapeHandler = this.scrapeHandler.bind(this);
 	}
 	
 	render() {
+		let sdo = this.props.scrapeDrawerOpen;
+		
 		////console.log("render ScrapeDrawer");
-		return <section className='scrape-drawer' 
-					style={{display: this.props.selectedSerial < 0 ? 'display' : 'none'}}>
-			scrape pit.  paste clues here.<br/>
-			<textarea className='scrape-pit' cols='50' rows='10' onChange={this.scrapeHandler}>
+		return <section className='scrape-drawer' >
+			<span onClick={ScrapeDrawer.clickToggleOpen} >{sdo ? '▾' : '▸'} <b>Scrape Pit</b>  paste clues here</span> 
+			<br/>
+			<textarea className='scrape-pit' cols='50' rows='10' onChange={this.scrapeHandler}
+					style={{display: sdo ? 'block' : 'none'}}>
 			</textarea>
 		</section>;
+	}
+	
+	// action handler to actually do the toggle upon click
+	static setScrapeDrawerOpen(state, action) {
+		state = {...state,
+			controlPanel: {scrapeDrawerOpen: action.open},
+		};
+		return state;
+	}
+	
+	static clickToggleOpen(ev) {
+		ScrapeDrawer.me.props.dispatch({type: 'SET_SCRAPE_DRAWER_OPEN', open: !ScrapeDrawer.me.props.scrapeDrawerOpen});
 	}
 	
 	// called upon every change to the scrape pit.  Scrapes and squirts it into the control panel.  Not that useful after recruiter is entered.
@@ -92,8 +117,7 @@ export class ScrapeDrawer extends Component {
 		////console.log("scraping results:");
 		////console.log(JSON.stringify(fields, undefined, '\t'));
 		
-		// for each field being changed, modify the rec for it and dispatch the cmd
-debugger;////
+		// for each field being changed, modify the rec for it and dispatch the cmd   debugger;////
 		var rec = _.cloneDeep(this.props.selectedRecord);
 		for (let f in fields) {
 			var val = fields[f];
@@ -141,7 +165,8 @@ debugger;////
 }
 
 function mapStateToProps(state) {
-	return state.selection;  // i don't think i really use these props
+	return state.controlPanel;  // includes scrapeDrawerOpen
+;
 }
 
 export default connect(mapStateToProps)(ScrapeDrawer);

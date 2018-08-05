@@ -7,6 +7,15 @@ button {
 	cursor: pointer;
 }
 
+.error {
+	float: left;
+	font-size: 3em;
+	color: #800;
+	padding: 1em;
+	margin: 1em;
+	background-color: #fee;
+}
+
 /******************************* control panel */
 
 #control-panel {
@@ -71,8 +80,10 @@ textarea.json-edit {
 
 div.json-errors {
 	width: 27em;
-	height: 2em;
-	color: red;
+	line-height: 2em;
+	margin-left: 5px;
+	color: #800;
+	background-color: #fee;
 }
 
 section.button-area {
@@ -96,6 +107,10 @@ section.button-area button.cancel-button { color: #800; background: #fee; }
 section.scrape-drawer {
 	clear: left;
 	display: block;
+}
+
+section.scrape-drawer span:active {
+	color: gray;
 }
 
 section.scrape-drawer textarea.scrape-pit {

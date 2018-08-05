@@ -1,18 +1,30 @@
 #!/bin/bash
 
+echo "This starts up all the servers.  Checks so it won't start a second process."
 
 here=`dirname $0`
 
 # must start mongo for server to work
 echo ":::::::::::::::::::::::::::::::::::: Starting up mongo DB"
-/dvl/mongo/mongodb-osx-x86_64-3.4.6/run
-sleep 2
+if ! pgrep -f mongod
+then
+	mongod &
+	sleep 2
+fi
+
 
 # must start server for webapp to run
-echo ":::::::::::::::::::::::::::::::::::: Starting up server"
-./server.js &
-sleep 2
+echo ":::::::::::::::::::::::::::::::::::: Starting up backend server"
+if ! pgrep -f rodexServer
+then 
+	./rodexServer.js &
+	sleep 2
+fi
 
 # now run it
 echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
-PORT=3300 npm start
+if ! pgrep -f react-scripts/scripts/start.js
+then 
+	PORT=3300 EDITOR= TERM= npm start &
+	sleep 2
+fi

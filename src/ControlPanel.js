@@ -10,6 +10,7 @@ import $ from "jquery";
 //import _ from "lodash";
 
 import ScrapeDrawer from './ScrapeDrawer';
+import LittleDialog from './LittleDialog';
 import RecForm from './RecForm';
 import JsonForm from './JsonForm';
 import {rxStore, getStateSelection} from './Reducer';
@@ -157,6 +158,20 @@ class ControlPanel extends Component {
 		//startEditRecord(rxStore.originalBeforeChanges);
 		////theControlPanel.setIdle();
 	}
+
+
+	// got error during saving.  do dialog.
+	errorPutPost(state, action) {
+		// dialog pleeze
+		LittleDialog.alert('Error Saving', action.errorObj.message, 
+			{callback: (a, b, c) => console.log(a, b, c) });
+		
+		// we put up a dialog but other than that no state change.
+		// that's not right...
+		return state;
+	}
+
+
 
 	
 	/****************************************************** drag around cpanel */

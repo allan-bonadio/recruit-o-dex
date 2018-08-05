@@ -35,7 +35,7 @@ class SummaryRec extends Component {
 		// the only thing you can do is click one to open it in control panel
 		let clickHandler =  (ev) => {
 			let act = {
-				type: 'EDIT_RECORD', 
+				type: 'START_EDIT_RECORD', 
 				node: ev.currentTarget,
 				summary: this,
 			};

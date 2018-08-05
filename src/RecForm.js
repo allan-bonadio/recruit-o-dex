@@ -27,6 +27,7 @@ function RecField(props) {
 		<div className={'edit-blank '+ fieldName}>
 			{entryElement}
 		</div>
+		<br clear='left' />
 	</div>;
 }
 
@@ -86,6 +87,7 @@ export class RecForm extends Component {
 			<RecField rec={rec} label='email:' fieldName='recruiter_email' />
 			<RecField rec={rec} label='phone:' fieldName='recruiter_phone' />
 			<RecField rec={rec} label='agency:' fieldName='agency' />
+			<div style={{height: '10px'}} />
 			<RecField rec={rec} label='company:' fieldName='company_name' />
 			<RecField rec={rec} label='jd url:' fieldName='job_desc_url' />
 			<RecField rec={rec} label='status:' fieldName='status' />

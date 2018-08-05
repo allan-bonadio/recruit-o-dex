@@ -13,7 +13,7 @@ import {getAll} from './Model';
 import {theGlobalList} from './GlobalList';
 
 // the prototype object for a selection, so I don't forget some fields
-let bareSelection = {
+export let bareSelection = {
 	selectedRecord: null, 
 	selectedSerial: -1, 
 	didChange: false, 
@@ -48,24 +48,14 @@ class LoadSave {
 		};
 		window.selectedRecord = selection.selectedRecord;  // so i can get at it in the debugger
 
-		// this should set the state of both components and show the info
-		////theControlPanel.setEdit(selection.selectedRecord);
-	
-	
-	
-	
-	// 			theButtonArea.saveButton$.show();
-	// 		theButtonArea.addButton$.hide();
-			$('#control-panel').removeClass('adding');
+		$('#control-panel').removeClass('adding');
 
 
-			state = {...state,
-				selection,
-			};
+		state = {...state,
+			selection,
+			controlPanel: {scrapeDrawerOpen: false},
+		};
 
-
-		//theControlPanel.setIdle(selectedRecord);
-	
 		return state;
 	}
 	
@@ -77,13 +67,12 @@ class LoadSave {
 		// update
 		let sel = state.selection;
 		var rec = sel.selectedRecord;
-		putOne(rec, function(statusText, statusNumber) {
+		putOne(rec, function(errorObj, httpStatus) {
 			////console.log("...saveEditClick done");
-			if (statusText == 'success') {  // eslint-disable-line
+			if (! errorObj) {  // eslint-disable-line
 				rxStore.dispatch({
 					type: 'SAVE_EDIT_DONE',
-					statusText: statusText,
-					statusNumber: statusNumber,
+					httpStatus,
 				});
 			}
 		});
@@ -100,9 +89,10 @@ class LoadSave {
 // 		state.recs[sel.selectedSerial] = {...sel.selectedRecord};
 
 		// reload the screen. kindof overkill but works
-		getAll((newRecs) => {
-			theGlobalList.update(newRecs)
-		});
+		theGlobalList.updateList();
+// 		getAll((err, newRecs) => {
+// 			theGlobalList.update(newRecs)
+// 		});
 
 		// replace the whole selection
 		state.selection = {...bareSelection};
@@ -114,20 +104,9 @@ class LoadSave {
 	/********************************************** Add New */
 	// start editing a new blank record.  Called when user clicks New Rec.
 	static startAddRecord(state, action) {
-		////let state = rxStore.getState();
-		////cleanChanges(state);
-	
-		//theControlPanel.setAdd();
-	
 		// the template for a new Recruiter
 		let initial = {status: 'applied', created: (new Date()).toISOString().replace(/T/, '.')};
-		// now what?!?!?
-	
-		////theCrudCurtain.show();
-	// 		theButtonArea.saveButton$.hide();
-	// 		theButtonArea.addButton$.show();
-	// 		theControlPanel.adding = true;
-	// 		theControlPanel.editing = false;
+
 		$('#control-panel').addClass('adding');
 		//theControlPanel.setCPRecord(initial).show();
 	
@@ -139,6 +118,7 @@ class LoadSave {
 				selectedRecord: initial,
 				saving: true,
 			},
+			controlPanel: {scrapeDrawerOpen: true},
 		};
 		return state;
 	}
@@ -147,14 +127,21 @@ class LoadSave {
 	static saveAddReq(state, action) {
 		// create
 		var rec = state.selection.selectedRecord;
-		postOne(rec, function(statusText, statusNumber) {
+		postOne(rec, function(errorObj, httpStatus) {
 			////console.log("...saveEditClick done");
-			if (statusText == 'success') {  // eslint-disable-line
+			if (! errorObj) {
 				rxStore.dispatch({
 					type: 'SAVE_ADD_DONE',
-					statusText: statusText,
-					statusNumber: statusNumber,
+					httpStatus: httpStatus,
 				});
+			}
+			else {
+				// error dialog
+				rxStore.dispatch({
+					type: 'ERROR_PUT_POST',
+					errorObj,
+				});
+				
 			}
 		});
 		
@@ -169,9 +156,10 @@ class LoadSave {
 		////theControlPanel.setIdle();
 	
 		// reload the screen. kindof overkill but works
-		getAll((newRecs) => {
-			theGlobalList.update(newRecs)
-		});
+		theGlobalList.updateList();
+// 		getAll((err, newRecs) => {
+// 			theGlobalList.update(newRecs)
+// 		});
 
 		state = {...state};
 		state.selection = {...bareSelection};
@@ -190,9 +178,10 @@ class LoadSave {
 	static cancelEditAdd(state, action) {
 
 		// reload the screen. kindof overkill but works
-		getAll((newRecs) => {
-			theGlobalList.update(newRecs)
-		});
+		theGlobalList.updateList();
+// 		getAll((err, newRecs) => {
+// 			theGlobalList.update(newRecs)
+// 		});
 
 		state = {...state, selection: {...bareSelection}};
 		return state;

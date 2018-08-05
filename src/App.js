@@ -16,7 +16,7 @@ import ControlPanel from './ControlPanel';
 import CrudCurtain from './CrudCurtain';
 ////import {getBySerial} from './Model';
 
-
+import LittleDialog from './LittleDialog';
 
 // the app itself, pretty simple
 export function App() {
@@ -24,10 +24,11 @@ export function App() {
 		<Provider store={rxStore}>
 			<div className="App">
 				<div>
-					<ControlPanel></ControlPanel>
-					<GlobalList></GlobalList>
+					<ControlPanel />
+					<GlobalList />
 				</div>
-				<CrudCurtain></CrudCurtain>
+				<CrudCurtain />
+				<LittleDialog />
 			</div>
 		</Provider>
 	);

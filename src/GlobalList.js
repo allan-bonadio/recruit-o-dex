@@ -7,6 +7,8 @@ import {connect} from 'react-redux';
 ////import {startAddRecord} from './ControlPanel'
 import SummaryRec from './SummaryRec';
 //import {store, getStateSelection} from './Reducer';
+////import LoadSave from './LoadSave';
+import {getAll} from './Model';
 
 export let theGlobalList;
 
@@ -28,6 +30,7 @@ class GlobalList extends Component {
 	render() {
 		////console.log("render GlobalList");
 		let p = this.props;
+		let list;
 		
 		// header cell with image and New button
 		let titleCell = <section className='summary title-cell' key='title-cell'>
@@ -38,13 +41,22 @@ class GlobalList extends Component {
 			</h1>
 		</section>;
 
-		// all the other cells with records in them
-		//let list = store.getState().recs.map(function(rec, ix) {
-		let list = p.recs.map(function(rec, ix) {
-			////thisSerial = ix;
-			return <SummaryRec key={ix.toString()} serial={ix} 
-				record={rec} selected={p.selectedSerial == ix} ></SummaryRec>;
-		});
+		if (p.globalListErrorObj) {
+			// all the other cells with records in them
+			//let list = store.getState().recs.map(function(rec, ix) {
+			list = [<section className='error' key='err' >
+				{p.globalListErrorObj.message}
+			</section>];
+		}
+		else {
+			// all the other cells with records in them
+			//let list = store.getState().recs.map(function(rec, ix) {
+			list = p.recs.map(function(rec, ix) {
+				////thisSerial = ix;
+				return <SummaryRec key={ix.toString()} serial={ix} 
+					record={rec} selected={p.selectedSerial == ix} ></SummaryRec>;
+			});
+		}
 		
 		// stick in the header cell in the upper left with the photo
 		list.unshift(titleCell);
@@ -58,6 +70,29 @@ class GlobalList extends Component {
 		this.props.dispatch({type: 'SET_WHOLE_LIST', recs: newList})
 		////this.setState({recs: newList});
 	}
+
+	// called at various times to re-read the jobs table and display it again
+	updateList() {
+		let p = this.props;
+		getAll((err, newRecs) => {
+			if (err) {
+				p.dispatch({type: 'ERROR_GET_ALL', errorObj: err})
+				
+			}
+			else
+				theGlobalList.update(newRecs)
+		});
+	}
+	
+	// put an error message up instead of the list of recs
+	// called in reducer from ERROR_GET_ALL
+	errorGetAll(state, action) {
+		// data in GlobalList not modified cuz no data came back.  Just error obj.
+		return {
+			...state,
+			globalListErrorObj: action.errorObj,
+		};
+	}
 	
 	// a click on the New Rec button to raise the control panel with a prospective rec
 	clickNewRec(ev) {
@@ -65,15 +100,16 @@ class GlobalList extends Component {
 	}
 }
 
-export function setGlobalData(recs) {
-	theGlobalList.update(recs);
-}
+// export function setGlobalData(recs) {
+// 	theGlobalList.update(recs);
+// }
 
 function mapStateToProps(state) {
 	console.log("|| GlobalList#mapStateToProps: state=", state);
 	return {
 		recs: (state ? state.recs : []), 
 		selectedSerial: state ? state.selection.selectedSerial : -1,
+		globalListErrorObj: state ? state.globalListErrorObj : null,
 	};
 }
 
