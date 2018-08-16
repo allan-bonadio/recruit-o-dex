@@ -11,17 +11,10 @@ import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {App} from './App';
-import {theGlobalList} from './GlobalList';
-import {getAll} from './Model';
-////import registerServiceWorker from './registerServiceWorker';
+import {globalListUpdateList} from './GlobalList';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
-theGlobalList.updateList();
-// getAll(function(err, records) {
-// 	// when the data is loaded for the first time, start the app.
-// 	setGlobalData(records);
-// });
-//registerServiceWorker();
+globalListUpdateList();  // should have been GlobalList.me.updateList();
 
 
