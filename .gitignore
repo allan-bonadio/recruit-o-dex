@@ -22,4 +22,5 @@ yarn-error.log*
 
 ############################### my stuff
 
-backups
+/backups/archives
+
