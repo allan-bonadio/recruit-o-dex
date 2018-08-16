@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 
 ////import {userChangedRecord} from './ControlPanel';
 import {Engagements} from './Engagements';
-import {rxStore, getStateSelection} from './Reducer';
+import {rxStore} from './Reducer';
 
 export var theRecForm;
 
@@ -40,33 +40,20 @@ export class RecForm extends Component {
 // 					agency:'',  company_name:'',  job_desc_url: '', status: 'active',  notes:''}, 
 // 					display: 'none'};
 		this.typeInBlank = this.typeInBlank.bind(this);
-		this.changeEngagements = this.changeEngagements.bind(this);
+//		this.changeEngagements = this.changeEngagements.bind(this);
 		window.recForm = this;
 		theRecForm = this;
 	}
 	
-	// keystroke handler - for all the text boxes in the form
-	typeInBlank(ev) {
-		var targ = ev.target;
-		let sel = getStateSelection();
-		
-		// appends or replaces one field only
-		var rec = _.clone(sel.selectedRecord);
-		rec[targ.name] = targ.value;
+// 	called by the Engagements Table when there's a change.  Completely replaces all events(engagements)
+// 	changeEngagements(newEvents) {
+// 		var rec = {...this.state.record};
+// 		rec.events = newEvents;
 // 		theControlPanel.setCPRecord(rec)
 // 		userChangedRecord(rxStore.getState());
-		rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: targ.name, newValue: targ.value});
-	}
-
-	// called by the Engagements Table when there's a change
-	changeEngagements(newEvents) {
-		var rec = _.clone(this.state.record);
-		rec.events = newEvents;
-// 		theControlPanel.setCPRecord(rec)
-// 		userChangedRecord(rxStore.getState());
-		rxStore.dispatch({type: 'CHANGE_TO_RECORD', 
-				fieldName: 'badEventz', newValue: 'badEventzValue'});
-	}
+// 		rxStore.dispatch({type: 'CHANGE_TO_RECORD', 
+// 				fieldName: 'badEventz', newValue: 'badEventzValue'});
+// 	}
 
 // 	set this to have the tree passed in as state
 // 	setRecordState(tree) {
@@ -77,7 +64,7 @@ export class RecForm extends Component {
 	render() {
 		////redux let rec = this.state.record;
 		let s = this.props.selection;
-		let rec = s.selectedRecord;
+		let rec = s.editingRecord;
 		if (! rec)
 			return [];
 
@@ -95,13 +82,45 @@ export class RecForm extends Component {
 			<RecField rec={rec} label='notes:' fieldName='notes' element='textarea' />
 			
 			<Engagements engagements={rec.engagements || rec.events} 
-						selectedEngagement={s.selectedEngagement}
-						changeEngagements={this.changeEngagements} />
+						editingEngagement={s.editingEngagement} dispatch={this.props.dispatch}
+						 />
 		</section>;
 	}
 	
 	componentDidCatch(error, info) {
 		console.error("componentDidCatch(%o, %o)", error, info);
+	}
+
+	// keystroke handler - for all the text boxes in the form
+	typeInBlank(ev) {
+		var targ = ev.target;
+		////let sel = getStateSelection();
+		
+		// appends or replaces one field only
+		////var rec = _.clone(sel.editingRecord);
+		//rec[targ.name] = targ.value;
+// 		theControlPanel.setCPRecord(rec)
+// 		userChangedRecord(rxStore.getState());
+		rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: targ.name, newValue: targ.value});
+	}
+
+	static changeToRecord(state, action) {
+		// action.fieldName and .newValue tells you what changed, .fieldPrefix is for subfields like selection
+		state = _.cloneDeep(state);////state = {...state}
+		let q = state.selection.editingRecord;
+		
+// 		fieldPath not used anymore ... kill it?
+// 		if (action.fieldPath) {
+// 			a few levels deep
+// 			action.fieldPath.forEach((name, ix) => {
+// 				if (!q[name])
+// 					q[name] = {};  // sometimes changed to an array elsewhere
+// 				q = q[name];
+// 			});
+// 		}
+
+		q[action.fieldName] = action.newValue;
+		return state;
 	}
 }
 
