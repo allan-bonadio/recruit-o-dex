@@ -35,6 +35,7 @@ button {
 	background-color: rgba(101, 231, 101, 0.5);
 }
 
+
 #control-panel input, #control-panel textarea {
 	background-color: rgba(255, 255, 255, .85);
 }
@@ -137,6 +138,12 @@ div.crud-curtain {
 
 /********************************************** Summary and GLobal List */
 
+.search-box {
+	border: none;
+	background: #fff);
+	text-align: right;
+}
+
 section.summary {
 	float:left;
 	z-index: 10;
@@ -149,15 +156,15 @@ section.summary {
 	border-radius: 6px;
 	padding: 6px;
 	margin: 4px;
+	background-color: #ffe;
 }
 
 /* just like a summary but ... different */
 section.summary.title-cell {
-	min-height: 214px;
-	max-height: 214px;
+	min-height: 308px;
+	width: 24.33em;
 	overflow-y: hidden;
-	text-align: center;
-	background: url(shyster307.jpg) no-repeat bottom center;
+	background: url(shyster307.jpg) no-repeat bottom center #ffe;
 
 	border-width: 0 1px 1px 0;
 	border-radius: 0 0 6px 0;
@@ -165,10 +172,9 @@ section.summary.title-cell {
 	margin: 0 4px 4px 0;
 }
 
-section.summary.title-cell h1 button {
+section.summary.title-cell button {
 	font-size: 18px;
 	position: relative;
-	top: -15px;
 	border-radius: 6px;
 	background-color: green;
 	color: #FFa;
