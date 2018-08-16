@@ -15,4 +15,10 @@ cd `dirname $0`
 d=`date +%Y-%m-%d,%H.%M`
 mv ./dump/jobs ./archives/jobs$d
 
+# now delete an old one.  Randomly chosen.
+lineNum=$(( $RANDOM * 20 / 32768 + 10 ))
+fileName=` ls -1t archives | tail -n +$lineNum | head -1 `
+/bin/rm -rf archives/$fileName
+
+
 
