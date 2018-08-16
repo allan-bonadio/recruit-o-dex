@@ -84,11 +84,13 @@ export class ScrapeDrawer extends Component {
 	}
 	
 	render() {
-		let sdo = this.props.scrapeDrawerOpen;
+		let sdo = this.props.controlPanel.scrapeDrawerOpen;
 		
 		////console.log("render ScrapeDrawer");
 		return <section className='scrape-drawer' >
-			<span onClick={ScrapeDrawer.clickToggleOpen} >{sdo ? '▾' : '▸'} <b>Scrape Pit</b>  paste clues here</span> 
+			<span onClick={ScrapeDrawer.clickToggleOpen} >
+				{sdo ? '▾' : '▸'} <b>Scrape Pit</b>  paste clues here
+			</span> 
 			<br/>
 			<textarea className='scrape-pit' cols='50' rows='10' onChange={this.scrapeHandler}
 					style={{display: sdo ? 'block' : 'none'}}>
@@ -108,8 +110,9 @@ export class ScrapeDrawer extends Component {
 		ScrapeDrawer.me.props.dispatch({type: 'SET_SCRAPE_DRAWER_OPEN', open: !ScrapeDrawer.me.props.scrapeDrawerOpen});
 	}
 	
-	// called upon every change to the scrape pit.  Scrapes and squirts it into the control panel.  Not that useful after recruiter is entered.
-	scrapeHandler() {
+	// called upon every change to the scrape pit.  Scrapes and squirts it into the control panel.  
+	// Not that useful after recruiter is entered.
+	scrapeHandler(ev) {
 		////console.log("saveHandler starting...");
 		// the text area is 'uncontrolled'
 		let clueText = $('section.scrape-drawer textarea.scrape-pit').val();
@@ -118,7 +121,7 @@ export class ScrapeDrawer extends Component {
 		////console.log(JSON.stringify(fields, undefined, '\t'));
 		
 		// for each field being changed, modify the rec for it and dispatch the cmd   debugger;////
-		var rec = _.cloneDeep(this.props.selectedRecord);
+		var rec = _.cloneDeep(this.props.editingRecord);
 		for (let f in fields) {
 			var val = fields[f];
 			
@@ -165,8 +168,10 @@ export class ScrapeDrawer extends Component {
 }
 
 function mapStateToProps(state) {
-	return state.controlPanel;  // includes scrapeDrawerOpen
-;
+	return {
+		editingRecord: state.selection.editingRecord,
+		controlPanel: state.controlPanel,  // includes scrapeDrawerOpen
+	};
 }
 
 export default connect(mapStateToProps)(ScrapeDrawer);
