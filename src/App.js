@@ -6,6 +6,8 @@
 
 import React from 'react';
 import {Provider} from 'react-redux';
+
+
 ////import $ from "jquery";
 
 import GlobalList from './GlobalList';
@@ -34,8 +36,4 @@ export function App() {
 	);
 }
 
-
-
-
-
-
+export default App;

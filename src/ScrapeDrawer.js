@@ -84,7 +84,10 @@ export class ScrapeDrawer extends Component {
 	}
 	
 	render() {
-		let sdo = this.props.controlPanel.scrapeDrawerOpen;
+////		console.info("render SD props:", this.props);
+		let sdo = this.props.controlPanel
+			? this.props.controlPanel.scrapeDrawerOpen
+			: false;  // during unit tests
 		
 		////console.log("render ScrapeDrawer");
 		return <section className='scrape-drawer' >
@@ -168,6 +171,7 @@ export class ScrapeDrawer extends Component {
 }
 
 function mapStateToProps(state) {
+	console.info('mstp SD state: ', state);
 	return {
 		editingRecord: state.selection.editingRecord,
 		controlPanel: state.controlPanel,  // includes scrapeDrawerOpen

@@ -179,3 +179,5 @@ function reducer(state = initialState, action) {
 
 // the one and only redux store
 export const rxStore = createStore(reducer, initialState);
+////console.log("rxStore = ", rxStore);
+
