@@ -9,21 +9,40 @@ import $ from "jquery";
 
 import {putOne, postOne} from './Model';
 import {rxStore} from './Reducer';
-import {getAll} from './Model';
-import {theGlobalList} from './GlobalList';
+//import {getAll} from './Model';
+import {globalListUpdateList} from './GlobalList';
+import Engagements from './Engagements';
+
 
 // the prototype object for a selection, so I don't forget some fields
 export let bareSelection = {
-	selectedRecord: null, 
+	editingRecord: null, 
 	selectedSerial: -1, 
 	didChange: false, 
 	saving: false,
-	selectedEngagement: {what: '', when: '', notes: '',},
+	editingEngagement: {what: '', when: '', notes: '',},
 };
 Object.freeze(bareSelection);
 
 class LoadSave {
 
+	// just before saving, clear out stuff, mostly empty fields
+	static cleanupRecord(record) {
+		for (let k in record) {
+			if (! record[k])
+				delete record[k];
+		}
+		
+		// clean out engagements; there's always at least one empty engagement
+		let e = Engagements.cleanEngagementsList(record.engagements);
+		if (e)
+			record.engagements = e
+		else
+			delete record.engagements;
+		
+		return record;
+	}
+	
 	/********************************************** Edit Existing */
 
 	// sets the existing rec passed in as the state record for the control panel.
@@ -36,17 +55,20 @@ class LoadSave {
 		$('div.App section.summary').removeClass('selected');
 		$(action.node).addClass('selected');
 
+		// unmanaged, the scrape pit is just a textarea.  Clear it out when CP opens again.
+		$('.scrape-pit').val('');
+
 		// the NEW selection to be handed in to state
 		let selection = {
 			...bareSelection,
 			originalBeforeChanges: action.record,  // this is in the big record list
 
-			// setting the selectedRecord will cause the control panel to appear
-			selectedRecord: _.cloneDeep(action.record),  // this copy gets changed during editing
+			// setting the editingRecord will cause the control panel to appear
+			editingRecord: _.cloneDeep(action.record),  // this copy gets changed during editing
 			selectedSerial: action.serial,
 			didChange: false,
 		};
-		window.selectedRecord = selection.selectedRecord;  // so i can get at it in the debugger
+		window.editingRecord = selection.editingRecord;  // so i can get at it in the debugger
 
 		$('#control-panel').removeClass('adding');
 
@@ -66,7 +88,7 @@ class LoadSave {
 		
 		// update
 		let sel = state.selection;
-		var rec = sel.selectedRecord;
+		var rec = LoadSave.cleanupRecord(sel.editingRecord);
 		putOne(rec, function(errorObj, httpStatus) {
 			////console.log("...saveEditClick done");
 			if (! errorObj) {  // eslint-disable-line
@@ -86,13 +108,15 @@ class LoadSave {
 		state = {...state};
 		
 // 		replace the newly edited thing
-// 		state.recs[sel.selectedSerial] = {...sel.selectedRecord};
+// 		state.recs[sel.selectedSerial] = {...sel.editingRecord};
 
 		// reload the screen. kindof overkill but works
-		theGlobalList.updateList();
+		globalListUpdateList();
 // 		getAll((err, newRecs) => {
-// 			theGlobalList.update(newRecs)
+// 			GlobalList.me.update(newRecs)
 // 		});
+
+		$('div.App section.summary').removeClass('selected');
 
 		// replace the whole selection
 		state.selection = {...bareSelection};
@@ -109,13 +133,17 @@ class LoadSave {
 
 		$('#control-panel').addClass('adding');
 		//theControlPanel.setCPRecord(initial).show();
+		
+		
+		// unmanaged, the scrape pit is just a textarea.  Clear it out when CP opens again.
+		$('.scrape-pit').val('');
 	
 		// most important, make a selection pointing to the new prototype rec
 		state = {
 			...state,
 			selection: {
 				...state.selection,
-				selectedRecord: initial,
+				editingRecord: initial,
 				saving: true,
 			},
 			controlPanel: {scrapeDrawerOpen: true},
@@ -126,7 +154,8 @@ class LoadSave {
 	// a click event on Add to save a new rec: actually start save
 	static saveAddReq(state, action) {
 		// create
-		var rec = state.selection.selectedRecord;
+		let sel = state.selection;
+		var rec = LoadSave.cleanupRecord(sel.editingRecord);
 		postOne(rec, function(errorObj, httpStatus) {
 			////console.log("...saveEditClick done");
 			if (! errorObj) {
@@ -156,10 +185,12 @@ class LoadSave {
 		////theControlPanel.setIdle();
 	
 		// reload the screen. kindof overkill but works
-		theGlobalList.updateList();
+		globalListUpdateList();
 // 		getAll((err, newRecs) => {
-// 			theGlobalList.update(newRecs)
+// 			GlobalList.me.update(newRecs)
 // 		});
+
+		$('div.App section.summary').removeClass('selected');
 
 		state = {...state};
 		state.selection = {...bareSelection};
@@ -170,7 +201,7 @@ class LoadSave {
 // 		state.selection.saving = false;
 // 		return state;
 // 		return {...state.selection, 
-// 				selectedRecord: null, selectedSerial: -1, didChange: false, 
+// 				editingRecord: null, selectedSerial: -1, didChange: false, 
 // 				saving: false,};
 	}
 	
@@ -178,9 +209,9 @@ class LoadSave {
 	static cancelEditAdd(state, action) {
 
 		// reload the screen. kindof overkill but works
-		theGlobalList.updateList();
+		globalListUpdateList();
 // 		getAll((err, newRecs) => {
-// 			theGlobalList.update(newRecs)
+// 			GlobalList.me.update(newRecs)
 // 		});
 
 		state = {...state, selection: {...bareSelection}};

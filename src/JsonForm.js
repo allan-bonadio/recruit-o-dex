@@ -1,7 +1,7 @@
 /*json-entry pane */
 
 import React, { Component } from 'react';
-import $ from "jquery";
+//import $ from "jquery";
 import {connect} from 'react-redux';
 
 ////import {userChangedRecord} from './ControlPanel';
@@ -99,7 +99,7 @@ class JsonForm extends Component {
 			return {
 				...state,
 				selection: {...state.selection,
-					selectedRecord: action.newRecord,
+					editingRecord: action.newRecord,
 				},
 				// now that the json parses, drop it, the tree is good
 				controlPanel: {...state.controlPanel,
@@ -125,7 +125,7 @@ class JsonForm extends Component {
 		////console.log("render JsonForm");
 		
 		// if jsonText is there, it's the true text, otherwise use whatever record we have
-		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.selection.selectedRecord);
+		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.selection.editingRecord);
 		
 		////rxStore.getState().jsonText || rxStore.getState().record);
 		////console.log(`Text is '${text}', cuz `+ (this.state.jsonText ? 'uncompiled test' : 'compiled object'));

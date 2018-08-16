@@ -28,7 +28,7 @@ export class CrudCurtain extends Component {
 
 		return <div className='crud-curtain' 
 			onClick={this.curtainClick}
-			style={{display: sel.selectedRecord ? 'block' : 'none'}}>
+			style={{display: sel.editingRecord ? 'block' : 'none'}}>
 		</div>;
 	}
 }

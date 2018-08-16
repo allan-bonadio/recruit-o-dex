@@ -10,21 +10,26 @@ import SummaryRec from './SummaryRec';
 ////import LoadSave from './LoadSave';
 import {getAll} from './Model';
 
-export let theGlobalList;
+//export let theGlobalList;
 
 // this is not the right way to pass this variable but I don't kno w what else to do
 ////export var thisSerial;
 
-
+// having trouble getting GlobalList to exist at startup
+export function globalListUpdateList() {
+	GlobalList.me.updateList();
+}
 
 // list of all recruiters, for click selecting
 class GlobalList extends Component {
 	constructor(props) {
 		super(props);
 		////this.state = {recs: []};
-		theGlobalList = this;
+		//theGlobalList = this;
+		GlobalList.me = this;
 		
 		this.clickNewRec = this.clickNewRec.bind(this);
+		this.changeSearchQuery = this.changeSearchQuery.bind(this);
 	}
 	
 	render() {
@@ -34,23 +39,23 @@ class GlobalList extends Component {
 		
 		// header cell with image and New button
 		let titleCell = <section className='summary title-cell' key='title-cell'>
-			<h1>
-				Recruit-O-Dex
-				&nbsp; &nbsp; &nbsp;
-				<button type='button' onClick={this.clickNewRec} >New<br/>Rec</button>
-			</h1>
+			<h1>Recruit-O-Dex</h1>
+			<button type='button' onClick={this.clickNewRec} >New Rec</button>
+			&nbsp; &nbsp;
+			<input className='search-box' placeholder='search (not yet impl)'
+				onChange={this.changeSearchQuery} defaultValue={p.searchQuery} />
+			&nbsp;
+			<big><span aria-label='search' role='img'>🔍</span></big>
 		</section>;
 
 		if (p.globalListErrorObj) {
-			// all the other cells with records in them
-			//let list = store.getState().recs.map(function(rec, ix) {
+			// no cells, just an error message
 			list = [<section className='error' key='err' >
 				{p.globalListErrorObj.message}
 			</section>];
 		}
 		else {
 			// all the other cells with records in them
-			//let list = store.getState().recs.map(function(rec, ix) {
 			list = p.recs.map(function(rec, ix) {
 				////thisSerial = ix;
 				return <SummaryRec key={ix.toString()} serial={ix} 
@@ -80,7 +85,7 @@ class GlobalList extends Component {
 				
 			}
 			else
-				theGlobalList.update(newRecs)
+				this.update(newRecs)
 		});
 	}
 	
@@ -98,19 +103,33 @@ class GlobalList extends Component {
 	clickNewRec(ev) {
 		this.props.dispatch({type: 'START_ADD_RECORD'})
 	}
+
+	// any input in the search box
+	changeSearchQuery(ev) {
+		this.props.dispatch({type: 'CHANGE_TO_SEARCH_QUERY', newQuery: ev.target.value});
+	}
+	
+	static changeToSearchQuery(state, action) {
+		return {
+			...state,
+			searchQuery: action.newQuery,
+		};
+	}
 }
 
-// export function setGlobalData(recs) {
-// 	theGlobalList.update(recs);
-// }
-
 function mapStateToProps(state) {
-	console.log("|| GlobalList#mapStateToProps: state=", state);
-	return {
-		recs: (state ? state.recs : []), 
-		selectedSerial: state ? state.selection.selectedSerial : -1,
-		globalListErrorObj: state ? state.globalListErrorObj : null,
-	};
+////	console.log("|| GlobalList#mapStateToProps: state=", state);
+	if (state) {
+		return {
+			recs: state.recs, 
+			selectedSerial: state.selection.selectedSerial,
+			globalListErrorObj: state.globalListErrorObj,
+			searchQuery: state.searchQuery, 
+		};
+	}
+	else {
+		return {recs: [], selectedSerial: -1, globalListErrorObj: null, searchQuery: ''};
+	}
 }
 
 export default connect(mapStateToProps)(GlobalList);

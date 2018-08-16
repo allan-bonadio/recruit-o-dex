@@ -4,18 +4,18 @@ import _ from "lodash";
 
 import LoadSave from './LoadSave';
 import Engagements from './Engagements';
-import {theGlobalList} from './GlobalList';
 import {theControlPanel} from './ControlPanel';
 import ScrapeDrawer from './ScrapeDrawer';
+import RecForm from './RecForm';
 import JsonForm from './JsonForm';
+import GlobalList from './GlobalList';
 
-/****************************************************** Redux */
 const initialState = {
 	selection: {
 		// the record being edited by the ControlPanel; a separate copy.  Null means no rec selected.
-		selectedRecord: null,
+		editingRecord: null,
 		selectedSerial: -1,  // index into allRecruiters, or New if <0
-		didChange: false,  // and should be saved
+		didChange: false,  // and editingRecord should be saved
 		originalBeforeChanges: null,  // save this for Cancel or Undo
 	},
 	
@@ -24,7 +24,7 @@ const initialState = {
 		scrapeDrawerOpen: false,
 		
 		// the text in json box, ONLY if it's unparsable.  
-		// If it's parsable, it's all loaded into selectedRecord and this is null.
+		// If it's parsable, it's all loaded into editingRecord and this is null.
 		jsonText: null,
 		jsonError: null,  // any error while parsing jsonText, or null if jsonText is null
 	},
@@ -46,7 +46,7 @@ export function getStateSelection() {
 
 // THE main dispatcher for this whole app
 function reducer(state = initialState, action) {
-	console.log("|| reducer() action: ", action);
+////	console.log("|| reducer() action: ", action);
 	
 	// redux starting up
 	if (/@@redux.INIT/.test(action.type))
@@ -61,7 +61,7 @@ function reducer(state = initialState, action) {
 			
 			// well we no longer have the old selection so drop that
 			selection: {
-				selectedRecord: null,
+				editingRecord: null,
 				selectedSerial: -1,  // index into allRecruiters, or New if <0
 				didChange: false,  // and should be saved
 				originalBeforeChanges: null,  // save this for Cancel or Undo
@@ -123,7 +123,7 @@ function reducer(state = initialState, action) {
 	case 'CANCEL_EDIT_ADD':
 		// user clicked Cancel button after opening control panel
 		state = LoadSave.cancelEditAdd(state, action);
-		////state.selection.selectedRecord = state.selection.originalBeforeChanges;
+		////state.selection.editingRecord = state.selection.originalBeforeChanges;
 		break;
 		
 	case 'APPEND_ENGAGEMENT':
@@ -132,13 +132,13 @@ function reducer(state = initialState, action) {
 		break;
 	
 	case 'CHANGE_TO_RECORD':
-		// user typed, backspaced, cut or pasted inside one of those text blanks, or equivalent
-		// action.fieldName and .newValue tells you what changed, .fieldPrefix is for subfields like selection
-		state = _.cloneDeep(state);////state = {...state}
-		let q = state.selection.selectedRecord;
-		if (action.fieldPrefix)
-			q = q[action.fieldPrefix];
-		q[action.fieldName] = action.newValue;
+		// user typed, backspaced, cut or pasted inside one of those text blanks, or equivalent		
+		state = RecForm.changeToRecord(state, action);
+		break;
+
+	case 'CHANGE_TO_ENGAGEMENT':
+		// inside a text blank in an engagement
+		state = Engagements.changeToEngagement(state, action);
 		break;
 
 	case 'CHANGE_TO_JSON':
@@ -146,11 +146,16 @@ function reducer(state = initialState, action) {
 		state = JsonForm.changeToJson(state, action);
 		break;
 
+	case 'CHANGE_TO_SEARCH_QUERY':
+		// user typed etc into the JSON box
+		state = GlobalList.changeToSearchQuery(state, action);
+		break;
+
 	
 	case 'ERROR_GET_ALL':
 		// any error from retrieval from mongo
 		console.error("ERROR_GET_ALL", action);
-		state = theGlobalList.errorGetAll(state, action);
+		state = GlobalList.me.errorGetAll(state, action);
 		break;
 	
 	case 'ERROR_PUT_POST':
