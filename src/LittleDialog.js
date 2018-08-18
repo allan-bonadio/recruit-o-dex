@@ -33,7 +33,7 @@ class LittleDialog extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className='little-dialog' >
 				<Modal isOpen={this.state.modal} className={this.props.className}>
 					<ModalHeader toggle={this.toggle}>{this.state.title}</ModalHeader>
 					<ModalBody>

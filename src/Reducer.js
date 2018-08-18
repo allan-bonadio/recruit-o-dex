@@ -155,7 +155,18 @@ function reducer(state = initialState, action) {
 	case 'ERROR_GET_ALL':
 		// any error from retrieval from mongo
 		console.error("ERROR_GET_ALL", action);
-		state = GlobalList.me.errorGetAll(state, action);
+		// why do i have to do this??@?@?@////
+////		if ('undefined' != typeof GlobalList)
+////			state = GlobalList.me.errorGetAll(state, action);
+////		else
+////			alert(action.errorObj.toString());
+		// if mongo & server aren't started,
+		// GlobalList is undefined and I can't even check for it!!
+		state = {
+			...state,
+			globalListErrorObj: action.errorObj,
+		};
+
 		break;
 	
 	case 'ERROR_PUT_POST':

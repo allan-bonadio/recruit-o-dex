@@ -12,7 +12,7 @@ export var allSummaryRecs = [];
 
 // each recruiter/job cell, shown in the Global List, the front page.
 // This is NOT a redux component because I need multiple ones of them.
-class SummaryRec extends Component {
+export class SummaryRec extends Component {
 	constructor(props) {
 		super(props);
 		//this.state = {};  //this.state = {serial: props.serial, record: props.record};

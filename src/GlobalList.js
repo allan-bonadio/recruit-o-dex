@@ -91,13 +91,14 @@ class GlobalList extends Component {
 	
 	// put an error message up instead of the list of recs
 	// called in reducer from ERROR_GET_ALL
-	errorGetAll(state, action) {
-		// data in GlobalList not modified cuz no data came back.  Just error obj.
-		return {
-			...state,
-			globalListErrorObj: action.errorObj,
-		};
-	}
+	// glitch when rodexServer isn't running; reducer includes this code directly.  ???
+////	errorGetAll(state, action) {
+////		// data in GlobalList not modified cuz no data came back.  Just error obj.
+////		return {
+////			...state,
+////			globalListErrorObj: action.errorObj,
+////		};
+////	}
 	
 	// a click on the New Rec button to raise the control panel with a prospective rec
 	clickNewRec(ev) {
