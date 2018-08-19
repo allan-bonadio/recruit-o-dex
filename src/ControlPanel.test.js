@@ -9,18 +9,18 @@ import {Provider} from 'react-redux';
 import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import {rxStore} from './Reducer';
+import {rxStore} from './reducer';
 import {ControlPanel} from './ControlPanel';
 
 configure({ adapter: new Adapter() });
 
 xdescribe('<ControlPanel', () => {
 	it('renders without crashing', () => {
-	  const div = document.createElement('div');
-	  console.info('rxStore:', rxStore, 'div~', div);
-	  ReactDOM.render(<Provider store={rxStore}><ControlPanel /></Provider>, div);
-	  let pcp = <Provider store={rxStore}><ControlPanel /></Provider>;
-	  ReactDOM.render(pcp, div);
+		const div = document.createElement('div');
+		console.info('rxStore:', rxStore, 'div~', div);
+		ReactDOM.render(<Provider store={rxStore}><ControlPanel /></Provider>, div);
+		let pcp = <Provider store={rxStore}><ControlPanel /></Provider>;
+		ReactDOM.render(pcp, div);
 	});
 
 	it('should be a div', () => {

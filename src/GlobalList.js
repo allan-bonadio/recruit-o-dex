@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 
 ////import {startAddRecord} from './ControlPanel'
 import SummaryRec from './SummaryRec';
-//import {store, getStateSelection} from './Reducer';
+//import {store, getStateSelection} from './reducer';
 ////import LoadSave from './LoadSave';
 import {getAll} from './Model';
 
@@ -21,7 +21,7 @@ export function globalListUpdateList() {
 }
 
 // list of all recruiters, for click selecting
-class GlobalList extends Component {
+export class GlobalList extends Component {
 	constructor(props) {
 		super(props);
 		////this.state = {recs: []};
@@ -32,13 +32,10 @@ class GlobalList extends Component {
 		this.changeSearchQuery = this.changeSearchQuery.bind(this);
 	}
 	
-	render() {
-		////console.log("render GlobalList");
+	// header cell with image and New button
+	renderTitleCell() {
 		let p = this.props;
-		let list;
-		
-		// header cell with image and New button
-		let titleCell = <section className='summary title-cell' key='title-cell'>
+		return <section className='summary title-cell' key='title-cell'>
 			<h1>Recruit-O-Dex</h1>
 			<button type='button' onClick={this.clickNewRec} >New Rec</button>
 			&nbsp; &nbsp;
@@ -47,25 +44,37 @@ class GlobalList extends Component {
 			&nbsp;
 			<big><span aria-label='search' role='img'>🔍</span></big>
 		</section>;
-
+	}
+	
+	// the list of recs, or just a big message
+	renderBodyCells() {
+		let p = this.props;
 		if (p.globalListErrorObj) {
 			// no cells, just an error message
-			list = [<section className='error' key='err' >
+			return [<section className='error' key='err' >
 				{p.globalListErrorObj.message}
 			</section>];
 		}
 		else {
 			// all the other cells with records in them
-			list = p.recs.map(function(rec, ix) {
+			return p.recs.map(function(rec, ix) {
 				////thisSerial = ix;
 				return <SummaryRec key={ix.toString()} serial={ix} 
 					record={rec} selected={p.selectedSerial == ix} ></SummaryRec>;
 			});
 		}
+	}
+	
+	render() {
+////		console.log('render GlobalList this.props', this.props);////
+		let p = this.props;
+		
+		let titleCell = this.renderTitleCell();
+		let list = this.renderBodyCells();
 		
 		// stick in the header cell in the upper left with the photo
 		list.unshift(titleCell);
-		
+
 		return list;
 	}
 	

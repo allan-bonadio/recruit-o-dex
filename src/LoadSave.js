@@ -8,7 +8,7 @@ import _ from "lodash";
 import $ from "jquery";
 
 import {putOne, postOne} from './Model';
-import {rxStore} from './Reducer';
+import {rxStore} from './reducer';
 //import {getAll} from './Model';
 import {globalListUpdateList} from './GlobalList';
 import Engagements from './Engagements';

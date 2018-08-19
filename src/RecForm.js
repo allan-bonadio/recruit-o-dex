@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 
 ////import {userChangedRecord} from './ControlPanel';
 import {Engagements} from './Engagements';
-import {rxStore} from './Reducer';
+import {rxStore} from './reducer';
 
 export var theRecForm;
 
@@ -63,6 +63,7 @@ export class RecForm extends Component {
 	// render the form with all the blanks and data populated in them
 	render() {
 		////redux let rec = this.state.record;
+		console.log('this.props', this.props);////
 		let s = this.props.selection;
 		let rec = s.editingRecord;
 		if (! rec)

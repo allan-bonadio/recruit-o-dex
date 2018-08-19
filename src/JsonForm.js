@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 
 ////import {userChangedRecord} from './ControlPanel';
 //import {theRecForm} from './RecForm';
-import {rxStore} from './Reducer';
+import {rxStore} from './reducer';
 
 
 // format this object as json, but instead of total tightness, try to indent it nicely
@@ -18,9 +18,10 @@ export function stringifyJson(obj) {
 const IN_JSON_RE = /in JSON at position (\d+)/;
 
 // raw JSON, editable
-class JsonForm extends Component {
+export class JsonForm extends Component {
 	constructor(props) {
 		super(props);
+console.log('JsonForm cons this.props', props);////
 		
 		// the state is the whole record, plus the field jsonText.
 		// In states where the user's text doesn't parse, set jsonText to the text.
@@ -30,16 +31,6 @@ class JsonForm extends Component {
 		this.typeInJson = this.typeInJson.bind(this);
 		JsonForm.me = this;
 	}
-	
-// 	set this to have the tree passed in as state
-// 	setRecordState(tree) {
-// 		this.setState({jsonText: null, jsonErrors: '', record: tree});
-// 	}
-	
-// 	set this to have the problematic json text as the state
-// 	setBadState(text, message) {
-// 		this.setState({jsonText: text, jsonErrors: '', record: null});
-// 	}
 	
 	// a change event (keystroke/cut/paste/etc) in the Json box
 	typeInJson(ev) {
@@ -125,6 +116,7 @@ class JsonForm extends Component {
 		////console.log("render JsonForm");
 		
 		// if jsonText is there, it's the true text, otherwise use whatever record we have
+console.log('jf render this.props', this.props);////
 		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.selection.editingRecord);
 		
 		////rxStore.getState().jsonText || rxStore.getState().record);
@@ -139,6 +131,7 @@ class JsonForm extends Component {
 }
 
 function mapStateToProps(state) {
+console.log('jf props <= state', state);////
 	return {selection: state.selection, controlPanel: state.controlPanel, };
 }
 

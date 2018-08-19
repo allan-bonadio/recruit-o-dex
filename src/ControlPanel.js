@@ -13,7 +13,7 @@ import ScrapeDrawer from './ScrapeDrawer';
 import LittleDialog from './LittleDialog';
 import RecForm from './RecForm';
 import JsonForm from './JsonForm';
-import {rxStore, getStateSelection} from './Reducer';
+import {rxStore, getStateSelection} from './reducer';
 
 
 /********************************************************************** Control Panel root */

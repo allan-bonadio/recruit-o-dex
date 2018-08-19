@@ -9,10 +9,12 @@ import ScrapeDrawer from './ScrapeDrawer';
 import RecForm from './RecForm';
 import JsonForm from './JsonForm';
 import GlobalList from './GlobalList';
+import LittleDialog from './LittleDialog';
 
 const initialState = {
 	selection: {
-		// the record being edited by the ControlPanel; a separate copy.  Null means no rec selected.
+		// the record being edited by the ControlPanel; a separate copy.  
+		// Null means no rec selected.
 		editingRecord: null,
 		selectedSerial: -1,  // index into allRecruiters, or New if <0
 		didChange: false,  // and editingRecord should be saved
@@ -27,6 +29,12 @@ const initialState = {
 		// If it's parsable, it's all loaded into editingRecord and this is null.
 		jsonText: null,
 		jsonError: null,  // any error while parsing jsonText, or null if jsonText is null
+	},
+	
+	// LittleDialog is for alerts and little prompts or 'save' reminder dialogs
+	// has more fields when in use
+	littleDialog: {
+		modal: false,  // whether it's open or hidden
 	},
 	
 	// all the records, for the GlobalList
@@ -177,6 +185,14 @@ function reducer(state = initialState, action) {
 		
 	case 'SET_SCRAPE_DRAWER_OPEN':
 		state = ScrapeDrawer.setScrapeDrawerOpen(state, action);
+		break;
+		
+	case 'OPEN_LITTLE_DIALOG':
+		state = LittleDialog.openLittleDialog(state, action);
+		break;
+		
+	case 'CLOSE_LITTLE_DIALOG':
+		state = LittleDialog.closeLittleDialog(state, action);
 		break;
 		
 	default:

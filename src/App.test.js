@@ -9,15 +9,15 @@ import {Provider} from 'react-redux';
 import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import {rxStore} from './Reducer';
+import {rxStore} from './reducer';
 import {App} from './App';
 
 configure({ adapter: new Adapter() });
 
 describe('<App', () => {
 	it('renders without crashing', () => {
-	  const div = document.createElement('div');
-	  ReactDOM.render(<App />, div);
+		const div = document.createElement('div');
+		ReactDOM.render(<App />, div);
 	});
 
 	it('should have a App ', () => {

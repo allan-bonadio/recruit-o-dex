@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-import {getStateSelection} from './Reducer';
+import {getStateSelection} from './reducer';
 //import LoadSave from './LoadSave';
 
 export let theCrudCurtain = null;

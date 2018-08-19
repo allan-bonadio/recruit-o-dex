@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 
 import {getBySerial} from './Model';
-import {rxStore} from './Reducer';
+import {rxStore} from './reducer';
 
 // these are the actual React components
 export var allSummaryRecs = [];

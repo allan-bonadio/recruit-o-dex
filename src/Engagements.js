@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import _ from "lodash";
-import {rxStore} from './Reducer'
+import {rxStore} from './reducer'
 
 ////let changeEngagementsCallback;
 
@@ -79,7 +79,7 @@ export class Engagements extends Component {
 		// generate the rows for existing engs
 		let rows =  es
 				? es.map((engagement, serial) => 
-					<EngagementRow serial={serial} engagement={engagement} changeEngagement={this.changeEngagement}/>
+					<EngagementRow serial={serial} key={serial} engagement={engagement} changeEngagement={this.changeEngagement}/>
 					)
 				: [];
 				

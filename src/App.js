@@ -12,7 +12,7 @@ import {Provider} from 'react-redux';
 
 import GlobalList from './GlobalList';
 import './App.css';
-import {rxStore} from './Reducer';
+import {rxStore} from './reducer';
 
 import ControlPanel from './ControlPanel';
 import CrudCurtain from './CrudCurtain';

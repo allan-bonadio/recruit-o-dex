@@ -1,15 +1,15 @@
 {
-  "short_name": "Recruit Man",
-  "name": "Recruit Man jobsearch manager",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "192x192",
-      "type": "image/png"
-    }
-  ],
-  "start_url": "./index.html",
-  "display": "standalone",
-  "theme_color": "#abc",
-  "background_color": "#678"
+	"short_name": "Recruit Man",
+	"name": "Recruit Man jobsearch manager",
+	"icons": [
+		{
+			"src": "favicon.ico",
+			"sizes": "192x192",
+			"type": "image/png"
+		}
+	],
+	"start_url": "./index.html",
+	"display": "standalone",
+	"theme_color": "#abc",
+	"background_color": "#678"
 }

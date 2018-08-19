@@ -1,33 +1,33 @@
 {
-  "name": "recruit-o-dex",
-  "version": "0.4.0",
-  "private": true,
-  "dependencies": {
-    "bootstrap": "^4.1.2",
-    "cors": "^2.8.4",
-    "jquery": "^3.2.1",
-    "mongodb": "^2.2.33",
-    "popper.js": "^1.14.3",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
-    "react-redux": "^5.0.7",
-    "react-scripts": "1.0.14",
-    "reactstrap": "^6.3.0",
-    "redux": "^4.0.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "rules": {
-      "eqeqeq": "off"
-    }
-  },
-  "devDependencies": {
-    "enzyme": "^3.4.1",
-    "enzyme-adapter-react-16": "^1.2.0"
-  }
+	"name": "recruit-o-dex",
+	"version": "0.4.0",
+	"private": true,
+	"dependencies": {
+		"bootstrap": "^4.1.2",
+		"cors": "^2.8.4",
+		"jquery": "^3.2.1",
+		"mongodb": "^2.2.33",
+		"popper.js": "^1.14.3",
+		"react": "^16.0.0",
+		"react-dom": "^16.0.0",
+		"react-redux": "^5.0.7",
+		"react-scripts": "1.0.14",
+		"reactstrap": "^6.3.0",
+		"redux": "^4.0.0"
+	},
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test --env=jsdom",
+		"eject": "react-scripts eject"
+	},
+	"eslintConfig": {
+		"rules": {
+			"eqeqeq": "off"
+		}
+	},
+	"devDependencies": {
+		"enzyme": "^3.4.1",
+		"enzyme-adapter-react-16": "^1.2.0"
+	}
 }

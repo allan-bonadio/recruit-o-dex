@@ -3,10 +3,6 @@ import {connect} from 'react-redux';
 import $ from "jquery";
 import _ from "lodash";
 
-//import {theControlPanel} from './ControlPanel';
-//import {theRecForm} from './RecForm';
-////import {store} from './App';
-
 /********************************************************************** Scraping */
 // Scan the scrape pit for specific patterns
 
@@ -78,8 +74,6 @@ export function scanOneInput(text) {
 /********************************************************************** ScrapeDrawer */
 // paste in stuff to set fields
 
-export var theScrapeDrawer;
-
 export class ScrapeDrawer extends Component {
 	constructor(props) {
 		super(props);
@@ -118,7 +112,10 @@ export class ScrapeDrawer extends Component {
 	}
 	
 	static clickToggleOpen(ev) {
-		ScrapeDrawer.me.props.dispatch({type: 'SET_SCRAPE_DRAWER_OPEN', open: !ScrapeDrawer.me.props.scrapeDrawerOpen});
+		ScrapeDrawer.me.props.dispatch({
+			type: 'SET_SCRAPE_DRAWER_OPEN', 
+			open: !ScrapeDrawer.me.props.scrapeDrawerOpen,
+		});
 	}
 	
 	// called upon every change to the scrape pit.  Scrapes and squirts it into the control panel.  
