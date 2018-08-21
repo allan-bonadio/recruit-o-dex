@@ -4,16 +4,8 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
-////import {startAddRecord} from './ControlPanel'
 import SummaryRec from './SummaryRec';
-//import {store, getStateSelection} from './reducer';
-////import LoadSave from './LoadSave';
 import {getAll} from './Model';
-
-//export let theGlobalList;
-
-// this is not the right way to pass this variable but I don't kno w what else to do
-////export var thisSerial;
 
 // having trouble getting GlobalList to exist at startup
 export function globalListUpdateList() {
@@ -24,8 +16,6 @@ export function globalListUpdateList() {
 export class GlobalList extends Component {
 	constructor(props) {
 		super(props);
-		////this.state = {recs: []};
-		//theGlobalList = this;
 		GlobalList.me = this;
 		
 		this.clickNewRec = this.clickNewRec.bind(this);
@@ -66,9 +56,6 @@ export class GlobalList extends Component {
 	}
 	
 	render() {
-////		console.log('render GlobalList this.props', this.props);////
-		let p = this.props;
-		
 		let titleCell = this.renderTitleCell();
 		let list = this.renderBodyCells();
 		
@@ -82,7 +69,6 @@ export class GlobalList extends Component {
 	// triggers a repaint, using this list of raw data from mongo
 	update(newList) {
 		this.props.dispatch({type: 'SET_WHOLE_LIST', recs: newList})
-		////this.setState({recs: newList});
 	}
 
 	// called at various times to re-read the jobs table and display it again
@@ -97,17 +83,6 @@ export class GlobalList extends Component {
 				this.update(newRecs)
 		});
 	}
-	
-	// put an error message up instead of the list of recs
-	// called in reducer from ERROR_GET_ALL
-	// glitch when rodexServer isn't running; reducer includes this code directly.  ???
-////	errorGetAll(state, action) {
-////		// data in GlobalList not modified cuz no data came back.  Just error obj.
-////		return {
-////			...state,
-////			globalListErrorObj: action.errorObj,
-////		};
-////	}
 	
 	// a click on the New Rec button to raise the control panel with a prospective rec
 	clickNewRec(ev) {

@@ -21,7 +21,7 @@ const IN_JSON_RE = /in JSON at position (\d+)/;
 export class JsonForm extends Component {
 	constructor(props) {
 		super(props);
-console.log('JsonForm cons this.props', props);////
+		////console.log('JsonForm cons this.props', props);////
 		
 		// the state is the whole record, plus the field jsonText.
 		// In states where the user's text doesn't parse, set jsonText to the text.
@@ -113,10 +113,8 @@ console.log('JsonForm cons this.props', props);////
 	}
 	
 	render() {
-		////console.log("render JsonForm");
-		
 		// if jsonText is there, it's the true text, otherwise use whatever record we have
-console.log('jf render this.props', this.props);////
+		////console.log('jf render this.props', this.props);////
 		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.selection.editingRecord);
 		
 		////rxStore.getState().jsonText || rxStore.getState().record);
@@ -131,7 +129,7 @@ console.log('jf render this.props', this.props);////
 }
 
 function mapStateToProps(state) {
-console.log('jf props <= state', state);////
+////	console.log('jf props <= state', state);////
 	return {selection: state.selection, controlPanel: state.controlPanel, };
 }
 

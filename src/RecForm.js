@@ -63,7 +63,7 @@ export class RecForm extends Component {
 	// render the form with all the blanks and data populated in them
 	render() {
 		////redux let rec = this.state.record;
-		console.log('this.props', this.props);////
+		////console.log('this.props', this.props);////
 		let s = this.props.selection;
 		let rec = s.editingRecord;
 		if (! rec)

@@ -4,12 +4,11 @@
 ** Copyright (C) 2017-2018 Tactile Interactive
 */
 
-import _ from "lodash";
 import $ from "jquery";
+import _ from "lodash";
 
 import {putOne, postOne} from './Model';
 import {rxStore} from './reducer';
-//import {getAll} from './Model';
 import {globalListUpdateList} from './GlobalList';
 import Engagements from './Engagements';
 
@@ -24,9 +23,10 @@ export let bareSelection = {
 };
 Object.freeze(bareSelection);
 
-class LoadSave {
+export class LoadSave {
 
 	// just before saving, clear out stuff, mostly empty fields
+	// has side effects on passed in record and returns same object
 	static cleanupRecord(record) {
 		for (let k in record) {
 			if (! record[k])
@@ -41,6 +41,10 @@ class LoadSave {
 			delete record.engagements;
 		
 		return record;
+	}
+	
+	static selectNothing(state) {
+		return {...state, selection: {...bareSelection}};
 	}
 	
 	/********************************************** Edit Existing */
@@ -105,7 +109,6 @@ class LoadSave {
 	}
 
 	static saveEditDone(state, action) {
-		state = {...state};
 		
 // 		replace the newly edited thing
 // 		state.recs[sel.selectedSerial] = {...sel.editingRecord};
@@ -119,9 +122,7 @@ class LoadSave {
 		$('div.App section.summary').removeClass('selected');
 
 		// replace the whole selection
-		state.selection = {...bareSelection};
-		
-		return state;
+		return LoadSave.selectNothing(state);
 	}
 	
 
@@ -139,7 +140,7 @@ class LoadSave {
 		$('.scrape-pit').val('');
 	
 		// most important, make a selection pointing to the new prototype rec
-		state = {
+		return {
 			...state,
 			selection: {
 				...state.selection,
@@ -148,7 +149,6 @@ class LoadSave {
 			},
 			controlPanel: {scrapeDrawerOpen: true},
 		};
-		return state;
 	}
 
 	// a click event on Add to save a new rec: actually start save
@@ -180,29 +180,12 @@ class LoadSave {
 	}
 
 	static saveAddDone(state, action) {
-		////cleanChanges(state);
-	
-		////theControlPanel.setIdle();
-	
 		// reload the screen. kindof overkill but works
 		globalListUpdateList();
-// 		getAll((err, newRecs) => {
-// 			GlobalList.me.update(newRecs)
-// 		});
 
 		$('div.App section.summary').removeClass('selected');
 
-		state = {...state};
-		state.selection = {...bareSelection};
-		return state;
-
-
-	// 	state = {...state};
-// 		state.selection.saving = false;
-// 		return state;
-// 		return {...state.selection, 
-// 				editingRecord: null, selectedSerial: -1, didChange: false, 
-// 				saving: false,};
+		return LoadSave.selectNothing(state);
 	}
 	
 	/********************************************************************** other */
@@ -210,12 +193,8 @@ class LoadSave {
 
 		// reload the screen. kindof overkill but works
 		globalListUpdateList();
-// 		getAll((err, newRecs) => {
-// 			GlobalList.me.update(newRecs)
-// 		});
 
-		state = {...state, selection: {...bareSelection}};
-		return state;
+		return LoadSave.selectNothing(state);
 	}
 }
 

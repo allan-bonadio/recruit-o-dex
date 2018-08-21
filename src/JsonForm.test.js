@@ -20,6 +20,7 @@ let mockSelection = {
 };
 
 let mockControlPanel = {
+	jsonText: "token words",
 };
 
 describe('<JsonForm', () => {
@@ -31,8 +32,21 @@ describe('<JsonForm', () => {
 	});
 
 	it('should have a textarea', () => {
-		
 		const wrapper = shallow(<JsonForm selection={mockSelection} controlPanel={mockControlPanel} />);
 		expect(wrapper.find('textarea').length).toEqual(1);
+	});
+
+	it('should show jsonText if there', () => {
+		const wrapper = shallow(<JsonForm selection={{}} controlPanel={mockControlPanel} />);
+		
+		// must verify value.  Only way I know how is with the .debug() dumper
+		let ta = wrapper.find('textarea').debug();
+		expect(ta).toMatch(/ value="token words"/);
+	});
+
+	it('should show editingRecord if no jsonText', () => {
+		const wrapper = shallow(<JsonForm selection={mockSelection} controlPanel={{}} />);
+		let ta = wrapper.find('textarea').debug();
+		expect(ta).toMatch(/ value="\{\\n\\t"recruiter_name": "samantha"\\n\}"/);
 	});
 });
