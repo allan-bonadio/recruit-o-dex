@@ -1,21 +1,11 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import _ from "lodash";
-import {rxStore} from './reducer'
+////import {rxStore} from './reducer'
 
 ////let changeEngagementsCallback;
 
 /********************************************************************** engagement fields */
-
-// one row of the table, displayed, readonly.  In other words, an engagement.
-// function EngagementRow(props) {
-// 	let e = props.engagement;
-// 	return <tr serial={e.serial}>
-// 		<td>{e.what}</td>
-// 		<td>{e.when}</td>
-// 		<td>{e.notes}</td>
-// 	</tr>;
-// }
 
 // the single bar, last row in the Engagements table, that lets users enter new engagements
 function EngagementRow(props) {

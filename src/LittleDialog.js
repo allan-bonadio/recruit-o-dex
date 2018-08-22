@@ -99,6 +99,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps)(LittleDialog);
 
 // for manual testing
+// eslint-disable-next-line
 function testMe() {
 	setTimeout(() => {
 ////		debugger;
