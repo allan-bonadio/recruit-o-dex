@@ -4,14 +4,14 @@ import _ from "lodash";
 
 import LoadSave from './LoadSave';
 import Engagements from './Engagements';
-import {theControlPanel} from './ControlPanel';
+import ControlPanel from './ControlPanel';
 import ScrapeDrawer from './ScrapeDrawer';
 import RecForm from './RecForm';
 import JsonForm from './JsonForm';
 import GlobalList from './GlobalList';
 import LittleDialog from './LittleDialog';
 
-const initialState = {
+export const initialState = {
 	selection: {
 		// the record being edited by the ControlPanel; a separate copy.  
 		// Null means no rec selected.
@@ -53,12 +53,12 @@ export function getStateSelection() {
 }
 
 // THE main dispatcher for this whole app
-function reducer(state = initialState, action) {
+export function reducer(state = initialState, action) {
 ////	console.log("|| reducer() action: ", action);
 	
 	// redux starting up
 	if (/@@redux.INIT/.test(action.type))
-		return;
+		return state;
 	
 	switch (action.type) {
 	/*********************************************** init */
@@ -68,12 +68,7 @@ function reducer(state = initialState, action) {
 			...state,
 			
 			// well we no longer have the old selection so drop that
-			selection: {
-				editingRecord: null,
-				selectedSerial: -1,  // index into allRecruiters, or New if <0
-				didChange: false,  // and should be saved
-				originalBeforeChanges: null,  // save this for Cancel or Undo
-			},
+			selection: initialState.selection,
 
 			// all new data
 			recs: action.recs,
@@ -97,11 +92,6 @@ function reducer(state = initialState, action) {
 	case 'SAVE_EDIT_DONE':
 		// save of existing record in CP was a success
 		// select and load a record into control panel
-		////return theControlPanel.saveEditDone(state, action);
-// 		state = {
-// 			...state,
-// 			selection: LoadSave.saveEditDone(state, action),
-// 		};
 		state = LoadSave.saveEditDone(state, action);
 		break;
 		
@@ -134,7 +124,7 @@ function reducer(state = initialState, action) {
 		////state.selection.editingRecord = state.selection.originalBeforeChanges;
 		break;
 		
-	case 'APPEND_ENGAGEMENT':
+	case 'ADD_NEW_ENGAGEMENT':
 		// user clicked add in the engagements panel
 		state = Engagements.addNewEngagement(state, action);
 		break;
@@ -180,7 +170,7 @@ function reducer(state = initialState, action) {
 	case 'ERROR_PUT_POST':
 		// any error from saving to mongo
 		console.error("ERROR_PUT_POST", action);
-		state = theControlPanel.errorPutPost(state, action);
+		state = ControlPanel.errorPutPost(state, action);
 		break;
 		
 	case 'SET_SCRAPE_DRAWER_OPEN':

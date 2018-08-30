@@ -145,7 +145,7 @@ export class ScrapeDrawer extends Component {
 }
 
 function mapStateToProps(state) {
-	console.info('mstp SD state: ', state);
+	////console.info('mstp SD state: ', state);
 	return {
 		editingRecord: state.selection.editingRecord,
 		controlPanel: state.controlPanel,  // includes scrapeDrawerOpen

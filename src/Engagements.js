@@ -160,7 +160,7 @@ export class Engagements extends Component {
 	clickAdd(ev) {
 		let p = this.props;
 		p.dispatch({
-					type: 'APPEND_ENGAGEMENT', 
+					type: 'ADD_NEW_ENGAGEMENT', 
 					what: p.what,
 					when: p.when,
 					notes: p.notes,

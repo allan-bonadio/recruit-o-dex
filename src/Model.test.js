@@ -20,7 +20,7 @@ describe('Model ', () => {
 			// lskdjf
 			expect(errors).toBeFalsy();
 			expect(recs.constructor).toBe(Array);
+			done();
 		});
-////		ReactDOM.render(<Provider store={rxStore}><Model /></Provider>, div);
 	});
 });

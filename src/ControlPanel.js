@@ -41,7 +41,7 @@ class ControlPanel extends Component {
 	render() {
 		let sel = getStateSelection();
 		if (!sel) return [];  // too early
-		console.log("control pan sel:", sel);
+		////console.log("control pan sel:", sel);
 
 		let ButtonArea = <section className='button-area' >
 			<div style={{display: sel.selectedSerial >= 0 ? 'block' :  'none'}}>
@@ -113,7 +113,7 @@ class ControlPanel extends Component {
 
 
 	// got error during saving.  do dialog.
-	errorPutPost(state, action) {
+	static errorPutPost(state, action) {
 		// dialog pleeze
 		LittleDialog.alert('Error Saving', action.errorObj.message, 
 			{callback: (a, b, c) => console.log(a, b, c) });

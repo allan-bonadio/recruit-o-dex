@@ -9,15 +9,84 @@ import {Provider} from 'react-redux';
 import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import {rxStore} from './reducer';
-import {ScrapeDrawer} from './ScrapeDrawer';
+import {rxStore, reducer, initialState} from './reducer';
+
+// for all the functions i gotta test
+import LoadSave from './LoadSave';
+import Engagements from './Engagements';
+import ControlPanel from './ControlPanel';
+import ScrapeDrawer from './ScrapeDrawer';
+import RecForm from './RecForm';
+import JsonForm from './JsonForm';
+import GlobalList from './GlobalList';
+import LittleDialog from './LittleDialog';
 
 
-configure({ adapter: new Adapter() });
+const iState = {
+	selection: {editingRecord: null, selectedSerial: -1,  didChange: false, originalBeforeChanges: null,},
+	controlPanel: {scrapeDrawerOpen: false, jsonText: null, jsonError: null,}, 
+	littleDialog: {modal: false}, 
+	recs: [],
+};
 
-describe('<ScrapeDrawer', () => {
-	it('renders without crashing', () => {
-		const div = document.createElement('div');
-		ReactDOM.render(<Provider store={rxStore}><ScrapeDrawer /></Provider>, div);
+describe('reducer ', () => {
+	it('should propertly initialize the state ', () => {
+		let initState = reducer(undefined, {type: '@@redux.INIT'});
+		expect(initState).toEqual(iState);
+	});
+
+	// this does a whole test for an action type, if that case is just a call to a function with the same name.
+	// call it like this:   testReducerAction(LoadSave, 'START_ADD_RECORD'));
+	// it makes sure that action calls LoadSave.startAddRecord()
+	function testReducerAction(obj, actionName) {
+		let methodName = actionName.split('_').map((word, ix) => {
+			if (ix == 0) return word.toLowerCase(); // first one isn't caplitalzied
+			return word[0] + word.substr(1).toLowerCase();
+		}).join('');
+
+		let rv = Math.floor(Math.random() * 1000);
+		////console.info("rv, objClass, actionName, methodName:", rv, 
+////			obj.constructor.name, actionName, methodName);////
+		spyOn(obj, methodName).and.returnValue(rv);
+
+		let beforeState = {zork: 'vork nork'};
+		let ac = {type: actionName, pink: 'link mink'};
+		
+		let afterState = reducer(beforeState, ac);
+		
+		expect(obj[methodName]).toHaveBeenCalledWith(beforeState, ac);
+		expect(afterState).toEqual(rv);
+	}
+
+	it('should do Edit and Add actions', () => {
+		
+		testReducerAction(LoadSave, 'START_EDIT_RECORD');
+		testReducerAction(LoadSave, 'SAVE_EDIT_REQ');
+		testReducerAction(LoadSave, 'SAVE_EDIT_DONE');
+		testReducerAction(LoadSave, 'START_ADD_RECORD');
+		testReducerAction(LoadSave, 'SAVE_ADD_REQ');
+		testReducerAction(LoadSave, 'SAVE_ADD_DONE');
+	});
+
+	it('should do Misc actions', () => {
+		testReducerAction(LoadSave, 'CANCEL_EDIT_ADD');
+		testReducerAction(Engagements, 'ADD_NEW_ENGAGEMENT');
+		testReducerAction(RecForm, 'CHANGE_TO_RECORD');
+		testReducerAction(Engagements, 'CHANGE_TO_ENGAGEMENT');
+		testReducerAction(JsonForm, 'CHANGE_TO_JSON');
+		testReducerAction(GlobalList, 'CHANGE_TO_SEARCH_QUERY');
+		
+		testReducerAction(ControlPanel, 'ERROR_PUT_POST');
+		testReducerAction(ScrapeDrawer, 'SET_SCRAPE_DRAWER_OPEN');
+		testReducerAction(LittleDialog, 'OPEN_LITTLE_DIALOG');
+		testReducerAction(LittleDialog, 'CLOSE_LITTLE_DIALOG');
+	});
+
+	it('should create a good rxStore ', () => {
+		expect(rxStore.dispatch).toBeTruthy();
+		expect(rxStore.getState).toBeTruthy();
+		expect(rxStore.replaceReducer).toBeTruthy();
+		expect(rxStore.subscribe).toBeTruthy();
 	});
 });
+
