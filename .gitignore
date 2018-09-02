@@ -22,5 +22,6 @@ yarn-error.log*
 
 ############################### my stuff
 
+# save the backup scripts but not the backups
 /backups/archives
 
