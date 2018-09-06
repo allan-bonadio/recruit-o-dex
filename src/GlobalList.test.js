@@ -16,7 +16,7 @@ configure({ adapter: new Adapter() });
 
 let mockProps = {
 	searchQuery: 'find me',
-	globalListErrorObj: 'my favorite error',
+	globalListErrorObj: null,
 	recs: [],
 	selectedSerial: -1,
 };
@@ -27,5 +27,11 @@ describe('<GlobalList', () => {
 		ReactDOM.render(<Provider store={rxStore}>
 			<GlobalList {...mockProps} />
 		</Provider>, div);
+	});
+
+	it('can render zero recs', () => {
+		const w = shallow(<GlobalList recs={[]} />);
+		expect(w.find('section.summary.title-cell').length).toEqual(1);
+		expect(w.find('section.summary').length).toEqual(1);
 	});
 });

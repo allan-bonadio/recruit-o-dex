@@ -2,16 +2,12 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
 import {getStateSelection} from './reducer';
-//import LoadSave from './LoadSave';
-
-export let theCrudCurtain = null;
 
 // the white translucent sheet behind the control panel; signifies you're changing a record
 export class CrudCurtain extends Component {
 	constructor(props) {
 		super(props);
-		////this.state = {display: 'none'};
-		theCrudCurtain = this;
+		CrudCurtain.me = this;
 		this.curtainClick = this.curtainClick.bind(this);
 	}
 	

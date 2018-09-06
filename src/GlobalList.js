@@ -48,13 +48,13 @@ export class GlobalList extends Component {
 		else {
 			// all the other cells with records in them
 			return p.recs.map(function(rec, ix) {
-				////thisSerial = ix;
 				return <SummaryRec key={ix.toString()} serial={ix} 
 					record={rec} selected={p.selectedSerial == ix} ></SummaryRec>;
 			});
 		}
 	}
 	
+	// returns a naked array of all the cells
 	render() {
 		let titleCell = this.renderTitleCell();
 		let list = this.renderBodyCells();
@@ -66,7 +66,7 @@ export class GlobalList extends Component {
 	}
 	
 	// Call this when you retrieve all the data, as when the app starts.
-	// triggers a repaint, using this list of raw data from mongo
+	// triggers a repaint, using this list of new raw data presumably from mongo
 	update(newList) {
 		this.props.dispatch({type: 'SET_WHOLE_LIST', recs: newList})
 	}
@@ -75,10 +75,8 @@ export class GlobalList extends Component {
 	updateList() {
 		let p = this.props;
 		getAll((err, newRecs) => {
-			if (err) {
+			if (err)
 				p.dispatch({type: 'ERROR_GET_ALL', errorObj: err})
-				
-			}
 			else
 				this.update(newRecs)
 		});
