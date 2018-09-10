@@ -34,4 +34,14 @@ describe('<GlobalList', () => {
 		expect(w.find('section.summary.title-cell').length).toEqual(1);
 		expect(w.find('section.summary').length).toEqual(1);
 	});
+	
+	it('can render two recs', () => {
+		const w = mount(<GlobalList recs={[{}, {}]} />);
+		expect(w.find('section.summary.title-cell').length).toEqual(1);
+		////expect(w.find('section.summary').length).toEqual(1);
+		expect(w.find('section.summary').length).toEqual(3);
+		expect(w.find('div.summary-field').length).toEqual(14);
+		expect(w.find('div.summary-field.recruiter_name').length).toEqual(2);
+		expect(w.find('div.summary-field.recruiter_phone').length).toEqual(2);
+	});
 });
