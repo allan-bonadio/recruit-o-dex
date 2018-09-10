@@ -68,7 +68,7 @@ describe('reducer ', () => {
 		testReducerAction(LoadSave, 'SAVE_ADD_DONE');
 	});
 
-	it('should do Misc actions', () => {
+	it('should try Misc actions', () => {
 		testReducerAction(LoadSave, 'CANCEL_EDIT_ADD');
 		testReducerAction(Engagements, 'ADD_NEW_ENGAGEMENT');
 		testReducerAction(RecForm, 'CHANGE_TO_RECORD');
@@ -76,10 +76,20 @@ describe('reducer ', () => {
 		testReducerAction(JsonForm, 'CHANGE_TO_JSON');
 		testReducerAction(GlobalList, 'CHANGE_TO_SEARCH_QUERY');
 		
-		testReducerAction(ControlPanel, 'ERROR_PUT_POST');
 		testReducerAction(ScrapeDrawer, 'SET_SCRAPE_DRAWER_OPEN');
 		testReducerAction(LittleDialog, 'OPEN_LITTLE_DIALOG');
 		testReducerAction(LittleDialog, 'CLOSE_LITTLE_DIALOG');
+	});
+
+	it('should try ERROR_PUT_POST ', () => {
+		spyOn(console, 'error');
+		testReducerAction(ControlPanel, 'ERROR_PUT_POST');
+    	expect(console.error).toHaveBeenCalled();
+    	expect(console.error).toHaveBeenCalledWith(
+    			"ERROR_PUT_POST", 
+    			{type: "ERROR_PUT_POST", pink: 'link mink'}
+    	);
+    	
 	});
 
 	it('should create a good rxStore ', () => {

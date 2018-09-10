@@ -7,7 +7,6 @@ import {connect} from 'react-redux';
 import {Engagements} from './Engagements';
 import {rxStore} from './reducer';
 
-export var theRecForm;
 
 // a function-based component: just renders a text field and its label
 function RecField(props) {
@@ -42,7 +41,7 @@ export class RecForm extends Component {
 		this.typeInBlank = this.typeInBlank.bind(this);
 //		this.changeEngagements = this.changeEngagements.bind(this);
 		window.recForm = this;
-		theRecForm = this;
+		RecForm.me = this;  // for singleton objects only
 	}
 	
 // 	called by the Engagements Table when there's a change.  Completely replaces all events(engagements)
@@ -106,20 +105,10 @@ export class RecForm extends Component {
 	}
 
 	static changeToRecord(state, action) {
-		// action.fieldName and .newValue tells you what changed, .fieldPrefix is for subfields like selection
+		// action.fieldName and .newValue tells you what changed, 
+		// .fieldPrefix is for subfields like selection
 		state = _.cloneDeep(state);////state = {...state}
 		let q = state.selection.editingRecord;
-		
-// 		fieldPath not used anymore ... kill it?
-// 		if (action.fieldPath) {
-// 			a few levels deep
-// 			action.fieldPath.forEach((name, ix) => {
-// 				if (!q[name])
-// 					q[name] = {};  // sometimes changed to an array elsewhere
-// 				q = q[name];
-// 			});
-// 		}
-
 		q[action.fieldName] = action.newValue;
 		return state;
 	}

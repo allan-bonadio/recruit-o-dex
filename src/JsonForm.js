@@ -4,8 +4,6 @@ import React, { Component } from 'react';
 //import $ from "jquery";
 import {connect} from 'react-redux';
 
-////import {userChangedRecord} from './ControlPanel';
-//import {theRecForm} from './RecForm';
 import {rxStore} from './reducer';
 
 

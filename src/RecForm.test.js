@@ -23,5 +23,23 @@ describe('<RecForm', () => {
 		const div = document.createElement('div');
 		ReactDOM.render(<Provider store={rxStore}><RecForm selection={mockSelection} /></Provider>, div);
 	});
+
+	it('has the right fields and pieces', () => {
+		// count up what I get for a deep render
+		const w = mount(<RecForm selection={{editingRecord: {}}} />);
+		////console.log("w dot debug: ", w.debug());////
+		
+		expect(w.find('section.edit-col.edit-form').length).toEqual(1);
+		expect(w.find('input').length).toEqual(9);
+		expect(w.find('textarea').length).toEqual(2);
+		expect(w.find('label.edit-label').length).toEqual(8);
+		expect(w.find('datalist#engagement-whats option').length).toEqual(5);
+
+		// specific ones
+		expect(w.find('input[name="company_name"]').length).toEqual(1);
+		expect(w.find('textarea[name="notes"]').length).toEqual(2);  // one for main notes, one for engagement
+		expect(w.find('input[list="engagement-whats"]').length).toEqual(1);
+	});
+	
 });
 
