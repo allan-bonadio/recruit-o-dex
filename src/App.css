@@ -1,6 +1,7 @@
 
 body {
 	font-size: 12px;
+	background-color: #ffe;
 }
 
 button {
@@ -140,7 +141,7 @@ div.crud-curtain {
 
 .search-box {
 	border: none;
-	background: #fff);
+	background: #ffe);
 	text-align: right;
 }
 
@@ -152,11 +153,11 @@ section.summary {
 	max-height: 96px;
 	overflow-y: hidden;
 
-	border: 1px solid #aaa;
-	border-radius: 6px;
 	padding: 6px;
 	margin: 4px;
-	background-color: #ffe;
+	background-color: #ffc;
+	border: 1px solid #990;
+	border-radius: 6px;
 }
 
 /* just like a summary but ... different */
@@ -164,7 +165,7 @@ section.summary.title-cell {
 	min-height: 308px;
 	width: 24.33em;
 	overflow-y: hidden;
-	background: url(shyster307.jpg) no-repeat bottom center #ffe;
+	background: url(shyster307.jpg) no-repeat bottom center #ffd;
 
 	border-width: 0 1px 1px 0;
 	border-radius: 0 0 6px 0;

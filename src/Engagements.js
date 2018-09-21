@@ -69,7 +69,8 @@ export class Engagements extends Component {
 		// generate the rows for existing engs
 		let rows =  es
 				? es.map((engagement, serial) => 
-					<EngagementRow serial={serial} key={serial} engagement={engagement} changeEngagement={this.changeEngagement}/>
+					<EngagementRow serial={serial} key={serial} engagement={engagement} 
+							changeEngagement={this.changeEngagement}/>
 					)
 				: [];
 				
