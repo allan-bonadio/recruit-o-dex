@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
-** server -- the MongoDB and server for the Recruit-o-dex page
+** recruit o dex server -- the MongoDB interface and server for the Recruit-o-dex page
 **
 ** Copyright (C) 2017 Allan Bonadio   All Rights Reserved
 */
@@ -132,13 +132,7 @@ function AskMongo(inquirer) {
 }
 
 function getAllRecords(callback) {
-	MongoClient.connect(mongoUrl, function(err, db) {
-		if (err) {
-			console.error(err);
-			process.exit(9);
-		}
-	
-		var col = db.collection('recruiters');
+	AskMongo(
 		col.find({}).sort({company_name:1}).toArray(function(err, docs) {
 			if (err) {
 				console.error(err);
@@ -148,7 +142,6 @@ function getAllRecords(callback) {
 			callback(docs);
 		});
 	
-		db.close();
 	});
 }
 
@@ -163,19 +156,9 @@ function saveOneRecord(record, id, callback) {
 		return;
 	}
 	
-// 	if (record._id != id)
-// 		console.error("@@@ record ids differ, record.id=%s, while id=%s on record %j", record._id, id, record);
 	console.log("\n\nsaveOneRecord: actually saving this record %j", record);
 	
-	MongoClient.connect(mongoUrl, function(err, db) {
-		if (err) {
-			console.error(err);
-			process.exit(9);
-		}
-
-		// the collection we do queries against
-		var col = db.collection('recruiters');
-		
+	AskMongo(col => {
 		// it took me half a day to write the following line of code cuz it's nowhere in the docs
 		//var query = {recruiter_name: record.recruiter_name};
 		//var query =  {_id: id};  // selects which one
@@ -193,7 +176,7 @@ function saveOneRecord(record, id, callback) {
 				process.exit(3);
 			}
 	
-			console.log("|| saveOneRecord: RETRIEVED %d records, first record %j", docs.length, docs);
+			console.log("|| *************kill me before I log again**********saveOneRecord: RETRIEVED %d records, first record %j", docs.length, docs);
 		});
 
 
@@ -208,24 +191,16 @@ function saveOneRecord(record, id, callback) {
 				}
 	
 				callback(result);
-			});
+			}
+		);
 
-		db.close();
 	});
 }
 
 function addOneRecord(record, callback) {
 	console.log("\n\n|| addOneRecord: actually saving this record %j", record);
 	
-	MongoClient.connect(mongoUrl, function(err, db) {
-		if (err) {
-			console.error(err);
-			process.exit(19);
-		}
-
-		// the collection we do queries against
-		var col = db.collection('recruiters');
-	
+	AskMongo(col => {
 
 		console.log("|| Gonna addOne on company_name="+ record.company_name +".");
 		col.insertOne(
@@ -238,8 +213,6 @@ function addOneRecord(record, callback) {
 	
 				callback('success', result);
 			});
-
-		db.close();
 	});
 }
 
