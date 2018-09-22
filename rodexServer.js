@@ -167,7 +167,7 @@ function saveOneRecord(record, id, callback) {
 		var query =  {_id: new ObjectID(id)};
 		// as in db.getCollection('recruiters').find({"_id" : ObjectId("5a0e0e81a45ced6059aa145d")})
 	
-		console.log("|| Gonna search for same id="+ record._id +".");
+		////console.log("|| Gonna search for same id="+ record._id +".");
 		col.find(
 			query
 		).toArray(function(err, docs) {
@@ -176,11 +176,11 @@ function saveOneRecord(record, id, callback) {
 				process.exit(3);
 			}
 	
-			console.log("|| *************kill me before I log again**********saveOneRecord: RETRIEVED %d records, first record %j", docs.length, docs);
+			////console.log("|| *************kill me before I log again**********saveOneRecord: RETRIEVED %d records, first record %j", docs.length, docs);
 		});
 
 
-		console.log("|| Gonna updateOne on company_name="+ record.company_name +".");
+		////console.log("|| Gonna updateOne on company_name="+ record.company_name +".");
 		col.updateOne(
 			query,
 			{$set: record}, // what to change it to
