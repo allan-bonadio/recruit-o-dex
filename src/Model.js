@@ -38,22 +38,25 @@ export function moGetAll(callback) {
 		return;////
 	}
 
-	$.get({
-		url: RODEX_SERVER +'/getall', 
-		success: function(data, status, jqxhr) {
-			allRecruiters = data;
+	fetch(RODEX_SERVER +'/getall', {})
+	.then(resp => resp.json(),
+		err => {
+			err.message = "loading from database: "+ err.message;
+			console.error(err);
+			callback(err, null);
+		})
+	.then(
+		list => {
+			allRecruiters =list;
 			callback(null, allRecruiters);
-		},
-		error: function(jqxhr, status, message) {
+		}, 
+		err => {
+			err.message = "reading json from from database: "+ err.message;
 			// special case: cors errors - they give us no clue as to what went wrong in js
-			console.error("Error loading from database: '%s' '%s' '%s' '%s'", jqxhr.status, status, message, jqxhr.state());
-			
-			////let {status, message} = createErrorObj(status, message);
-			var er = createErrorObj("loading from database", status, message, jqxhr);
-			////new Error("Error loading from database: "+ status +': '+ message);
-			callback(er, jqxhr.status ||  jqxhr.state());
-		},
-	});
+			console.error("Error loading from database: ", err);
+			callback(err, null);
+		}
+	);
 }
 
 // get a record given its position in the array
@@ -63,23 +66,47 @@ export function getBySerial(serial) {
 
 // put one to update an existing record
 export function moPutOne(record, callback) {
-	$.ajax({
-		url: RODEX_SERVER +'/one/'+ record._id, 
-		method: 'put',
-		contentType: 'application/json',  
-		data: JSON.stringify(record),
-		success: function(data, status, jqxhr) {
-			callback(null, jqxhr.status);
-		},
-		error: function(jqxhr, status, message) {
-			console.error("Error updating database: %s %s %s", jqxhr.status, status, message);
+	let opts = {
+		method: 'PUT',
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
+        body: JSON.stringify(record),
+    };
 
-			////{status, message} = createErrorObj(status, message);
-			////var er = new Error("Error updating database: "+ status +': '+ message);
-			var er = createErrorObj("updating database", status, message, jqxhr);
-			callback(er, jqxhr.status ||  jqxhr.state());
-		},
-	});
+	fetch(RODEX_SERVER +'/one/'+ record._id, opts)
+	.then(
+		resp => {
+			if (! resp.ok || 204 != resp.status)  // eslint-disable-line
+				callback(new Error("Error updating: "+ resp.status +': '+ resp.statusText));
+			else
+				callback(null);  // success
+		}, 
+		err => {
+			err.message = "updating database: "+ err.message;
+			// special case: cors errors - they give us no clue as to what went wrong in js
+			console.error("Error updating database: ", err);
+			callback(err);
+		}
+	);
+
+
+////
+////	$.ajax({
+////		url: RODEX_SERVER +'/one/'+ record._id, 
+////		method: 'put',
+////		contentType: 'application/json',  
+////		data: JSON.stringify(record),
+////		success: function(data, status, jqxhr) {
+////			callback(null, jqxhr.status);
+////		},
+////		error: function(jqxhr, status, message) {
+////			console.error("Error updating database: %s %s %s", jqxhr.status, status, message);
+////
+////			////{status, message} = createErrorObj(status, message);
+////			////var er = new Error("Error updating database: "+ status +': '+ message);
+////			var er = createErrorObj("updating database", status, message, jqxhr);
+////			callback(er, jqxhr.status ||  jqxhr.state());
+////		},
+////	});
 }
 
 // a new one: add it in to the collection
@@ -111,6 +138,8 @@ export function moPostOne(record, callback) {
 
 // delete an existing record
 export function moDeleteOne(record, callback) {
+	throw "nevert implemented";////
+	
 	$.ajax({
 		url: RODEX_SERVER +'/one/'+ record._id, 
 		method: 'delete',

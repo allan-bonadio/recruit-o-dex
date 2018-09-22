@@ -93,18 +93,16 @@ export class LoadSave {
 		// update
 		let sel = state.selection;
 		var rec = LoadSave.cleanupRecord(sel.editingRecord);
-		moPutOne(rec, function(errorObj, httpStatus) {
+		moPutOne(rec, function(errorObj) {
 			////console.log("...saveEditClick done");
-			if (! errorObj) {  // eslint-disable-line
-				rxStore.dispatch({
-					type: 'SAVE_EDIT_DONE',
-					httpStatus,
-				});
-			}
+			if (errorObj)  // eslint-disable-line
+				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
+			else
+				rxStore.dispatch({type: 'SAVE_EDIT_DONE'});
 		});
 		
 		state = {...state};
-		state.selection.saving = true;
+		state.selection.saving = true;  // is this ever turned off?
 		return state;
 	}
 

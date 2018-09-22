@@ -114,9 +114,13 @@ class ControlPanel extends Component {
 
 	// got error during saving.  do dialog.
 	static errorPutPost(state, action) {
-		// dialog pleeze
-		LittleDialog.alert('Error Saving', action.errorObj.message, 
-			{callback: (a, b, c) => console.log(a, b, c) });
+		let message = 'no message';
+		if (action.httpStatus)
+			message = "http status "+ action.httpStatus;
+		if (action.errorObj)
+			message = action.errorObj.message;
+
+		LittleDialog.alert('Error Saving', message);
 		
 		// we put up a dialog but other than that no state change.
 		// that's not right...

@@ -79,15 +79,19 @@ export class LittleDialog extends Component {
 	
 	/******************************************************************* end-user functions */
 	
-	// call this to make a popup alert = dialog with simple message
+	// call this to make a popup alert = dialog with simple message.
+	// Actual dialog comes up just after, in the next event loop
 	static alert(title, message, callback) {
-		LittleDialog.me.props.dispatch({
-			type: 'OPEN_LITTLE_DIALOG', 
-			title,
-			message,
-			callback,
-		});
-		////LittleDialog.me.setState({...options, modal: true, title, message});
+////		debugger;
+		// cannot dispatch from inside a reducer, so do it later
+		setTimeout(() => {
+			LittleDialog.me.props.dispatch({
+				type: 'OPEN_LITTLE_DIALOG', 
+				title,
+				message,
+				callback,
+			});
+		}, 0);
 	}
 	
 }
