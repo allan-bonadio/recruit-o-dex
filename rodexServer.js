@@ -132,7 +132,7 @@ function AskMongo(inquirer) {
 }
 
 function getAllRecords(callback) {
-	AskMongo(
+	AskMongo(col => {
 		col.find({}).sort({company_name:1}).toArray(function(err, docs) {
 			if (err) {
 				console.error(err);
@@ -228,7 +228,7 @@ function generateAAT() {
 	console.log("============");
 	console.log("generateAAT()");
 	console.log("============");
-	AskMongo(function(col) {
+	AskMongo(col => {
 		
 		// find, in the recruiters collection, all records, but just take the company names, sort, and then...
 		col
