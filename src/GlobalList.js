@@ -5,7 +5,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 import SummaryRec from './SummaryRec';
-import {getAll} from './Model';
+import {moGetAll} from './Model';
 
 // having trouble getting GlobalList to exist at startup
 export function globalListUpdateList() {
@@ -74,7 +74,7 @@ export class GlobalList extends Component {
 	// called at various times to re-read the jobs table and display it again
 	updateList() {
 		let p = this.props;
-		getAll((err, newRecs) => {
+		moGetAll((err, newRecs) => {
 			if (err)
 				p.dispatch({type: 'ERROR_GET_ALL', errorObj: err})
 			else

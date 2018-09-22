@@ -32,7 +32,7 @@ function createErrorObj(what, status, message, jqxhr) {
 
 // download the whole thing.  
 // Call the callback either like (null, allData) or (errorObj, null) depending on success
-export function getAll(callback) {
+export function moGetAll(callback) {
 	if (simulateErrors.getError) {
 		setTimeout(() => callback(simulateErrors.getError, null), 100);////
 		return;////
@@ -62,7 +62,7 @@ export function getBySerial(serial) {
 }
 
 // put one to update an existing record
-export function putOne(record, callback) {
+export function moPutOne(record, callback) {
 	$.ajax({
 		url: RODEX_SERVER +'/one/'+ record._id, 
 		method: 'put',
@@ -83,7 +83,7 @@ export function putOne(record, callback) {
 }
 
 // a new one: add it in to the collection
-export function postOne(record, callback) {
+export function moPostOne(record, callback) {
 	if (simulateErrors.postError) {
 		setTimeout(() => callback(simulateErrors.postError, 401), 100);////
 		return;
@@ -108,6 +108,27 @@ export function postOne(record, callback) {
 	});
 }
 	
+
+// delete an existing record
+export function moDeleteOne(record, callback) {
+	$.ajax({
+		url: RODEX_SERVER +'/one/'+ record._id, 
+		method: 'delete',
+		contentType: 'application/json',  
+		success: function(data, status, jqxhr) {
+			callback(null, jqxhr.status);
+		},
+		error: function(jqxhr, status, message) {
+			console.error("Error deleting doc: %s %s %s", jqxhr.status, status, message);
+
+			////{status, message} = createErrorObj(status, message);
+			////var er = new Error("Error updating database: "+ status +': '+ message);
+			var er = createErrorObj("deleting a document", status, message, jqxhr);
+			callback(er, jqxhr.status ||  jqxhr.state());
+		},
+	});
+}
+
 
 
 

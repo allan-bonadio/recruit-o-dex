@@ -7,7 +7,7 @@
 import $ from "jquery";
 import _ from "lodash";
 
-import {putOne, postOne} from './Model';
+import {moPutOne, moPostOne} from './Model';
 import {rxStore} from './reducer';
 import {globalListUpdateList} from './GlobalList';
 import Engagements from './Engagements';
@@ -93,7 +93,7 @@ export class LoadSave {
 		// update
 		let sel = state.selection;
 		var rec = LoadSave.cleanupRecord(sel.editingRecord);
-		putOne(rec, function(errorObj, httpStatus) {
+		moPutOne(rec, function(errorObj, httpStatus) {
 			////console.log("...saveEditClick done");
 			if (! errorObj) {  // eslint-disable-line
 				rxStore.dispatch({
@@ -115,7 +115,7 @@ export class LoadSave {
 
 		// reload the screen. kindof overkill but works
 		globalListUpdateList();
-// 		getAll((err, newRecs) => {
+// 		moGetAll((err, newRecs) => {
 // 			GlobalList.me.update(newRecs)
 // 		});
 
@@ -156,7 +156,7 @@ export class LoadSave {
 		// create
 		let sel = state.selection;
 		var rec = LoadSave.cleanupRecord(sel.editingRecord);
-		postOne(rec, function(errorObj, httpStatus) {
+		moPostOne(rec, function(errorObj, httpStatus) {
 			////console.log("...saveEditClick done");
 			if (! errorObj) {
 				rxStore.dispatch({
