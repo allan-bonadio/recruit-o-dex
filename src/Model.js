@@ -64,8 +64,13 @@ export function getBySerial(serial) {
 	return allRecruiters[serial];
 }
 
-// put one to update an existing record
+// put one to update an existing record. 
 export function moPutOne(record, callback) {
+	if (simulateErrors.putError) {
+		setTimeout(() => callback(simulateErrors.putError, 100));////
+		return;
+	}
+	
 	let opts = {
 		method: 'PUT',
         headers: {'Content-Type': 'application/json; charset=utf-8'},
@@ -112,27 +117,50 @@ export function moPutOne(record, callback) {
 // a new one: add it in to the collection
 export function moPostOne(record, callback) {
 	if (simulateErrors.postError) {
-		setTimeout(() => callback(simulateErrors.postError, 401), 100);////
+		setTimeout(() => callback(simulateErrors.postError, 100));////
 		return;
 	}
 
-	$.ajax({
-		url: RODEX_SERVER +'/one', 
-		method: 'post',
-		contentType: 'application/json',  
-		data: JSON.stringify(record),
-		success: function(data, status, jqxhr) {
-			callback(null, jqxhr.status);
-		},
-		error: function(jqxhr, status, message) {
-			console.error("Error inserting into database: %s %s %s", jqxhr.status, status, message);
-// 			var er = new Error("Error inserting into database: "+ status +': '+ message);
-// 			{status, message} = createErrorObj(status, message);
-			var er = createErrorObj("inserting into database", status, message, jqxhr);
+	let opts = {
+		method: 'POST',
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
+        body: JSON.stringify(record),
+    };
 
-			callback(er, jqxhr.status ||  jqxhr.state());
-		},
-	});
+	fetch(RODEX_SERVER +'/one', opts)
+	.then(
+		resp => {
+			if (! resp.ok || 201 != resp.status)  // eslint-disable-line
+				callback(new Error("Error updating: "+ resp.status +': '+ resp.statusText));
+			else
+				callback(null);  // success
+		}, 
+		err => {
+			err.message = "inserting into database: "+ err.message;
+			// special case: cors errors - they give us no clue as to what went wrong in js
+			console.error("inserting into database: ", err);
+			callback(err);
+		}
+	);
+
+
+////	$.ajax({
+////		url: RODEX_SERVER +'/one', 
+////		method: 'post',
+////		contentType: 'application/json',  
+////		data: JSON.stringify(record),
+////		success: function(data, status, jqxhr) {
+////			callback(null, jqxhr.status);
+////		},
+////		error: function(jqxhr, status, message) {
+////			console.error("Error inserting into database: %s %s %s", jqxhr.status, status, message);
+////// 			var er = new Error("Error inserting into database: "+ status +': '+ message);
+////// 			{status, message} = createErrorObj(status, message);
+////			var er = createErrorObj("inserting into database", status, message, jqxhr);
+////
+////			callback(er, jqxhr.status ||  jqxhr.state());
+////		},
+////	});
 }
 	
 

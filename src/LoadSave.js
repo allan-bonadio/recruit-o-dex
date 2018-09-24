@@ -23,7 +23,14 @@ export let bareSelection = {
 };
 Object.freeze(bareSelection);
 
+// return the current timestamp like "2018-09-23.01:23:45Z"
+function timestampString() {
+	 return (new Date()).toISOString().replace(/T/, '.')
+}
+
+
 export class LoadSave {
+
 
 	// just before saving, clear out stuff, mostly empty fields
 	// has side effects on passed in record and returns same object
@@ -90,9 +97,19 @@ export class LoadSave {
 	static saveEditReq(state, action) {
 		////console.log("saveEditClick starting...");
 		
+		// wait!  has there been any changes?  If not, this doesn't do much.
+		// I don't have a lot of faith in this
+		let obc = JSON.stringify(state.selection.originalBeforeChanges);
+		let cur = JSON.stringify(state.selection.editingRecord);
+		console.log(obc, cur);
+		if (obc == cur)
+			return state;
+		
 		// update
 		let sel = state.selection;
 		var rec = LoadSave.cleanupRecord(sel.editingRecord);
+		rec.updated = timestampString();
+
 		moPutOne(rec, function(errorObj) {
 			////console.log("...saveEditClick done");
 			if (errorObj)  // eslint-disable-line
@@ -128,7 +145,7 @@ export class LoadSave {
 	// start editing a new blank record.  Called when user clicks New Rec.
 	static startAddRecord(state, action) {
 		// the template for a new Recruiter
-		let initial = {status: 'applied', created: (new Date()).toISOString().replace(/T/, '.')};
+		let initial = {status: 'applied', created: timestampString()};
 
 		$('#control-panel').addClass('adding');
 		//theControlPanel.setCPRecord(initial).show();
@@ -154,12 +171,12 @@ export class LoadSave {
 		// create
 		let sel = state.selection;
 		var rec = LoadSave.cleanupRecord(sel.editingRecord);
-		moPostOne(rec, function(errorObj, httpStatus) {
+		moPostOne(rec, function(errorObj) {
 			////console.log("...saveEditClick done");
 			if (! errorObj) {
 				rxStore.dispatch({
 					type: 'SAVE_ADD_DONE',
-					httpStatus: httpStatus,
+					errorObj,
 				});
 			}
 			else {
