@@ -18,11 +18,15 @@ do
 npm install
 
 ### each time to run
-To start it, run ./run, which will start up mongo, the server & the app in the right order.  And open a Chrome window onto the webapp
+To start it, run ./start, which will start up mongo, the server & the app in the right order.  And open a Chrome window onto the webapp.
+
+To shut down all three, run ./stop.  It will stop all three, in turn.
+
+To mess with one or another independently, read the script and act accordingly.
 
 ### Concurrency
 
-Do not have two mongoDB daemons or server.js daemons running at once.  Must be one each.  The webapp can be shown on multiple tabs, just as long as they're talking to the same server.
+Do not have two mongoDB daemons or rodexServer.js daemons running at once.  Must be one each.  The webapp can be shown on multiple tabs, just as long as they're talking to the same server.
 
 
 
