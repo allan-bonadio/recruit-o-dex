@@ -98,12 +98,15 @@ export class LoadSave {
 		////console.log("saveEditClick starting...");
 		
 		// wait!  has there been any changes?  If not, this doesn't do much.
-		// I don't have a lot of faith in this
+		// I don't have a lot of faith in this but it seems to work well.
 		let obc = JSON.stringify(state.selection.originalBeforeChanges);
 		let cur = JSON.stringify(state.selection.editingRecord);
 		console.log(obc, cur);
-		if (obc == cur)
+		if (obc == cur) {
+			// cannot dispatch from a reducer function.
+			setTimeout(() => rxStore.dispatch({type: 'SAVE_EDIT_DONE'}));
 			return state;
+		}
 		
 		// update
 		let sel = state.selection;
@@ -112,8 +115,9 @@ export class LoadSave {
 
 		moPutOne(rec, function(errorObj) {
 			////console.log("...saveEditClick done");
+			// these are done later so no problem running from within a reducer
 			if (errorObj)  // eslint-disable-line
-				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
+				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});  // can't dispatch from a resolver?
 			else
 				rxStore.dispatch({type: 'SAVE_EDIT_DONE'});
 		});
