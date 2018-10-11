@@ -7,7 +7,7 @@ import _ from "lodash";
 
 /********************************************************************** engagement fields */
 
-// the single bar, last row in the Engagements table, that lets users enter new engagements
+// a row in the Engagements table, that lets users enter new engagements
 function EngagementRow(props) {
 	return <tr className='engagement' serial={props.serial}>
 		<td>
