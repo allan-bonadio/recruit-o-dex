@@ -144,9 +144,13 @@ export function reducer(state = initialState, action) {
 		state = JsonForm.changeToJson(state, action);
 		break;
 
-	case 'CHANGE_TO_SEARCH_QUERY':
+	case 'CHANGE_SEARCH_QUERY':
 		// user typed etc into the JSON box
 		state = GlobalList.changeToSearchQuery(state, action);
+		break;
+
+	case 'CHANGE_SORT_CRITERION':
+		state = GlobalList.changeSortCriterion(state, action);
 		break;
 
 	

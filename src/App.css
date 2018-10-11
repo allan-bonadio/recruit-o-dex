@@ -139,12 +139,6 @@ div.crud-curtain {
 
 /********************************************** Summary and GLobal List */
 
-.search-box {
-	border: none;
-	background: #ffe);
-	text-align: right;
-}
-
 section.summary {
 	float:left;
 	z-index: 10;
@@ -158,27 +152,6 @@ section.summary {
 	background-color: #ffc;
 	border: 1px solid #990;
 	border-radius: 6px;
-}
-
-/* just like a summary but ... different */
-section.summary.title-cell {
-	min-height: 308px;
-	width: 24.33em;
-	overflow-y: hidden;
-	background: url(shyster307.jpg) no-repeat bottom center #ffd;
-
-	border-width: 0 1px 1px 0;
-	border-radius: 0 0 6px 0;
-	padding: 11px 6px 6px 11px;
-	margin: 0 4px 4px 0;
-}
-
-section.summary.title-cell button {
-	font-size: 18px;
-	position: relative;
-	border-radius: 6px;
-	background-color: green;
-	color: #FFa;
 }
 
 section.summary.selected {
@@ -200,4 +173,48 @@ section.summary .company_name {
 	max-width: 11em;
 }
 
- 
+/* title cell */
+/* just like a summary but ... different */
+section.summary.title-cell {
+	min-height: 308px;
+	width: 24.33em;
+	overflow-y: hidden;
+	background: url(shyster307.jpg) no-repeat bottom center #ffd;
+
+	border-width: 0 1px 1px 0;
+	border-radius: 0 0 6px 0;
+	padding: 11px 6px 6px 11px;
+	margin: 0 4px 4px 0;
+}
+
+section.summary.title-cell button.add {
+	font-size: 18px;
+	/*position: relative;*/
+	float: left;
+	border-radius: 6px;
+	background-color: green;
+	color: #FFa;
+}
+
+section.title-cell aside {
+	float: right;
+	width: 14em;
+	text-align: right;
+}
+
+section.title-cell input.search-box {
+	float: right;
+	margin-bottom: .5em;
+	border: #fea solid 1px;
+	background-color: #fff);
+	text-align: right;
+} 
+
+section.title-cell big {
+	float: right;
+	margin: 0 0 .5em .2em;
+}
+
+section.title-cell .sort-criterion {
+	float:right;
+}

@@ -74,7 +74,8 @@ describe('reducer ', () => {
 		testReducerAction(RecForm, 'CHANGE_TO_RECORD');
 		testReducerAction(Engagements, 'CHANGE_TO_ENGAGEMENT');
 		testReducerAction(JsonForm, 'CHANGE_TO_JSON');
-		testReducerAction(GlobalList, 'CHANGE_TO_SEARCH_QUERY');
+		testReducerAction(GlobalList, 'CHANGE_SEARCH_QUERY');
+		testReducerAction(GlobalList, 'CHANGE_SORT_CRITERION');
 		
 		testReducerAction(ScrapeDrawer, 'SET_SCRAPE_DRAWER_OPEN');
 		testReducerAction(LittleDialog, 'OPEN_LITTLE_DIALOG');

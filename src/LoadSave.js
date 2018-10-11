@@ -117,7 +117,7 @@ export class LoadSave {
 			////console.log("...saveEditClick done");
 			// these are done later so no problem running from within a reducer
 			if (errorObj)  // eslint-disable-line
-				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});  // can't dispatch from a resolver?
+				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
 			else
 				rxStore.dispatch({type: 'SAVE_EDIT_DONE'});
 		});
