@@ -62,7 +62,10 @@ function setupServer() {
 
 	app.get('/getall', function (req, res) {
 		getAllRecords(function(records) {
-			res.json(records);  // an array
+			if (records.error)
+				res.status(500).send({error: records.error});
+			else
+				res.json(records);  // an array
 		});
 	})
 
@@ -81,7 +84,10 @@ function setupServer() {
 		delete req.body._id;
 		saveOneRecord(req.body, req.params.id, function(results) {
 			console.log("    saveOneRecord() gave me results %j", results);
-			res.sendStatus(204);
+			if (results.error)
+				res.status(500).send({error: results.error});
+			else
+				res.sendStatus(204);
 		});
 	})
 
@@ -98,7 +104,10 @@ function setupServer() {
 	
 		addOneRecord(req.body, function(overall, results) {
 			console.log("    addOneRecord() gave me results ‹%s› %j", overall, results);
-			res.sendStatus(201);
+			if (results.error)
+				res.status(500).send({error: records.error});
+			else
+				res.sendStatus(201);
 		});
 	})
 
@@ -117,29 +126,38 @@ function setupServer() {
 /**************************************************** mongo interface */
 
 // take care of Mongo details, I just want to write the code for col.find() or similar
-// to do: convert the other functions to use this
 function AskMongo(inquirer) {
 	MongoClient.connect(mongoUrl, function(err, db) {
 		if (err) {
 			console.error(err);
 			process.exit(9);
 		}
+		
+		// inquirer must call this function when it's done with all its callbacks
+		function doneFunc() {
+			db.close();
+		}
 	
 		var col = db.collection('recruiters');
-		inquirer(col);
-		db.close();
+		inquirer(col, doneFunc);
+		
+		// must close ... later.  After all the callbacks in inquirer().  try this for now...
+		setTimeout(() => db.close(), 300);
+		//setTimeout(() => db.close(), 1000);
 	});
 }
 
 function getAllRecords(callback) {
-	AskMongo(col => {
+	AskMongo((col, doneFunc) => {
 		col.find({}).sort({company_name:1}).toArray(function(err, docs) {
 			if (err) {
-				console.error(err);
-				process.exit(3);
+				console.error(err);  // includes traceback
+				callback({error: err.name +': '+ err.message});  // polite back to the user
 			}
-	
-			callback(docs);
+			else {
+				callback(docs);
+			}
+			doneFunc();
 		});
 	
 	});
@@ -158,12 +176,8 @@ function saveOneRecord(record, id, callback) {
 	
 	console.log("\n\nsaveOneRecord: actually saving this record %j", record);
 	
-	AskMongo(col => {
+	AskMongo((col, doneFunc) => {
 		// it took me half a day to write the following line of code cuz it's nowhere in the docs
-		//var query = {recruiter_name: record.recruiter_name};
-		//var query =  {_id: id};  // selects which one
-		//var query =  {_id: ObjectId(id)};
-		//var query =  {'_id.str': id};
 		var query =  {_id: new ObjectID(id)};
 		// as in db.getCollection('recruiters').find({"_id" : ObjectId("5a0e0e81a45ced6059aa145d")})
 	
@@ -173,24 +187,24 @@ function saveOneRecord(record, id, callback) {
 		).toArray(function(err, docs) {
 			if (err) {
 				console.error(err);
-				process.exit(3);
+				callback({error: err.name +': '+ err.message});  // polite back to the user
+				doneFunc();
+				return;
 			}
-	
-			////console.log("|| *************kill me before I log again**********saveOneRecord: RETRIEVED %d records, first record %j", docs.length, docs);
 		});
 
 
-		////console.log("|| Gonna updateOne on company_name="+ record.company_name +".");
 		col.updateOne(
 			query,
 			{$set: record}, // what to change it to
 			function(err, result) {  // when done
 				if (err) {
 					console.error(err);
-					process.exit(5);
+					callback({error: err.name +': '+ err.message});  // polite back to the user
 				}
-	
-				callback(result);
+				else {
+					callback(result);
+				}
 			}
 		);
 
@@ -200,7 +214,7 @@ function saveOneRecord(record, id, callback) {
 function addOneRecord(record, callback) {
 	console.log("\n\n|| addOneRecord: actually saving this record %j", record);
 	
-	AskMongo(col => {
+	AskMongo((col, doneFunc) => {
 
 		console.log("|| Gonna addOne on company_name="+ record.company_name +".");
 		col.insertOne(
@@ -208,10 +222,11 @@ function addOneRecord(record, callback) {
 			function(err, result) {  // when done
 				if (err) {
 					console.error(err);
-					process.exit(5);
+					callback({error: err.name +': '+ err.message});  // polite back to the user
 				}
-	
-				callback('success', result);
+				else {
+					callback('success', result);
+				}
 			});
 	});
 }
@@ -228,27 +243,30 @@ function generateAAT() {
 	console.log("============");
 	console.log("generateAAT()");
 	console.log("============");
-	AskMongo(col => {
+	AskMongo((col, doneFunc) => {
 		
 		// find, in the recruiters collection, all records, but just take the company names, sort, and then...
 		col
 				.find({}, {company_name: 1})  // just the company name
 				.collation({locale: "en"})      //  case-insensitive
 				.sort({company_name:1})  // sort on the only field
-				.toArray(function(err, docs) {
+				.toArray(
+		function(err, docs) {
 			if (err) {
+				console.info('=================================== Error in generateAAT() =====');
 				console.error(err);
-				process.exit(33);
+				console.info('================================================================');
 			}
-	
-			var content = docs
-						.map(doc => doc.company_name)
-						.filter(cname => cname)
-						.join('\n');
+			else {
+				var content = docs
+							.map(doc => doc.company_name)
+							.filter(cname => cname)
+							.join('\n');
 			
-			// and get it out there before something else fails
-			fs.writeFileSync(process.env.ROX_AAT_TARGET, content);
-			fs.chmodSync(process.env.ROX_AAT_TARGET, 0o666);
+				// and get it out there before something else fails
+				fs.writeFileSync(process.env.ROX_AAT_TARGET, content);
+				fs.chmodSync(process.env.ROX_AAT_TARGET, 0o666);
+			}
 		});
 	});
 }

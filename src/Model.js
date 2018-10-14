@@ -47,13 +47,20 @@ export function moGetAll(callback) {
 		})
 	.then(
 		list => {
-			allRecruiters =list;
-			callback(null, allRecruiters);
+			// {error: "MongoError: blah blah"} is what we get back if an error on the server.
+			if (! list.error) {
+				allRecruiters =list;
+				callback(null, allRecruiters);
+			}
+			else {
+				console.error("Server Error loading from database: ", list.error);
+				callback(list.error, null);
+			}
 		}, 
 		err => {
-			err.message = "reading json from from database: "+ err.message;
+			err.message = "reading json from from server: "+ err.message;
 			// special case: cors errors - they give us no clue as to what went wrong in js
-			console.error("Error loading from database: ", err);
+			console.error("Protocol Error reading from server: ", err);
 			callback(err, null);
 		}
 	);
