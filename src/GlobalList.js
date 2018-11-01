@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 
 import SummaryRec from './SummaryRec';
 import {moGetAll} from './Model';
-
+import {initialState} from './reducer';
 
 
 
@@ -30,9 +30,9 @@ let sorters = [
 		compare: function(aRec, bRec) {
 			// haha!  ISO dates sort alphanumerically.  Older records don't have updated but they should all have created date
 			let aDate = aRec.updated || aRec.created || '2017-01-01';
-			let bDate = aRec.updated || aRec.created || '2017-01-01';
-			if (aDate < bDate) return -1;
-			if (aDate > bDate) return 1;
+			let bDate = bRec.updated || bRec.created || '2017-01-01';
+			if (aDate < bDate) return 1;
+			if (aDate > bDate) return -1;
 			return 0;
 		},	
 	},
@@ -56,15 +56,15 @@ export class GlobalList extends Component {
 		GlobalList.me = this;
 		
 		this.clickNewRec = this.clickNewRec.bind(this);
-		this.changeSearchQuery = this.changeSearchQuery.bind(this);
-		this.changeSortCriterion = this.changeSortCriterion.bind(this);
+		this.changeSearchQueryEv = this.changeSearchQueryEv.bind(this);
+		this.changeSortCriterionEv = this.changeSortCriterionEv.bind(this);
 	}
 	
 	// header cell with image and New button
 	renderTitleCell() {
 		let p = this.props;
 		
-		// fills in the menu
+		// fills in the menu.  Name is displayed, value is just a serial 0, 1, 2...
 		let sortOptions = sorters.map((s, ix) => <option key={ix} value={ix}>{s.name}</option>);
 		///console.log("sort options", sortOptions.debug());
 		
@@ -74,10 +74,10 @@ export class GlobalList extends Component {
 			<aside>
 				<big><span aria-label='search' role='img'>🔍</span></big>
 				<input className='search-box' placeholder='search (not yet impl)'
-					onChange={this.changeSearchQuery} defaultValue={p.searchQuery} />
+					onChange={this.changeSearchQueryEv} defaultValue={p.searchQuery} />
 				<br />
 				sort:&nbsp;
-				<select id='sort-criterion' onChange={this.changeSortCriterion} >
+				<select id='sort-criterion' onChange={this.changeSortCriterionEv} >
 					{sortOptions}
 				</select>
 			</aside>
@@ -116,7 +116,22 @@ export class GlobalList extends Component {
 	// Call this when you retrieve all the data, as when the app starts.
 	// triggers a repaint, using this list of new raw data presumably from mongo
 	update(newList) {
-		this.props.dispatch({type: 'SET_WHOLE_LIST', recs: newList})
+		let list = GlobalList.sortRecords(newList, this.props.sortCriterion);
+
+		this.props.dispatch({type: 'SET_WHOLE_LIST', recs: list});
+	}
+	
+	// reducer handler
+	static setWholeList(state, action) {
+		return {
+			...state,
+			
+			// well we no longer have the old selection so drop that
+			selection: initialState.selection,
+
+			// all new data
+			recs: action.recs,
+		};
 	}
 
 	// called at various times to re-read the jobs table and display it again
@@ -135,8 +150,9 @@ export class GlobalList extends Component {
 		this.props.dispatch({type: 'START_ADD_RECORD'})
 	}
 
+	/* *********************************************************** searching */
 	// any input in the search box
-	changeSearchQuery(ev) {
+	changeSearchQueryEv(ev) {
 		this.props.dispatch({type: 'CHANGE_SEARCH_QUERY', newQuery: ev.target.value});
 	}
 
@@ -147,14 +163,20 @@ export class GlobalList extends Component {
 		};
 	}
 
-	// any change in the menu
-	changeSortCriterion(ev) {
+	/* *********************************************************** sorting */
+	static sortRecords(recs, criterion) {
+		return [...recs].sort(sorters[criterion].compare);
+	}
+	
+	// any change in the menu, direct event handler
+	changeSortCriterionEv(ev) {
 		this.props.dispatch({type: 'CHANGE_SORT_CRITERION', newCriterion: ev.target.value});
 	}
 	
+	// same, called from the resolver
 	static changeSortCriterion(state, action) {
 		// do the sort
-		let newRecs = [...state.recs].sort(sorters[action.newCriterion].compare);
+		let newRecs = GlobalList.sortRecords(state.recs, action.newCriterion);
 		
 		// now set the state that way
 		return {
@@ -167,17 +189,19 @@ export class GlobalList extends Component {
 }
 
 function mapStateToProps(state) {
-////	console.log("|| GlobalList#mapStateToProps: state=", state);
 	if (state) {
 		return {
 			recs: state.recs, 
 			selectedSerial: state.selection.selectedSerial,
 			globalListErrorObj: state.globalListErrorObj,
 			searchQuery: state.searchQuery, 
+			sortCriterion: state.sortCriterion,
 		};
 	}
 	else {
-		return {recs: [], selectedSerial: -1, globalListErrorObj: null, searchQuery: ''};
+		// during startup, no state in place yet
+		return {recs: [], selectedSerial: -1, globalListErrorObj: null, 
+				searchQuery: '', sortCriterion: 0};
 	}
 }
 

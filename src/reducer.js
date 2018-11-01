@@ -16,7 +16,7 @@ export const initialState = {
 		// the record being edited by the ControlPanel; a separate copy.  
 		// Null means no rec selected.
 		editingRecord: null,
-		selectedSerial: -1,  // index into allRecruiters, or New if <0
+		selectedSerial: -1,  // index into state.recs or New if <0
 		didChange: false,  // and editingRecord should be saved
 		originalBeforeChanges: null,  // save this for Cancel or Undo
 	},
@@ -37,6 +37,8 @@ export const initialState = {
 		modal: false,  // whether it's open or hidden
 	},
 	
+	sortCriterion: 0,  // default is first in menu, Company Name presently
+	
 	// all the records, for the GlobalList
 	recs: [],
 };
@@ -54,7 +56,6 @@ export function getStateSelection() {
 
 // THE main dispatcher for this whole app
 export function reducer(state = initialState, action) {
-////	console.log("|| reducer() action: ", action);
 	
 	// redux starting up
 	if (/@@redux.INIT/.test(action.type))
@@ -63,16 +64,8 @@ export function reducer(state = initialState, action) {
 	switch (action.type) {
 	/*********************************************** init */
 	case 'SET_WHOLE_LIST':
-		// retrieve all records from mongo, set into GlobalList and render.  called during page load.
-		state = {
-			...state,
-			
-			// well we no longer have the old selection so drop that
-			selection: initialState.selection,
-
-			// all new data
-			recs: action.recs,
-		};
+		// set all records, set into GlobalList and render.  called during page load.
+		state = GlobalList.setWholeList(state, action);
 		break;
 	
 	
@@ -80,7 +73,7 @@ export function reducer(state = initialState, action) {
 	case 'START_EDIT_RECORD':
 		// select and load a record into control panel (after user clicks it in the GlobalList)
 		state = LoadSave.startEditRecord(state, action);
-		state = _.cloneDeep(state);
+		state = {...state};  // ??
 		break;
 		
 	case 'SAVE_EDIT_REQ':
@@ -121,7 +114,6 @@ export function reducer(state = initialState, action) {
 	case 'CANCEL_EDIT_ADD':
 		// user clicked Cancel button after opening control panel
 		state = LoadSave.cancelEditAdd(state, action);
-		////state.selection.editingRecord = state.selection.originalBeforeChanges;
 		break;
 		
 	case 'ADD_NEW_ENGAGEMENT':
@@ -157,18 +149,12 @@ export function reducer(state = initialState, action) {
 	case 'ERROR_GET_ALL':
 		// any error from retrieval from mongo
 		console.error("ERROR_GET_ALL", action);
-		// why do i have to do this??@?@?@////
-////		if ('undefined' != typeof GlobalList)
-////			state = GlobalList.me.errorGetAll(state, action);
-////		else
-////			alert(action.errorObj.toString());
 		// if mongo & server aren't started,
 		// GlobalList is undefined and I can't even check for it!!
 		state = {
 			...state,
 			globalListErrorObj: action.errorObj,
 		};
-
 		break;
 	
 	case 'ERROR_PUT_POST':
@@ -193,12 +179,9 @@ export function reducer(state = initialState, action) {
 		console.warn("unfound action ", action.type);
 		break;
 	}
-	window.rst = state;//// for debugging
-	//console.log("|| state will be: ", state);
 	return state;
 }
 
 // the one and only redux store
 export const rxStore = createStore(reducer, initialState);
-////console.log("rxStore = ", rxStore);
 

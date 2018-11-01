@@ -56,15 +56,17 @@ export class LoadSave {
 	
 	/********************************************** Edit Existing */
 
-	// sets the existing rec passed in as the state record for the control panel.
-	// rec is presumed to be a raw record in the Global List.  It will not be changed, just cloned.
+	// sets the existing rec passed in as the selected record for the control panel.
 	// called by reducer()
 	static startEditRecord(state, action) {
 		if (state.selection.didChange)
 			throw "Cannot set new selection while old one has changes";  // eslint-disable-line
 
 		$('div.App section.summary').removeClass('selected');
-		$(action.node).addClass('selected');
+		let node$ = $('section[serial='+ action.serial +']');
+		node$.addClass('selected');
+		
+		let record = state.recs[action.serial];
 
 		// unmanaged, the scrape pit is just a textarea.  Clear it out when CP opens again.
 		$('.scrape-pit').val('');
@@ -72,17 +74,16 @@ export class LoadSave {
 		// the NEW selection to be handed in to state
 		let selection = {
 			...bareSelection,
-			originalBeforeChanges: action.record,  // this is in the big record list
+			originalBeforeChanges: record,  // this is in the big record list
 
 			// setting the editingRecord will cause the control panel to appear
-			editingRecord: _.cloneDeep(action.record),  // this copy gets changed during editing
+			editingRecord: _.cloneDeep(record),  // this copy gets changed during editing
 			selectedSerial: action.serial,
 			didChange: false,
 		};
-		window.editingRecord = selection.editingRecord;  // so i can get at it in the debugger
+		//window.editingRecord = selection.editingRecord;  // so i can get at it in the debugger
 
 		$('#control-panel').removeClass('adding');
-
 
 		state = {...state,
 			selection,
@@ -95,13 +96,11 @@ export class LoadSave {
 	
 	// a click event on Save, post dispatch
 	static saveEditReq(state, action) {
-		////console.log("saveEditClick starting...");
-		
-		// wait!  has there been any changes?  If not, this doesn't do much.
+		// wait!  has there been any changes?  If not, don't actually save, leave it.
 		// I don't have a lot of faith in this but it seems to work well.
 		let obc = JSON.stringify(state.selection.originalBeforeChanges);
 		let cur = JSON.stringify(state.selection.editingRecord);
-		console.log(obc, cur);
+		//console.log(obc, cur);
 		if (obc == cur) {
 			// cannot dispatch from a reducer function.
 			setTimeout(() => rxStore.dispatch({type: 'SAVE_EDIT_DONE'}));
@@ -114,7 +113,6 @@ export class LoadSave {
 		rec.updated = timestampString();
 
 		moPutOne(rec, function(errorObj) {
-			////console.log("...saveEditClick done");
 			// these are done later so no problem running from within a reducer
 			if (errorObj)  // eslint-disable-line
 				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
@@ -176,7 +174,6 @@ export class LoadSave {
 		let sel = state.selection;
 		var rec = LoadSave.cleanupRecord(sel.editingRecord);
 		moPostOne(rec, function(errorObj) {
-			////console.log("...saveEditClick done");
 			if (! errorObj) {
 				rxStore.dispatch({
 					type: 'SAVE_ADD_DONE',
