@@ -35,10 +35,12 @@ export class LoadSave {
 	// just before saving, clear out stuff, mostly empty fields
 	// has side effects on passed in record and returns same object
 	static cleanupRecord(record) {
-		for (let k in record) {
-			if (! record[k])
-				delete record[k];
-		}
+		// this was making it impossible to delete eg company name; 
+		// would always come back
+////		for (let k in record) {
+////			if (! record[k])
+////				delete record[k];
+////		}
 		
 		// clean out engagements; there's always at least one empty engagement
 		let e = Engagements.cleanEngagementsList(record.engagements);
