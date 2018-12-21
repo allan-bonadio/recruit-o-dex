@@ -21,7 +21,7 @@ import JsonForm from './JsonForm';
 import GlobalList from './GlobalList';
 import LittleDialog from './LittleDialog';
 
-
+// initial state, what it should be
 const iState = {
 	selection: {editingRecord: null, selectedSerial: -1,  didChange: false, originalBeforeChanges: null,},
 	controlPanel: {scrapeDrawerOpen: false, jsonText: null, jsonError: null,}, 
