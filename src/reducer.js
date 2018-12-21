@@ -64,8 +64,13 @@ export function reducer(state = initialState, action) {
 	switch (action.type) {
 	/*********************************************** init */
 	case 'SET_WHOLE_LIST':
-		// set all records, set into GlobalList and render.  called during page load.
+		// set all records, set into GlobalList.  called during page load.
 		state = GlobalList.setWholeList(state, action);
+		break;
+	
+	case 'RESET_SELECTION':
+		// set to no control panel, no record selected
+		state = GlobalList.resetSelection(state, action);
 		break;
 	
 	

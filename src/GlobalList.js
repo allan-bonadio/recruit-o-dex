@@ -119,6 +119,7 @@ export class GlobalList extends Component {
 		let list = GlobalList.sortRecords(newList, this.props.sortCriterion);
 
 		this.props.dispatch({type: 'SET_WHOLE_LIST', recs: list});
+		this.props.dispatch({type: 'RESET_SELECTION'});
 	}
 	
 	// reducer handler
@@ -126,11 +127,17 @@ export class GlobalList extends Component {
 		return {
 			...state,
 			
-			// well we no longer have the old selection so drop that
-			selection: initialState.selection,
-
 			// all new data
 			recs: action.recs,
+		};
+	}
+
+	static resetSelection(state, action) {
+		return {
+			...state,
+			
+			// well we no longer have the old selection so drop that
+			selection: initialState.selection,
 		};
 	}
 
