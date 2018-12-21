@@ -145,13 +145,18 @@ section.summary {
 	width: 24em;
 	min-height: 96px;
 	max-height: 96px;
-	overflow-y: auto;
+	overflow-y: hidden;
 
 	padding: 6px;
 	margin: 4px;
 	background-color: #ffc;
 	border: 1px solid #990;
 	border-radius: 6px;
+}
+
+/* auto-scrollbar these so they tend to reset to the start */
+section.summary:hover {
+	overflow-y: auto;
 }
 
 section.summary.selected {
