@@ -30,7 +30,7 @@ function EngagementRow(props) {
 
 
 // construct the default 'environments' state, not what's stored in the record, 
-// but instead just variable values in the widget boxes
+// but instead just today's date in the date box
 function defaultEngagement() {
 	function twoDigit(n) { return String(n + 100).substr(1) }
 	let today = new Date();
@@ -102,8 +102,8 @@ export class Engagements extends Component {
 		
 		var tr = targ.parentElement.parentElement;
 		var serial = tr.getAttribute('serial');
-// 		let engs = state.selection.editingRecord.engagements || [];  // all, for the selected rec
-// 		let sel = state.selection.editingEngagement || defaultEngagement();  // current kinetic state
+// 		let engs = state.controlPanel.editingRecord.engagements || [];  // all, for the selected rec
+// 		let sel = state.controlPanel.editingEngagement || defaultEngagement();  // current kinetic state
 		
 		// this field is two levels down: editingRecord.engagements[4].fieldName
 		this.props.dispatch({
@@ -120,14 +120,14 @@ export class Engagements extends Component {
 		ev.stopPropagation();
 	}
 	
-	static changeToEngagement(state, action) {
+	static changeToEngagement(controlPanel, action) {
 		// action.fieldName and .newValue tells you what changed, .fieldPrefix is for subfields like selection
-		state = _.cloneDeep(state);////state = {...state}
+		////state = _.cloneDeep(state);////state = {...state}
 		
 		// find where it goes, creating stuff as needed
-		if (! state.selection.editingRecord.engagements)
-			state.selection.editingRecord.engagements = [defaultEngagement()]
-		let q = state.selection.editingRecord.engagements
+		if (! controlPanel.editingRecord.engagements)
+			controlPanel.editingRecord.engagements = [defaultEngagement()]
+		let q = controlPanel.editingRecord.engagements
 		if (! q[action.serial])
 			q[action.serial] = defaultEngagement();
 		q = q[action.serial];
@@ -136,13 +136,13 @@ export class Engagements extends Component {
 		q[action.fieldName] = action.newValue;
 		
 		// // now's a good time to insert the 'new' engagement if needed
-// 		let engs = state.selection.editingRecord.engagements;
+// 		let engs = controlPanel.editingRecord.engagements;
 // 		let lastEng = engs[engs.length - 1];
 // 		if (lastEng.what || lastEng.notes) {
 // 			engs.push(defaultEngagement())
 // 		}
 		
-		return state;
+		return controlPanel;
 	}
 	
 	// clean out empty engagements including that 'new' one at the end
@@ -170,16 +170,21 @@ export class Engagements extends Component {
 	}
 	
 	// action handler, called by the Add bar to add it.
-	static addNewEngagement(state, action) {
+	static addNewEngagement(controlPanel, action) {
 		// what, when, notes was old arg list
 		// engagements is a new feature; failover
 		let newEngagements = [];
-		if (this.props.engagements)
-			newEngagements = {...this.props.engagements};
+		if (controlPanel.engagements)
+			newEngagements = {...controlPanel.engagements};
 		
-		newEngagements.push({what: action.what, when: action.when, notes: action.notes, serial: newEngagements.length});
+		newEngagements.push({
+			what: action.what, 
+			when: action.when, 
+			notes: action.notes, 
+			serial: newEngagements.length
+		});
 		//changeEngagementsCallback(newEngagements);
-		return state;
+		return controlPanel;
 	}
 	
 }
@@ -187,16 +192,16 @@ export class Engagements extends Component {
 function mapStateToProps(state) {
 	debugger;
 	console.log("|| Engagements#mapStateToProps: state=", state);
-	let s = state.selection;
+	let s = state.controlPanel;
 	return {
-		selection: s,
+		controlPanel: s,
 		engagements: s.engagements,
 		////editingEngagement: s.editingEngagement,
 		////changeEngagements: changeEngagementsCallback,
 	};
 // 	return {
 // 		recs: (state ? state.recs : []), 
-// 		selectedSerial: state ? state.selection.selectedSerial : -1,
+// 		selectedSerial: state ? state.controlPanel.selectedSerial : -1,
 // 	};
 }
 

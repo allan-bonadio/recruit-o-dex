@@ -9,11 +9,12 @@ import {connect} from 'react-redux';
 import $ from "jquery";
 //import _ from "lodash";
 
-import ScrapeDrawer from './ScrapeDrawer';
+////import ScrapeDrawer from './ScrapeDrawer';
+import LoadSave from './LoadSave';
 import LittleDialog from './LittleDialog';
 import RecForm from './RecForm';
 import JsonForm from './JsonForm';
-import {rxStore, getStateSelection} from './reducer';
+import {rxStore} from './reducer';
 
 
 /********************************************************************** Control Panel root */
@@ -39,7 +40,7 @@ class ControlPanel extends Component {
 	}
 
 	render() {
-		let sel = getStateSelection();
+		let sel = this.props;
 		if (!sel) return [];  // too early
 		////console.log("control pan sel:", sel);
 
@@ -77,7 +78,6 @@ class ControlPanel extends Component {
 						}} >
 				<RecForm></RecForm>
 				<JsonForm></JsonForm>
-				<ScrapeDrawer></ScrapeDrawer>
 				{ButtonArea}
 			</div>
 	}
@@ -85,17 +85,13 @@ class ControlPanel extends Component {
 	
 	// a click event on Save, save existing rec, pre-dispatch
 	saveEditClick(ev) {
-		rxStore.dispatch({
-			type: 'SAVE_EDIT_REQ',
-		});
+		LoadSave.saveEditRecord();
 	}
 	
 	// a click event on Add to save a new rec, just click handler that dispatches
 	saveAddClick(ev) {
 		////console.log("saveAddClick starting...");
-		rxStore.dispatch({
-			type: 'SAVE_ADD_REQ',
-		});
+		LoadSave.saveAddRecord();
 	}
 	
 	// a click event on Cancel
@@ -113,7 +109,7 @@ class ControlPanel extends Component {
 
 
 	// got error during saving.  do dialog.
-	static errorPutPost(state, action) {
+	static errorPutPost(controlPanel, action) {
 		let message = 'no message';
 		if (action.httpStatus)
 			message = "http status "+ action.httpStatus;
@@ -123,8 +119,7 @@ class ControlPanel extends Component {
 		LittleDialog.alert('Error Saving', message);
 		
 		// we put up a dialog but other than that no state change.
-		// that's not right...
-		return state;
+		return controlPanel;
 	}
 
 
@@ -173,7 +168,7 @@ class ControlPanel extends Component {
 
 
 function mapStateToProps(state) {
-	return state ? state.selection : {};  // i don't think i really use these props
+	return state ? state.controlPanel : {};  // i don't think i really use these props
 }
 
 export default connect(mapStateToProps)(ControlPanel);

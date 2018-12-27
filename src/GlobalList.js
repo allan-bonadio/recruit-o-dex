@@ -95,7 +95,7 @@ export class GlobalList extends Component {
 		}
 		else {
 			// all the other cells with records in them
-			return p.recs.map(function(rec, ix) {
+			return p.wholeList.recs.map(function(rec, ix) {
 				return <SummaryRec key={ix.toString()} serial={ix} 
 					record={rec} selected={p.selectedSerial == ix} ></SummaryRec>;
 			});
@@ -113,32 +113,18 @@ export class GlobalList extends Component {
 		return list;
 	}
 	
-	// Call this when you retrieve all the data, as when the app starts.
-	// triggers a repaint, using this list of new raw data presumably from mongo
-	update(newList) {
-		let list = GlobalList.sortRecords(newList, this.props.sortCriterion);
-
-		this.props.dispatch({type: 'SET_WHOLE_LIST', recs: list});
-		this.props.dispatch({type: 'RESET_SELECTION'});
-	}
-	
 	// reducer handler
-	static setWholeList(state, action) {
+	static setWholeList(wholeList, action) {
 		return {
-			...state,
+			...wholeList,
 			
 			// all new data
 			recs: action.recs,
 		};
 	}
 
-	static resetSelection(state, action) {
-		return {
-			...state,
-			
-			// well we no longer have the old selection so drop that
-			selection: initialState.selection,
-		};
+	static resetSelection(controlPanel, action) {
+		return initialState.controlPanel;
 	}
 
 	// called at various times to re-read the jobs table and display it again
@@ -147,9 +133,24 @@ export class GlobalList extends Component {
 		moGetAll((err, newRecs) => {
 			if (err)
 				p.dispatch({type: 'ERROR_GET_ALL', errorObj: err})
-			else
-				this.update(newRecs)
+			else {
+				let list = GlobalList.sortRecords(newRecs, this.props.wholeList.sortCriterion);
+
+			 	// triggers a repaint, using this list of new raw data presumably from mongo
+				this.props.dispatch({type: 'SET_WHOLE_LIST', recs: list});
+				this.props.dispatch({type: 'RESET_SELECTION'});
+			}
 		});
+	}
+	
+	static errorGetAll(wholeList, action) {
+		console.error("ERROR_GET_ALL", action);
+		// if mongo & server aren't started,
+		// GlobalList is undefined and I can't even check for it!!
+		return {
+			...wholeList,
+			globalListErrorObj: action.errorObj,
+		};
 	}
 	
 	// a click on the New Rec button to raise the control panel with a prospective rec
@@ -163,9 +164,9 @@ export class GlobalList extends Component {
 		this.props.dispatch({type: 'CHANGE_SEARCH_QUERY', newQuery: ev.target.value});
 	}
 
-	static changeSearchQuery(state, action) {
+	static changeSearchQuery(wholeList, action) {
 		return {
-			...state,
+			...wholeList,
 			searchQuery: action.newQuery,
 		};
 	}
@@ -181,13 +182,13 @@ export class GlobalList extends Component {
 	}
 	
 	// same, called from the resolver
-	static changeSortCriterion(state, action) {
+	static changeSortCriterion(wholeList, action) {
 		// do the sort
-		let newRecs = GlobalList.sortRecords(state.recs, action.newCriterion);
+		let newRecs = GlobalList.sortRecords(wholeList.recs, action.newCriterion);
 		
 		// now set the state that way
 		return {
-			...state,
+			...wholeList,
 			sortCriterion: action.newCriterion,
 			recs: newRecs,
 		};
@@ -198,17 +199,21 @@ export class GlobalList extends Component {
 function mapStateToProps(state) {
 	if (state) {
 		return {
-			recs: state.recs, 
-			selectedSerial: state.selection.selectedSerial,
-			globalListErrorObj: state.globalListErrorObj,
-			searchQuery: state.searchQuery, 
-			sortCriterion: state.sortCriterion,
+			wholeList: state.wholeList,
+			selectedSerial: state.controlPanel.selectedSerial,
 		};
 	}
 	else {
 		// during startup, no state in place yet
-		return {recs: [], selectedSerial: -1, globalListErrorObj: null, 
-				searchQuery: '', sortCriterion: 0};
+		return {
+			wholeList:  {
+				recs: [], 
+				globalListErrorObj: null, 
+				searchQuery: '', 
+				sortCriterion: 0
+			},
+			selectedSerial: -1, 
+		};
 	}
 }
 

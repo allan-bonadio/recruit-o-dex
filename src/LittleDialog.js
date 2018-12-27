@@ -65,7 +65,7 @@ export class LittleDialog extends Component {
 		return state;
 	}
 	
-	// reducer handler - get rid of it
+	// reducer handler - get rid of dialog
 	static closeLittleDialog(state, action) {
 		state = {
 			...state,

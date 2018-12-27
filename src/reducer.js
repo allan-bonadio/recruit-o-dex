@@ -1,5 +1,5 @@
 //import React from 'react';
-import { createStore } from 'redux';
+import {createStore, combineReducers} from 'redux';
 import _ from "lodash";
 
 import LoadSave from './LoadSave';
@@ -11,20 +11,22 @@ import JsonForm from './JsonForm';
 import GlobalList from './GlobalList';
 import LittleDialog from './LittleDialog';
 
+// the initial, default state.  Try to put in normally-absent fields so we can document them here.
 export const initialState = {
-	selection: {
+	// stuff about the control panel, including the selected record
+	controlPanel: {
 		// the record being edited by the ControlPanel; a separate copy.  
 		// Null means no rec selected.
 		editingRecord: null,
 		selectedSerial: -1,  // index into state.recs or New if <0
 		didChange: false,  // and editingRecord should be saved
 		originalBeforeChanges: null,  // save this for Cancel or Undo
-	},
-	
-	// stuff about the control panel, not directly related to the selected record
-	controlPanel: {
-		scrapeDrawerOpen: false,
+
+////		scrapeDrawerOpen: false,
 		
+	saving: false,
+	editingEngagement: {what: '', when: '', notes: '',},
+
 		// the text in json box, ONLY if it's unparsable.  
 		// If it's parsable, it's all loaded into editingRecord and this is null.
 		jsonText: null,
@@ -37,155 +39,149 @@ export const initialState = {
 		modal: false,  // whether it's open or hidden
 	},
 	
-	sortCriterion: 0,  // default is first in menu, Company Name presently
+	// data in the whole list aka global list, the background of all the data
+	wholeList: {
+		sortCriterion: 0,  // default is first in menu, Company Name presently
+		
+		searchQuery: '',  // someday
 	
-	// all the records, for the GlobalList
-	recs: [],
+		// all the records, for the GlobalList
+		recs: [],
+		
+		globalListErrorObj: null,
+	}
 };
+Object.freeze(initialState);
 
 
-// get me just the .selection property of the state
-export function getStateSelection() {
-	let state = rxStore.getState();
-	//console.warn("|| getStateSelection from state", state);
-	if (state)
-		return state.selection;
-	else
-		return null;  // too early during strtup?
-}
+////// get me just the .controlPanel property of the state
+////export function getStateSelection() {
+////	let state = rxStore.getState();
+////	//console.warn("|| getStateSelection from state", state);
+////	if (state)
+////		return state.controlPanel;
+////	else
+////		return null;  // too early during strtup?
+////}
 
 // THE main dispatcher for this whole app
-export function reducer(state = initialState, action) {
-	
-	// redux starting up
-	if (/@@redux.INIT/.test(action.type))
-		return state;
-	
+////export function reducer(state = initialState, action) {
+////	
+////	// redux starting up
+////	if (/@@redux.INIT/.test(action.type))
+////		return state;
+////	
+////	switch (action.type) {
+////	return state;
+////}
+
+function wholeListReducer(wholeList = initialState.wholeList, action) {
 	switch (action.type) {
 	/*********************************************** init */
 	case 'SET_WHOLE_LIST':
 		// set all records, set into GlobalList.  called during page load.
-		state = GlobalList.setWholeList(state, action);
-		break;
+		return GlobalList.setWholeList(wholeList, action);
+
+	case 'CHANGE_SEARCH_QUERY':
+		// user typed etc into the JSON box
+		return GlobalList.changeSearchQuery(wholeList, action);
+
+	case 'CHANGE_SORT_CRITERION':
+		return GlobalList.changeSortCriterion(wholeList, action);
 	
+	case 'ERROR_GET_ALL':
+		// any error from retrieval from mongo
+		return errorGetAll(wholeList, action);
+	}
+	return wholeList;
+}
+
+function controlPanelReducer(controlPanel = initialState.wholeList, action) {
+	switch (action.type) {
 	case 'RESET_SELECTION':
 		// set to no control panel, no record selected
-		state = GlobalList.resetSelection(state, action);
-		break;
-	
+		return GlobalList.resetSelection(controlPanel, action);
 	
 	/*********************************************** control panel operations */
 	case 'START_EDIT_RECORD':
 		// select and load a record into control panel (after user clicks it in the GlobalList)
-		state = LoadSave.startEditRecord(state, action);
-		state = {...state};  // ??
-		break;
+		return LoadSave.startEditRecord(controlPanel, action);
+		//return {...state};  // ??
 		
 	case 'SAVE_EDIT_REQ':
 		// initiate save after START_EDIT_RECORD (after user clicked Save)
 		//return theControlPanel.saveEditReq(state, action);
-		state = LoadSave.saveEditReq(state, action);
-		break;
+		return LoadSave.saveEditReq(controlPanel, action);
 		
 	case 'SAVE_EDIT_DONE':
 		// save of existing record in CP was a success
 		// select and load a record into control panel
-		state = LoadSave.saveEditDone(state, action);
-		break;
+		return LoadSave.saveEditDone(controlPanel, action);
 		
 	case 'START_ADD_RECORD':
 		// create and load a new record into control panel (after user clicked New Rec)
-		state = LoadSave.startAddRecord(state, action);
-		break;
+		return LoadSave.startAddRecord(controlPanel, action);
 		
 	case 'SAVE_ADD_REQ':
 		// initiate save after START_ADD_RECORD (after user clicks Add or on drapes
 		// create and load a record into control panel
-		state = LoadSave.saveAddReq(state, action);
-		break;
-// 		return {
-// 			...state,
-// 			selection: LoadSave.saveAddReq(state, action),
-// 		};
+		return LoadSave.saveAddReq(controlPanel, action);
 		
 	case 'SAVE_ADD_DONE':
 		// success
-		state = LoadSave.saveAddDone(state, action);
-		break;
-// 		};
+		return LoadSave.saveAddDone(controlPanel, action);
 		
 	/********************************************************************** misc */
 
 	case 'CANCEL_EDIT_ADD':
 		// user clicked Cancel button after opening control panel
-		state = LoadSave.cancelEditAdd(state, action);
-		break;
+		return LoadSave.cancelEditAdd(controlPanel, action);
 		
 	case 'ADD_NEW_ENGAGEMENT':
 		// user clicked add in the engagements panel
-		state = Engagements.addNewEngagement(state, action);
-		break;
+		return Engagements.addNewEngagement(controlPanel, action);
 	
 	case 'CHANGE_TO_RECORD':
 		// user typed, backspaced, cut or pasted inside one of those text blanks, or equivalent		
-		state = RecForm.changeToRecord(state, action);
-		break;
+		return RecForm.changeToRecord(controlPanel, action);
 
 	case 'CHANGE_TO_ENGAGEMENT':
 		// inside a text blank in an engagement
-		state = Engagements.changeToEngagement(state, action);
-		break;
+		return Engagements.changeToEngagement(controlPanel, action);
 
 	case 'CHANGE_TO_JSON':
 		// user typed etc into the JSON box
-		state = JsonForm.changeToJson(state, action);
-		break;
+		return JsonForm.changeToJson(controlPanel, action);
 
-	case 'CHANGE_SEARCH_QUERY':
-		// user typed etc into the JSON box
-		state = GlobalList.changeToSearchQuery(state, action);
-		break;
-
-	case 'CHANGE_SORT_CRITERION':
-		state = GlobalList.changeSortCriterion(state, action);
-		break;
-
-	
-	case 'ERROR_GET_ALL':
-		// any error from retrieval from mongo
-		console.error("ERROR_GET_ALL", action);
-		// if mongo & server aren't started,
-		// GlobalList is undefined and I can't even check for it!!
-		state = {
-			...state,
-			globalListErrorObj: action.errorObj,
-		};
-		break;
-	
 	case 'ERROR_PUT_POST':
 		// any error from saving to mongo
 		console.error("ERROR_PUT_POST", action);
-		state = ControlPanel.errorPutPost(state, action);
-		break;
+		return ControlPanel.errorPutPost(controlPanel, action);
 		
-	case 'SET_SCRAPE_DRAWER_OPEN':
-		state = ScrapeDrawer.setScrapeDrawerOpen(state, action);
-		break;
-		
+////	case 'SET_SCRAPE_DRAWER_OPEN':
+////		return ScrapeDrawer.setScrapeDrawerOpen(controlPanel, action);
+////		
+	}
+	return controlPanel;
+}
+
+function littleDialogReducer(littleDialog = initialState.littleDialog, action) {
+	switch (action.type) {
 	case 'OPEN_LITTLE_DIALOG':
-		state = LittleDialog.openLittleDialog(state, action);
-		break;
+		return LittleDialog.openLittleDialog(littleDialog, action);
 		
 	case 'CLOSE_LITTLE_DIALOG':
-		state = LittleDialog.closeLittleDialog(state, action);
-		break;
-		
-	default:
-		console.warn("unfound action ", action.type);
-		break;
+		return LittleDialog.closeLittleDialog(littleDialog, action);
 	}
-	return state;
+	return littleDialog;
 }
+
+// unify the reducers
+export const reducer = combineReducers({
+	wholeList: wholeListReducer,
+	controlPanel: controlPanelReducer,
+	littleDialog: littleDialogReducer,
+});
 
 // the one and only redux store
 export const rxStore = createStore(reducer, initialState);

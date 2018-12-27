@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-import {getStateSelection} from './reducer';
-
 // the white translucent sheet behind the control panel; signifies you're changing a record
 export class CrudCurtain extends Component {
 	constructor(props) {
@@ -19,7 +17,7 @@ export class CrudCurtain extends Component {
 	}
 	
 	render() {
-		let sel = getStateSelection();
+		let sel = this.props;
 		if (!sel) return [];
 
 		return <div className='crud-curtain' 
@@ -30,7 +28,7 @@ export class CrudCurtain extends Component {
 }
 
 function mapStateToProps(state) {
-	return state ? state.selection : {};  // i don't think i really use these props
+	return state ? state.controlPanel : {};
 }
 
 export default connect(mapStateToProps)(CrudCurtain);

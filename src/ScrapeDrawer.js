@@ -104,11 +104,11 @@ export class ScrapeDrawer extends Component {
 	}
 	
 	// action handler to actually do the toggle upon click
-	static setScrapeDrawerOpen(state, action) {
-		state = {...state,
-			controlPanel: {scrapeDrawerOpen: action.open},
+	static setScrapeDrawerOpen(controlPanel, action) {
+		controlPanel = {...controlPanel,
+			scrapeDrawerOpen: action.open,
 		};
-		return state;
+		return controlPanel;
 	}
 	
 	static clickToggleOpen(ev) {
@@ -147,7 +147,7 @@ export class ScrapeDrawer extends Component {
 function mapStateToProps(state) {
 	////console.info('mstp SD state: ', state);
 	return {
-		editingRecord: state.selection.editingRecord,
+		editingRecord: state.controlPanel.editingRecord,
 		controlPanel: state.controlPanel,  // includes scrapeDrawerOpen
 	};
 }

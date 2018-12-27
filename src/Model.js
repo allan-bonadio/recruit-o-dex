@@ -123,20 +123,20 @@ export function moPostOne(record, callback) {
 export function moDeleteOne(record, callback) {
 	throw "never implemented";////
 	
-	$.ajax({
-		url: RODEX_SERVER +'/one/'+ record._id, 
-		method: 'delete',
-		contentType: 'application/json',  
-		success: function(data, status, jqxhr) {
-			callback(null, jqxhr.status);
-		},
-		error: function(jqxhr, status, message) {
-			console.error("Error deleting doc: %s %s %s", jqxhr.status, status, message);
-
-			var er = createErrorObj("deleting a document", status, message, jqxhr);
-			callback(er, jqxhr.status ||  jqxhr.state());
-		},
-	});
+////	$.ajax({
+////		url: RODEX_SERVER +'/one/'+ record._id, 
+////		method: 'delete',
+////		contentType: 'application/json',  
+////		success: function(data, status, jqxhr) {
+////			callback(null, jqxhr.status);
+////		},
+////		error: function(jqxhr, status, message) {
+////			console.error("Error deleting doc: %s %s %s", jqxhr.status, status, message);
+////
+////			var er = createErrorObj("deleting a document", status, message, jqxhr);
+////			callback(er, jqxhr.status ||  jqxhr.state());
+////		},
+////	});
 }
 
 

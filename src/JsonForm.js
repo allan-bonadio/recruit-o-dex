@@ -81,31 +81,24 @@ export class JsonForm extends Component {
 	}
 
 	// action handler for a keystroke in the json box
-	static changeToJson(state, action) {
+	static changeToJson(controlPanel, action) {
 		////state = _.cloneDeep(state);
 		if (action.newRecord) {
 			// good json parsed to tree, replace record
 			return {
-				...state,
-				selection: {...state.selection,
-					editingRecord: action.newRecord,
-				},
-				// now that the json parses, drop it, the tree is good
-				controlPanel: {...state.controlPanel,
-					jsonText: null,
-					errorMessage: null,
-				},
+				...controlPanel,
+				editingRecord: action.newRecord,
+				jsonText: null,
+				errorMessage: null,
 			};
 		}
 		else {
 			// json that flunked the parser.   Don't touch the record, just these others.
-			return {
-				...state,
 				// leave the selection as-is, record doesn't change
-				controlPanel: {...state.controlPanel,
-					jsonText: action.newJson,
-					errorMessage: action.errorMessage,
-				},
+			return {
+				...controlPanel,
+				jsonText: action.newJson,
+				errorMessage: action.errorMessage,
 			};
 		}
 	}
@@ -113,7 +106,7 @@ export class JsonForm extends Component {
 	render() {
 		// if jsonText is there, it's the true text, otherwise use whatever record we have
 		////console.log('jf render this.props', this.props);////
-		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.selection.editingRecord);
+		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.controlPanel.editingRecord);
 		
 		////rxStore.getState().jsonText || rxStore.getState().record);
 		////console.log(`Text is '${text}', cuz `+ (this.state.jsonText ? 'uncompiled test' : 'compiled object'));
@@ -128,7 +121,7 @@ export class JsonForm extends Component {
 
 function mapStateToProps(state) {
 ////	console.log('jf props <= state', state);////
-	return {selection: state.selection, controlPanel: state.controlPanel, };
+	return {selection: state.controlPanel, controlPanel: state.controlPanel, };
 }
 
 export default connect(mapStateToProps)(JsonForm);

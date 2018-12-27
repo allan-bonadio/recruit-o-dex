@@ -10,7 +10,7 @@ import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 import {rxStore} from './reducer';
-import {ScrapeDrawer} from './ScrapeDrawer';
+////import {ScrapeDrawer} from './ScrapeDrawer';
 
 
 configure({ adapter: new Adapter() });

@@ -44,26 +44,11 @@ export class RecForm extends Component {
 		RecForm.me = this;  // for singleton objects only
 	}
 	
-// 	called by the Engagements Table when there's a change.  Completely replaces all events(engagements)
-// 	changeEngagements(newEvents) {
-// 		var rec = {...this.state.record};
-// 		rec.events = newEvents;
-// 		theControlPanel.setCPRecord(rec)
-// 		userChangedRecord(rxStore.getState());
-// 		rxStore.dispatch({type: 'CHANGE_TO_RECORD', 
-// 				fieldName: 'badEventz', newValue: 'badEventzValue'});
-// 	}
-
-// 	set this to have the tree passed in as state
-// 	setRecordState(tree) {
-// 		this.setState({record: tree});
-// 	}
-	
 	// render the form with all the blanks and data populated in them
 	render() {
 		////redux let rec = this.state.record;
 		////console.log('this.props', this.props);////
-		let s = this.props.selection;
+		let s = this.props;
 		let rec = s.editingRecord;
 		if (! rec)
 			return [];
@@ -101,21 +86,22 @@ export class RecForm extends Component {
 		//rec[targ.name] = targ.value;
 // 		theControlPanel.setCPRecord(rec)
 // 		userChangedRecord(rxStore.getState());
-		rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: targ.name, newValue: targ.value});
+		rxStore.dispatch({type: 'CHANGE_TO_RECORD', 
+				fieldName: targ.name, newValue: targ.value});
 	}
 
-	static changeToRecord(state, action) {
+	static changeToRecord(controlPanel, action) {
 		// action.fieldName and .newValue tells you what changed, 
 		// .fieldPrefix is for subfields like selection
-		state = _.cloneDeep(state);////state = {...state}
-		let q = state.selection.editingRecord;
+		////state = _.cloneDeep(state);////state = {...state}
+		let q = controlPanel.editingRecord;
 		q[action.fieldName] = action.newValue;
-		return state;
+		return controlPanel;
 	}
 }
 
 function mapStateToProps(state) {
-	return {selection: state.selection};
+	return state.controlPanel;
 }
 
 export default connect(mapStateToProps)(RecForm);
