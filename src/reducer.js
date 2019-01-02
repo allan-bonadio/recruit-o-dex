@@ -91,7 +91,7 @@ function wholeListReducer(wholeList = initialState.wholeList, action) {
 	
 	case 'ERROR_GET_ALL':
 		// any error from retrieval from mongo
-		return errorGetAll(wholeList, action);
+		return GlobalList.errorGetAll(wholeList, action);
 	}
 	return wholeList;
 }
