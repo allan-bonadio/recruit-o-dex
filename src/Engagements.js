@@ -16,7 +16,7 @@ function EngagementRow(props) {
 					onChange={props.changeEngagement} />
 		</td>
 		<td>
-			<input type='date' name='when' 
+			<input type='datetime-local' name='when' 
 					defaultValue={props.engagement.when} min='2017-01-01' max='2030-01-01' 
 					onChange={props.changeEngagement} />
 		</td>
