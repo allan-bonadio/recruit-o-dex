@@ -83,6 +83,7 @@ export class RecForm extends Component {
 			
 			<Engagements engagements={rec.engagements || rec.events} 
 						editingEngagement={s.editingEngagement} dispatch={this.props.dispatch}
+						rec={rec}
 						 />
 		</section>;
 	}
