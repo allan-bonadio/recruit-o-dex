@@ -30,7 +30,7 @@ Do not have two mongoDB daemons or rodexServer.js daemons running at once.  Must
 
 
 
-# react boilerplate
+# -------------- react boilerplate --------------
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
