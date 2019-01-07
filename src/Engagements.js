@@ -15,6 +15,22 @@ import _ from "lodash";
 
 // a row in the Engagements table, that lets users enter new engagements
 function EngagementRow(props) {
+	let startTime = props.engagement.when;
+	if (startTime && startTime.length <= 10)
+		startTime += 'T06:00:00';  // compat with legacy data (6am=legacy)
+
+	let calStr = '';
+	if (props.engagement.what && startTime) {
+		// calculate the calendar string that i can cop/paste to Calendar + box
+		let start = new Date(startTime);
+		let end = new Date( (props.engagement.howLong || 60) * 60000 + start.getTime() )
+
+		calStr = props.engagement.what +' '+ 
+			(props.company_name || 'company') +' '+
+			start.toLocaleDateString() +' '+ start.toTimeString().substr(0, 5) +
+			' to '+ end.toTimeString().substr(0, 5);
+	}
+	
 	return <tr className='engagement' serial={props.serial}>
 		<td>
 			<input name='what' list='engagement-whats' size='12' placeholder='choose what' 
@@ -22,16 +38,33 @@ function EngagementRow(props) {
 					onChange={props.changeEngagement} />
 		</td>
 		<td>
-			<input type='date' name='when' 
-					defaultValue={props.engagement.when} min='2017-01-01' max='2030-01-01' 
+			<input type='datetime-local' name='when' size='22'
+					defaultValue={startTime} 
+					min='2017-01-01T00:00:00Z' max='2030-01-01T00:00:00Z' 
 					onChange={props.changeEngagement} />
+		</td>
+		<td>
+			<select name='howLong' defaultValue={props.engagement.howLong || 60} >
+				<option value='30'>30 m</option>
+				<option value='60'>1 hr</option>
+				<option value='90'>1.5 hr</option>
+				<option value='120'>2 hr</option>
+				<option value='180'>3 hr</option>
+				<option value='240'>4 hr</option>
+				<option value='300'>5 hr</option>
+				<option value='360'>6 hr</option>
+			</select>
 		</td>
 		<td>
 			<textarea name='notes' rows='1'
 					defaultValue={props.engagement.notes} placeholder='enter notes'
 					onChange={props.changeEngagement} />
 		</td>
-	</tr>
+		<td>
+			<input readOnly='1' className='calendarDesc' value={calStr}
+				onClick={ev => ev.target.select()} size='2'/>
+		</td>
+	</tr>;
 }
 
 
@@ -39,10 +72,12 @@ function EngagementRow(props) {
 // but instead just today's date in the date box
 function defaultEngagement() {
 	function twoDigit(n) { return String(n + 100).substr(1) }
-	let today = new Date();
+	let tomorrow = new Date(Date.now() + 86400000)
 	return {
 		what: '', 
-		when: today.getFullYear() +'-'+ twoDigit(today.getMonth()+1) +'-'+ twoDigit(today.getDate()),
+		when: tomorrow.getFullYear() +'-'+ twoDigit(tomorrow.getMonth()+1) +'-'+ 
+					twoDigit(tomorrow.getDate()) +'T11:00',
+		howLong: '60',
 		notes: '',
 		// serial added at creation time
 	}
@@ -55,7 +90,6 @@ export class Engagements extends Component {
 		super(props);
 		Engagements.me = this;
 		
-		////changeEngagementsCallback = props.changeEngagements;
 		this.changeEngagement = this.changeEngagement.bind(this);
 	}
 	
@@ -72,9 +106,10 @@ export class Engagements extends Component {
 		es.push({what: '', date: '', notes: ''});
 		
 		// generate the rows for existing engs
-		let rows =  es
+		let eRows =  es
 				? es.map((engagement, serial) => 
-					<EngagementRow serial={serial} key={serial} engagement={engagement} 
+					<EngagementRow serial={serial} key={serial} 
+							engagement={engagement} company_name={p.rec.company_name}
 							changeEngagement={this.changeEngagement}/>
 					)
 				: [];
@@ -83,14 +118,16 @@ export class Engagements extends Component {
 		return <div>
 			<datalist id='engagement-whats'>
 				<option value='recruiter call' >recruiter call</option>
-				<option value='hr phint' >Phone Interview, HR</option>
-				<option value='semitech phint' >Phone Interview, semitechnical</option>
-				<option value='tech phint' >Phone Interview, technical</option>
+				<option value='intro' >Intro Phone Int</option>
+				<option value='phint' >Phone Interview</option>
+				<option value='skype' >Skype Interview</option>
+				<option value='zoom' >Zoom Interview</option>
+				<option value='webex' >Webex Interview</option>
 				<option value='onsite' >On-Site Interview</option>
 			</datalist>
 			<table>
 				<tbody>
-					{rows}
+					{eRows}
 				</tbody>
 			</table>
 		</div>;
@@ -168,24 +205,22 @@ export class Engagements extends Component {
 		newEngagements.push({
 			what: action.what, 
 			when: action.when, 
+			howLong: action.howLong, 
 			notes: action.notes, 
 			serial: newEngagements.length
 		});
-		//changeEngagementsCallback(newEngagements);
 		return controlPanel;
 	}
 	
 }
 
 function mapStateToProps(state) {
-	debugger;
+	debugger;  // this never gets hit?
 	console.log("|| Engagements#mapStateToProps: state=", state);
 	let s = state.controlPanel;
 	return {
 		controlPanel: s,
 		engagements: s.engagements,
-		////editingEngagement: s.editingEngagement,
-		////changeEngagements: changeEngagementsCallback,
 	};
 }
 

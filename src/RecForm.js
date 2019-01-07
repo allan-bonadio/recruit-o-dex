@@ -66,13 +66,14 @@ export class RecForm extends Component {
 			<RecField rec={rec} label='agency:' fieldName='agency' />
 			<div style={{height: '10px'}} />
 			<RecField rec={rec} label='company:' fieldName='company_name' />
-			<RecField rec={rec} label='jd url:' fieldName='job_desc_url' />
+			<RecField rec={rec} label='jd url:' fieldName='job_desc_url' element='textarea' />
 			<RecField rec={rec} label='status:' fieldName='status' />
 			
 			<RecField rec={rec} label='notes:' fieldName='notes' element='textarea' />
 			
 			<Engagements engagements={rec.engagements || rec.events} 
 						editingEngagement={s.editingEngagement} dispatch={this.props.dispatch}
+						rec={rec}
 						 />
 		</section>;
 	}
