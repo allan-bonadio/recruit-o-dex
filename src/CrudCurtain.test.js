@@ -35,12 +35,12 @@ describe('<CrudCurtain', () => {
 		curt.props.selectedSerial = 5;  // simulated edit
 		wasCalledWith = null;
 		curt.curtainClick({});
-		expect(wasCalledWith).toEqual({type: 'SAVE_EDIT_REQ'});
+		expect(wasCalledWith).toEqual({type: 'SAVE_EDIT_START'});
 
 		curt.props.selectedSerial = -1;  // simulated add
 		wasCalledWith = null;
 		curt.curtainClick({});
-		expect(wasCalledWith).toEqual({type: 'SAVE_ADD_REQ'});
+		expect(wasCalledWith).toEqual({type: 'SAVE_ADD_START'});
 		
 		curt.props = oldProps;
 	});

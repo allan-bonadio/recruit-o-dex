@@ -1,5 +1,7 @@
 /*
 ** GlobalList -- the main display showing all records 
+**
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -97,7 +99,7 @@ export class GlobalList extends Component {
 			// all the other cells with records in them
 			return p.wholeList.recs.map(function(rec, ix) {
 				return <SummaryRec key={ix.toString()} serial={ix} 
-					record={rec} selected={p.selectedSerial == ix} ></SummaryRec>;
+					record={rec} selectedSerial={p.selectedSerial} ></SummaryRec>;
 			});
 		}
 	}

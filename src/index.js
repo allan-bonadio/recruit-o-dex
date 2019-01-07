@@ -1,7 +1,7 @@
 /*
 ** index -- top level for the RecruitMan page
 **
-** Copyright (C) 2017 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
 
 import React from 'react';

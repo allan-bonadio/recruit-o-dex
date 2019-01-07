@@ -1,7 +1,7 @@
 /*
 ** Model -- ajax calls for RecruitMan page
 **
-** Copyright (C) 2017 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
 
 import $ from "jquery";
@@ -90,6 +90,7 @@ export function moPutOne(record, callback) {
 
 // a new one: add it in to the collection
 export function moPostOne(record, callback) {
+	console.log("moPostOne(%s, %s)", record.recruiter_name, callback.name);
 	if (simulateErrors.postError) {
 		setTimeout(() => callback(simulateErrors.postError, 100));
 		return;
@@ -101,9 +102,11 @@ export function moPostOne(record, callback) {
         body: JSON.stringify(record),
     };
 
+	console.log("moPostOne fetch (%s, %s)", record.recruiter_name, callback.name);
 	fetch(RODEX_SERVER +'/one', opts)
 	.then(
 		resp => {
+			console.log("moPostOne resp ok, status=", resp.ok, resp.status);
 			if (! resp.ok || 201 != resp.status)  // eslint-disable-line
 				callback(new Error("Error updating: "+ resp.status +': '+ resp.statusText));
 			else

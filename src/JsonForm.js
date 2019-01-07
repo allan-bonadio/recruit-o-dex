@@ -1,4 +1,8 @@
-/*json-entry pane */
+/*
+** JsonForm -- json-entry pane
+**
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+*/
 
 import React, { Component } from 'react';
 //import $ from "jquery";

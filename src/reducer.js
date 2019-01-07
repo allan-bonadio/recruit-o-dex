@@ -1,4 +1,9 @@
-//import React from 'react';
+/*
+** reducer -- redux reducer case stmts
+**
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+*/
+
 import {createStore, combineReducers} from 'redux';
 import _ from "lodash";
 
@@ -108,10 +113,10 @@ function controlPanelReducer(controlPanel = initialState.wholeList, action) {
 		return LoadSave.startEditRecord(controlPanel, action);
 		//return {...state};  // ??
 		
-	case 'SAVE_EDIT_REQ':
+	case 'SAVE_EDIT_START':
 		// initiate save after START_EDIT_RECORD (after user clicked Save)
-		//return theControlPanel.saveEditReq(state, action);
-		return LoadSave.saveEditReq(controlPanel, action);
+		//return theControlPanel.saveEditStart(state, action);
+		return LoadSave.saveEditStart(controlPanel, action);
 		
 	case 'SAVE_EDIT_DONE':
 		// save of existing record in CP was a success
@@ -122,10 +127,10 @@ function controlPanelReducer(controlPanel = initialState.wholeList, action) {
 		// create and load a new record into control panel (after user clicked New Rec)
 		return LoadSave.startAddRecord(controlPanel, action);
 		
-	case 'SAVE_ADD_REQ':
+	case 'SAVE_ADD_START':
 		// initiate save after START_ADD_RECORD (after user clicks Add or on drapes
 		// create and load a record into control panel
-		return LoadSave.saveAddReq(controlPanel, action);
+		return LoadSave.saveAddStart(controlPanel, action);
 		
 	case 'SAVE_ADD_DONE':
 		// success

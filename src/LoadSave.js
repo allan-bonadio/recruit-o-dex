@@ -1,33 +1,30 @@
 /*
 ** LoadSave -- crud actions
 **
-** Copyright (C) 2017-2018 Tactile Interactive
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
 
 import $ from "jquery";
 import _ from "lodash";
 
+import ControlPanel from './ControlPanel';
+import Engagements from './Engagements';
+import {globalListUpdateList} from './GlobalList';
 import {moPutOne, moPostOne} from './Model';
 import {rxStore, initialState} from './reducer';
-import {globalListUpdateList} from './GlobalList';
-import Engagements from './Engagements';
-
-// use initialState.controlPanel instead
-////// the prototype object for a selection, so I don't forget some fields
-////export let bareSelection = {
-////	editingRecord: null, 
-////	selectedSerial: -1, 
-////	didChange: false, 
-////	saving: false,
-////	editingEngagement: {what: '', when: '', notes: '',},
-////};
-////Object.freeze(bareSelection);
 
 // return the current timestamp like "2018-09-23.01:23:45Z"
 function timestampString() {
 	 return (new Date()).toISOString().replace(/T/, '.')
 }
 
+// compare the EditingRecord and originalBeforechanges, return true if the same
+function noChanges(controlPanel) {
+	let obc = JSON.stringify(controlPanel.originalBeforeChanges);
+	let cur = JSON.stringify(controlPanel.editingRecord);
+	return (obc == cur);
+}
+	
 
 export class LoadSave {
 	// just before saving, clear out stuff, mostly empty fields
@@ -43,10 +40,6 @@ export class LoadSave {
 		return record;
 	}
 	
-////	static selectNothing(state) {
-////		return {...state, controlPanel: {...bareSelection}};
-////	}
-	
 	/********************************************** Edit Existing */
 
 	// sets the existing rec passed in as the selected record for the control panel.
@@ -59,22 +52,22 @@ export class LoadSave {
 		let node$ = $('section[serial='+ action.serial +']');
 		node$.addClass('selected');
 		
-		let record = rxStore.getState().recs[action.serial];
+		let record = action.record;
 
 		// unmanaged, the scrape pit is just a textarea.  Clear it out when CP opens again.
 ////		$('.scrape-pit').val('');
 
 
-		$('#control-panel').removeClass('adding');
+		//$('#control-panel').removeClass('adding');
 
 		// the NEW selection to be handed in to state
 		return {
-			...initialState.controlPanel,
+			...controlPanel,
 			originalBeforeChanges: record,  // this is in the big record list
 
 			// setting the editingRecord will cause the control panel to appear
 			editingRecord: _.cloneDeep(record),  // this copy gets changed during editing
-			selectedSerial: action.serial,
+			selectedSerial: action.serial,  
 			didChange: false,
 			
 ////			scrapeDrawerOpen: false,
@@ -86,57 +79,41 @@ export class LoadSave {
 	// a click event on Save, or just on the background.  Does the request and dispatches actions.
 	static saveEditRecord() {
 		let cp = rxStore.getState().controlPanel;
+		
 		// wait!  has there been any changes?  If not, don't actually save, leave it.
-		// I don't have a lot of faith in this but it seems to work well.
-		let obc = JSON.stringify(cp.originalBeforeChanges);
-		let cur = JSON.stringify(cp.editingRecord);
-		//console.log(obc, cur);
-		if (obc == cur) {
-			return;   // don't store it again
-////			// cannot dispatch from a reducer function.
-////			rxStore.dispatch({type: 'SAVE_EDIT_DONE'}));
+		if (noChanges(cp)) {
+			ControlPanel.cancelControlPanel()
+			return;
 		}
 		
-		rxStore.dispatch({
-			type: 'SAVE_EDIT_REQ',
-		});
+		rxStore.dispatch({type: 'SAVE_EDIT_START'});
 
-		moPutOne(cur, function(errorObj) {
-			// these are done later so no problem running from within a reducer
-			if (errorObj)  // eslint-disable-line
-				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
-			else
+		// update, will happen soon.  Don't update the recs till the save is successful!
+		var rec = LoadSave.cleanupRecord(cp.editingRecord);
+		rec.updated = timestampString();
+		
+		moPutOne(rec, function(errorObj) {
+			if (! errorObj) {
 				rxStore.dispatch({type: 'SAVE_EDIT_DONE'});
+
+				// reload the screen. kindof overkill but works
+				globalListUpdateList();
+			}
+			else
+				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
 		});
 
 	}
 	
 	
-	// resolver for initial PUT request
-	static saveEditReq(controlPanel, action) {
-		// update
-		var rec = LoadSave.cleanupRecord(controlPanel.editingRecord);
-		rec.updated = timestampString();
-		
-		controlPanel = {...controlPanel};
-		controlPanel.saving = true;  // is this ever turned off?
-		return controlPanel;
+	// resolver for initial PUT request - before doing the req
+	static saveEditStart(controlPanel, action) {
+		return {...controlPanel, saving: true};
 	}
 
 	static saveEditDone(controlPanel, action) {
-		
-// 		replace the newly edited thing
-// 		state.recs[sel.selectedSerial] = {...sel.editingRecord};
-
-		// reload the screen. kindof overkill but works
-		// ?? this shouldn't be done in a resolver!??!
-		globalListUpdateList();
-
-		$('div.App section.summary').removeClass('selected');
-
-		// replace the whole controlPanel
-		return {...initialState.controlPanel};
-////		return LoadSave.selectNothing(state);
+		return {...controlPanel, saving: false}; 
+////		return {...initialState.controlPanel};
 	}
 	
 
@@ -145,10 +122,6 @@ export class LoadSave {
 	static startAddRecord(controlPanel, action) {
 		// the template for a new Recruiter
 		let initial = {status: 'applied', created: timestampString()};
-
-		$('#control-panel').addClass('adding');
-		//theControlPanel.setCPRecord(initial).show();
-		
 		
 		// unmanaged, the scrape pit is just a textarea.  Clear it out when CP opens again.
 		$('.scrape-pit').val('');
@@ -156,81 +129,51 @@ export class LoadSave {
 		// most important, make a controlPanel pointing to the new prototype rec
 		return {
 			...controlPanel,
+			originalBeforeChanges: initial,  // brand new
 			editingRecord: initial,
-			saving: true,
-////			scrapeDrawerOpen: true,
+			selectedSerial: -1,    // says this is add, not edit
 		};
 	}
 
+	// call this to save the record after user is done filling in blanks
 	static saveAddRecord() {
-		let controlPanel = rxStore.getState().controlPanel;
-		var rec = LoadSave.cleanupRecord(controlPanel.editingRecord);
+		let cp = rxStore.getState().controlPanel;
+		if (noChanges(cp)) {
+			ControlPanel.cancelControlPanel();  // don't save empty record
+			return;
+		}
 
-		rxStore.dispatch({
-			type: 'SAVE_ADD_REQ',
-		});
+		rxStore.dispatch({type: 'SAVE_ADD_START'});
 
+		var rec = LoadSave.cleanupRecord(cp.editingRecord);
 		moPostOne(rec, function(errorObj) {
 			if (! errorObj) {
-				rxStore.dispatch({
-					type: 'SAVE_ADD_DONE',
-					controlPanel: controlPanel,
-				});
+				rxStore.dispatch({type: 'SAVE_ADD_DONE', controlPanel: cp});
+
+				// reload the screen. kindof overkill but works
+				globalListUpdateList();
 			}
-			else {
-				// error dialog
-				rxStore.dispatch({
-					type: 'ERROR_PUT_POST',
-					errorObj,
-				});
-				
-			}
+			else
+				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
 		});
-		
+	}
+
+	// reducer: a click event on Save to save a new rec: before save
+	static saveAddStart(controlPanel, action) {
 		return {...controlPanel, saving: true,};
 	}
 
-	// a click event on Add to save a new rec: actually start save
-	static saveAddReq(controlPanel, action) {
-		// create
-		let sel = controlPanel;
-		var rec = LoadSave.cleanupRecord(sel.editingRecord);
-		moPostOne(rec, function(errorObj) {
-			if (! errorObj) {
-				rxStore.dispatch({
-					type: 'SAVE_ADD_DONE',
-					controlPanel,
-				});
-			}
-			else {
-				// error dialog
-				rxStore.dispatch({
-					type: 'ERROR_PUT_POST',
-					errorObj,
-				});
-				
-			}
-		});
-		
-		return {...controlPanel, saving: true,};
-	}
-
+	// reducer: done with save
 	static saveAddDone(controlPanel, action) {
-		// reload the screen. kindof overkill but works
-		globalListUpdateList();
-
-		$('div.App section.summary').removeClass('selected');
-
-		return {...initialState.controlPanel};
+		return {...controlPanel};
 	}
 	
-	/********************************************************************** other */
+	/********************************************************************** cancel */
+	
+	// reducer for edit and add
 	static cancelEditAdd(controlPanel, action) {
-
-		// reload the screen. kindof overkill but works
-		globalListUpdateList();
-
-		return {...initialState.controlPanel};
+		// no selection
+		return {...initialState.controlPanel, saving: false};
 	}
 }
 

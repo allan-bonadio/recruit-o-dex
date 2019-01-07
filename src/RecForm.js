@@ -1,4 +1,9 @@
-/* Recruiter form pane */
+/*
+** RecForm -- Recruiter form, misc fields
+**
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+*/
+
 import React, {Component} from 'react';
 import _ from "lodash";
 import {connect} from 'react-redux';
@@ -94,8 +99,11 @@ export class RecForm extends Component {
 		// action.fieldName and .newValue tells you what changed, 
 		// .fieldPrefix is for subfields like selection
 		////state = _.cloneDeep(state);////state = {...state}
-		let q = controlPanel.editingRecord;
-		q[action.fieldName] = action.newValue;
+		controlPanel = {...controlPanel, 
+			editingRecord: {...controlPanel.editingRecord, 
+				[action.fieldName]: action.newValue}};
+////		let q = controlPanel.editingRecord;
+////		q[action.fieldName] = action.newValue;
 		return controlPanel;
 	}
 }

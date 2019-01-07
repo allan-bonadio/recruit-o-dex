@@ -1,5 +1,13 @@
+/*
+** CrudCurtain -- foggy background for control panel
+**
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+*/
+
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+
+import LoadSave from './LoadSave';
 
 // the white translucent sheet behind the control panel; signifies you're changing a record
 export class CrudCurtain extends Component {
@@ -11,9 +19,10 @@ export class CrudCurtain extends Component {
 	
 	// clicking on the CrudCurtain does a Save
 	curtainClick(ev) {
-		this.props.dispatch({
-			type: (this.props.selectedSerial >= 0) ? 'SAVE_EDIT_REQ' : 'SAVE_ADD_REQ',
-		});
+		if (this.props.selectedSerial >= 0)
+			LoadSave.saveEditRecord();
+		else
+			LoadSave.saveAddRecord();
 	}
 	
 	render() {

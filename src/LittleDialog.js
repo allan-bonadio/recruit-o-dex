@@ -1,4 +1,9 @@
-// a dialog for things like alerts and quick messages
+/*
+** LittleDialog -- a dialog for things like alerts and quick messages
+**
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+*/
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, {Component} from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';

@@ -1,7 +1,7 @@
 /*
 ** Control Panel -- the floating blue box on the page
 **
-** Copyright (C) 2017 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
 
 import React, { Component } from 'react';
@@ -10,10 +10,11 @@ import $ from "jquery";
 //import _ from "lodash";
 
 ////import ScrapeDrawer from './ScrapeDrawer';
+import {globalListUpdateList} from './GlobalList';
 import LoadSave from './LoadSave';
 import LittleDialog from './LittleDialog';
-import RecForm from './RecForm';
 import JsonForm from './JsonForm';
+import RecForm from './RecForm';
 import {rxStore} from './reducer';
 
 
@@ -32,7 +33,6 @@ class ControlPanel extends Component {
 		
 		this.saveEditClick = this.saveEditClick.bind(this);
 		this.saveAddClick = this.saveAddClick.bind(this);
-		this.cancelEditAdd = this.cancelEditAdd.bind(this);
 
 // 		this.state = {display: 'none'};
 		this.cPanelX = 100;
@@ -62,7 +62,7 @@ class ControlPanel extends Component {
 			<div style={{display: 'block'}}>
 				<button type='button' 
 							className='cancel-button main-button' 
-							onClick={this.cancelEditAdd}>
+							onClick={ControlPanel.cancelControlPanel}>
 					Cancel
 				</button>
 			</div>
@@ -94,17 +94,12 @@ class ControlPanel extends Component {
 		LoadSave.saveAddRecord();
 	}
 	
-	// a click event on Cancel
-	cancelEditAdd(ev) {
-		////console.log("cancelEditAdd starting...");
-		rxStore.dispatch({
-			type: 'CANCEL_EDIT_ADD',
-		});
-		
-		// all we have to do is return the two edit widgets to the original
-		////cleanChanges(rxStore.getState());
-		//startEditRecord(rxStore.originalBeforeChanges);
-		////theControlPanel.setIdle();
+	// Cancel current editing, either during edit or add.   Can be used as event handler or just a function to call
+	static cancelControlPanel(ev) {
+		// reload the screen. kindof overkill but works
+		globalListUpdateList();
+
+		rxStore.dispatch({type: 'CANCEL_EDIT_ADD'});
 	}
 
 

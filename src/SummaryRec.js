@@ -11,18 +11,11 @@ import {rxStore} from './reducer';
 export class SummaryRec extends Component {
 	constructor(props) {
 		super(props);
+		this.clickEv = this.clickEv.bind(this);
 	}
 	
 	
 	render() {
-		// the only thing you can do is click one to open it in control panel
-		let clickEv =  (ev) => {
-			rxStore.dispatch({
-				type: 'START_EDIT_RECORD', 
-				serial: ev.currentTarget.getAttribute('serial'),
-				summary: this,
-			});
-		};
 		
 		// for each field, make a <div with the current value in it
 		let Field = (props) => {
@@ -34,7 +27,7 @@ export class SummaryRec extends Component {
 		let r = this.props.record;
 		return <section 
 				className={'summary '+ (this.props.selectedSerial == this.props.serial ? 'selected' : '')}
-				onClick={clickEv} 
+				onClick={this.clickEv} 
 				serial={this.props.serial} key={this.props.serial} >
 			<Field record={r} name='company_name' />
 			<Field record={r} name='recruiter_name' />
@@ -55,6 +48,17 @@ export class SummaryRec extends Component {
 // 		$(node).addClass('selected');
 // 		editRecord(serial, record);
 // 	}
+
+
+	// the only thing you can do is click one to open it in control panel
+	clickEv(ev) {
+		rxStore.dispatch({
+			type: 'START_EDIT_RECORD', 
+			serial: this.props.serial,
+			record: this.props.record,
+		});
+	};
+
 }
 
 export default SummaryRec;

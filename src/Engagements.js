@@ -1,3 +1,9 @@
+/*
+** Engagements -- manage interviews for control panel
+**
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+*/
+
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import _ from "lodash";
@@ -50,7 +56,6 @@ export class Engagements extends Component {
 		Engagements.me = this;
 		
 		////changeEngagementsCallback = props.changeEngagements;
-		this.clickAdd = this.clickAdd.bind(this);
 		this.changeEngagement = this.changeEngagement.bind(this);
 	}
 	
@@ -83,7 +88,6 @@ export class Engagements extends Component {
 				<option value='tech phint' >Phone Interview, technical</option>
 				<option value='onsite' >On-Site Interview</option>
 			</datalist>
-			<button type='button' className='add-engagement' onClick={p.clickAdd} >+</button>
 			<table>
 				<tbody>
 					{rows}
@@ -91,10 +95,6 @@ export class Engagements extends Component {
 			</table>
 		</div>;
 	}
-// 					<EngagementAddBar changeEngagement={this.changeEngagement} clickAdd={this.clickAdd}
-// 								what={sel.what} 
-// 								when={sel.when} 
-// 								notes={sel.notes} />
 
 	// event handler for a keystroke or other change to that new engagement
 	changeEngagement(ev) {
@@ -157,18 +157,6 @@ export class Engagements extends Component {
 			return newEngs;
 	}
 
-	// event handler for button to add this engagement to the list of engagements for the currently selected record
-	clickAdd(ev) {
-		let p = this.props;
-		p.dispatch({
-					type: 'ADD_NEW_ENGAGEMENT', 
-					what: p.what,
-					when: p.when,
-					notes: p.notes,
-				});
-		////this.addNewEngagement(p.what, p.when, p.notes);
-	}
-	
 	// action handler, called by the Add bar to add it.
 	static addNewEngagement(controlPanel, action) {
 		// what, when, notes was old arg list
@@ -199,10 +187,6 @@ function mapStateToProps(state) {
 		////editingEngagement: s.editingEngagement,
 		////changeEngagements: changeEngagementsCallback,
 	};
-// 	return {
-// 		recs: (state ? state.recs : []), 
-// 		selectedSerial: state ? state.controlPanel.selectedSerial : -1,
-// 	};
 }
 
 export default connect(mapStateToProps)(Engagements);

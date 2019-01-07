@@ -63,10 +63,10 @@ describe('reducer ', () => {
 	it('should do Edit and Add actions', () => {
 		
 		testReducerAction(LoadSave, 'START_EDIT_RECORD');
-		testReducerAction(LoadSave, 'SAVE_EDIT_REQ');
+		testReducerAction(LoadSave, 'SAVE_EDIT_START');
 		testReducerAction(LoadSave, 'SAVE_EDIT_DONE');
 		testReducerAction(LoadSave, 'START_ADD_RECORD');
-		testReducerAction(LoadSave, 'SAVE_ADD_REQ');
+		testReducerAction(LoadSave, 'SAVE_ADD_START');
 		testReducerAction(LoadSave, 'SAVE_ADD_DONE');
 	});
 
