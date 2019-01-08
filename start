@@ -25,6 +25,6 @@ fi
 echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
 if ! pgrep -f react-scripts/scripts/start.js
 then 
-	PORT=3300 EDITOR= TERM= npm start &
+	PORT=3300 EDITOR= TERM= react-scripts start &
 	sleep 2
 fi

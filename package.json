@@ -16,7 +16,8 @@
     "redux": "^4.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "./start",
+    "stop": "./stop",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
