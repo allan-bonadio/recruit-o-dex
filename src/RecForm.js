@@ -82,16 +82,21 @@ export class RecForm extends Component {
 		console.error("componentDidCatch(%o, %o)", error, info);
 	}
 
-	// keystroke handler - for all the text boxes in the form
+	// keystroke handler - for all the text boxes in the form.  Also gets paste, etc
 	typeInBlank(ev) {
 		var targ = ev.target;
-		////let sel = getStateSelection();
 		
-		// appends or replaces one field only
-		////var rec = _.clone(sel.editingRecord);
-		//rec[targ.name] = targ.value;
-// 		theControlPanel.setCPRecord(rec)
-// 		userChangedRecord(rxStore.getState());
+		// special: take apart an email with name of the form ` "My Name" <myname@wherever.what>`
+		// If such a string is pasted into recruiter name/email, parse and fill in both
+		// optional quote, grouped name chars, optional quote, <, grouped email, >
+		let m = /"?([-\w ,.()]+)"? <([-\w+@.]+)>/i.exec(targ.value);
+		if ((targ.name == 'recruiter_name' || targ.name == 'recruiter_email') && m) {
+			rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: 'recruiter_name', newValue: m[1]});
+			rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: 'recruiter_email', newValue: m[2]});
+			return;
+		}
+
+		// normal change to some record
 		rxStore.dispatch({type: 'CHANGE_TO_RECORD', 
 				fieldName: targ.name, newValue: targ.value});
 	}
