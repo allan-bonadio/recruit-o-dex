@@ -4,23 +4,10 @@
 ** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
 
-import $ from "jquery";
-
 // same place we get the website from, just a different port
 const RODEX_SERVER = window.location.protocol +'//'+ window.location.hostname +':5555';
 
 export let simulateErrors = {};
-
-// converts what jquery hands back for an error.
-// Checks for suspicious pattern and if so, set message to something appropriate
-function createErrorObj(what, status, message, jqxhr) {
-	if ("rejected" == jqxhr.state())
-		message = "Request was rejected; is the rodex server up?";
-	else
-		message = message || jqxhr.state();
-	return new Error("Error "+ what +": "+ status +': '+ message);
-}
-
 
 // download the whole thing.  
 // Call the callback either like (null, allData) or (errorObj, null) depending on success

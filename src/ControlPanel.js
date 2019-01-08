@@ -7,9 +7,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import $ from "jquery";
-//import _ from "lodash";
 
-////import ScrapeDrawer from './ScrapeDrawer';
 import {globalListUpdateList} from './GlobalList';
 import LoadSave from './LoadSave';
 import LittleDialog from './LittleDialog';

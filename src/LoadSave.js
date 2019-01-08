@@ -4,7 +4,6 @@
 ** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
 
-import $ from "jquery";
 import _ from "lodash";
 
 import ControlPanel from './ControlPanel';
@@ -44,18 +43,8 @@ export class LoadSave {
 
 	// sets the existing rec passed in as the selected record for the control panel.
 	// called by reducer()
-	static startEditRecord(controlPanel, action) {
-		$('div.App section.summary').removeClass('selected');
-		let node$ = $('section[serial='+ action.serial +']');
-		node$.addClass('selected');
-		
+	static startEditRecord(controlPanel, action) {	
 		let record = action.record;
-
-		// unmanaged, the scrape pit is just a textarea.  Clear it out when CP opens again.
-////		$('.scrape-pit').val('');
-
-
-		//$('#control-panel').removeClass('adding');
 
 		// the NEW selection to be handed in to state
 		return {
@@ -66,7 +55,6 @@ export class LoadSave {
 			editingRecord: _.cloneDeep(record),  // this copy gets changed during editing
 			selectedSerial: action.serial,  
 		};
-		//window.editingRecord = controlPanel.editingRecord;  // so i can get at it in the debugger
 	}
 	
 	
@@ -107,7 +95,6 @@ export class LoadSave {
 
 	static saveEditDone(controlPanel, action) {
 		return {...controlPanel, saving: false}; 
-////		return {...initialState.controlPanel};
 	}
 	
 
@@ -116,9 +103,6 @@ export class LoadSave {
 	static startAddRecord(controlPanel, action) {
 		// the template for a new Recruiter
 		let initial = {status: 'applied', created: timestampString()};
-		
-		// unmanaged, the scrape pit is just a textarea.  Clear it out when CP opens again.
-		$('.scrape-pit').val('');
 	
 		// most important, make a controlPanel pointing to the new prototype rec
 		return {

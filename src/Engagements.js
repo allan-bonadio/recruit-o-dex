@@ -6,10 +6,6 @@
 
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import _ from "lodash";
-////import {rxStore} from './reducer'
-
-////let changeEngagementsCallback;
 
 /********************************************************************** engagement fields */
 
@@ -142,8 +138,6 @@ export class Engagements extends Component {
 		
 		var tr = targ.parentElement.parentElement;
 		var serial = tr.getAttribute('serial');
-// 		let engs = state.controlPanel.editingRecord.engagements || [];  // all, for the selected rec
-// 		let sel = state.controlPanel.editingEngagement || defaultEngagement();  // current kinetic state
 		
 		// this field is two levels down: editingRecord.engagements[4].fieldName
 		this.props.dispatch({

@@ -15,7 +15,6 @@ import {rxStore, reducer, initialState} from './reducer';
 import LoadSave from './LoadSave';
 import Engagements from './Engagements';
 import ControlPanel from './ControlPanel';
-////import ScrapeDrawer from './ScrapeDrawer';
 import RecForm from './RecForm';
 import JsonForm from './JsonForm';
 import GlobalList from './GlobalList';
@@ -25,7 +24,6 @@ import LittleDialog from './LittleDialog';
 const iState = {
 	selection: {},
 	controlPanel: {editingRecord: null, selectedSerial: -1,  originalBeforeChanges: null, 
-////				scrapeDrawerOpen: false, 
 				jsonText: null, jsonError: null,}, 
 	littleDialog: {modal: false}, 
 	recs: [],
@@ -78,7 +76,6 @@ describe('reducer ', () => {
 		testReducerAction(GlobalList, 'CHANGE_SEARCH_QUERY');
 		testReducerAction(GlobalList, 'CHANGE_SORT_CRITERION');
 		
-////		testReducerAction(ScrapeDrawer, 'SET_SCRAPE_DRAWER_OPEN');
 		testReducerAction(LittleDialog, 'OPEN_LITTLE_DIALOG');
 		testReducerAction(LittleDialog, 'CLOSE_LITTLE_DIALOG');
 	});

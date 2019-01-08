@@ -10,7 +10,6 @@ import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 import {rxStore} from './reducer';
-////import {ScrapeDrawer} from './ScrapeDrawer';
 
 
 configure({ adapter: new Adapter() });
@@ -18,6 +17,5 @@ configure({ adapter: new Adapter() });
 describe('index', () => {
 	it('dunno what to test', () => {
 		const div = document.createElement('div');
-		//ReactDOM.render(<Provider store={rxStore}><ScrapeDrawer /></Provider>, div);
 	});
 });

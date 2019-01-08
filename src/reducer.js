@@ -5,12 +5,10 @@
 */
 
 import {createStore, combineReducers} from 'redux';
-import _ from "lodash";
 
 import LoadSave from './LoadSave';
 import Engagements from './Engagements';
 import ControlPanel from './ControlPanel';
-import ScrapeDrawer from './ScrapeDrawer';
 import RecForm from './RecForm';
 import JsonForm from './JsonForm';
 import GlobalList from './GlobalList';
@@ -26,10 +24,8 @@ export const initialState = {
 		selectedSerial: -1,  // index into state.recs or New if <0
 		originalBeforeChanges: null,  // save this for Cancel or Undo
 
-////		scrapeDrawerOpen: false,
-		
-	saving: false,
-	editingEngagement: {what: '', when: '', notes: '',},
+		saving: false,
+		editingEngagement: {what: '', when: '', notes: '',},
 
 		// the text in json box, ONLY if it's unparsable.  
 		// If it's parsable, it's all loaded into editingRecord and this is null.
@@ -157,10 +153,6 @@ function controlPanelReducer(controlPanel = initialState.wholeList, action) {
 		// any error from saving to mongo
 		console.error("ERROR_PUT_POST", action);
 		return ControlPanel.errorPutPost(controlPanel, action);
-		
-////	case 'SET_SCRAPE_DRAWER_OPEN':
-////		return ScrapeDrawer.setScrapeDrawerOpen(controlPanel, action);
-////		
 	}
 	return controlPanel;
 }

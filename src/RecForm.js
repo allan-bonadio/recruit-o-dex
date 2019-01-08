@@ -5,7 +5,6 @@
 */
 
 import React, {Component} from 'react';
-import _ from "lodash";
 import {connect} from 'react-redux';
 
 ////import {userChangedRecord} from './ControlPanel';
@@ -103,13 +102,9 @@ export class RecForm extends Component {
 
 	static changeToRecord(controlPanel, action) {
 		// action.fieldName and .newValue tells you what changed, 
-		// .fieldPrefix is for subfields like selection
-		////state = _.cloneDeep(state);////state = {...state}
 		controlPanel = {...controlPanel, 
 			editingRecord: {...controlPanel.editingRecord, 
 				[action.fieldName]: action.newValue}};
-////		let q = controlPanel.editingRecord;
-////		q[action.fieldName] = action.newValue;
 		return controlPanel;
 	}
 }

@@ -111,23 +111,6 @@ section.button-area button.save-button { color: #00c; background: #eef; }
 section.button-area button.add-button { color: #080; background: #efe; }
 section.button-area button.cancel-button { color: #800; background: #fee; }
 
-section.scrape-drawer {
-	clear: left;
-	display: block;
-}
-
-section.scrape-drawer span:active {
-	color: gray;
-}
-
-section.scrape-drawer textarea.scrape-pit {
-	float: left;
-}
-
-.engagement-add-bar {
-	border: 1px dotted black;
-	background: #4ce;
-}
 
 /********************************************** crudCurtain */
 
@@ -142,7 +125,7 @@ div.crud-curtain {
 	background-color: rgba(255, 255, 255, 0.5);
 }
 
-/********************************************** Summary and GLobal List */
+/********************************************** Summary and Global List */
 
 section.summary {
 	float:left;
