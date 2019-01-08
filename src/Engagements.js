@@ -17,7 +17,7 @@ import _ from "lodash";
 function EngagementRow(props) {
 	let startTime = props.engagement.when;
 	if (startTime && startTime.length <= 10)
-		startTime += 'T06:00:00';  // compat with legacy data (6am=legacy)
+		startTime += 'T06:00';  // compat with legacy data (6am=legacy)
 
 	let calStr = '';
 	if (props.engagement.what && startTime) {
@@ -44,8 +44,11 @@ function EngagementRow(props) {
 					onChange={props.changeEngagement} />
 		</td>
 		<td>
-			<select name='howLong' defaultValue={props.engagement.howLong || 60} >
+			<select name='howLong' defaultValue={props.engagement.howLong || 60} 
+						onChange={props.changeEngagement} >
+				<option value='15'>15 m</option>
 				<option value='30'>30 m</option>
+				<option value='45'>45 m</option>
 				<option value='60'>1 hr</option>
 				<option value='90'>1.5 hr</option>
 				<option value='120'>2 hr</option>
@@ -149,40 +152,34 @@ export class Engagements extends Component {
 					fieldName: targ.name,
 					newValue: targ.value,
 				});
-
-
-// 		var chobj = {};
-// 		chobj[ev.target.name] = ev.target.value;
-// 		this.setState(chobj);
 		ev.stopPropagation();
 	}
 	
+	// reducer for such change
 	static changeToEngagement(controlPanel, action) {
-		// action.fieldName and .newValue tells you what changed, .fieldPrefix is for subfields like selection
-		////state = _.cloneDeep(state);////state = {...state}
-		
 		// find where it goes, creating stuff as needed
 		if (! controlPanel.editingRecord.engagements)
 			controlPanel.editingRecord.engagements = [defaultEngagement()]
 		let q = controlPanel.editingRecord.engagements
 		if (! q[action.serial])
-			q[action.serial] = defaultEngagement();
+			q[action.serial] = defaultEngagement();  // used the bottom row = new row
 		q = q[action.serial];
 
 		// actually set the value into the engagement
 		q[action.fieldName] = action.newValue;
 		
-		// // now's a good time to insert the 'new' engagement if needed
-// 		let engs = controlPanel.editingRecord.engagements;
-// 		let lastEng = engs[engs.length - 1];
-// 		if (lastEng.what || lastEng.notes) {
-// 			engs.push(defaultEngagement())
-// 		}
+		controlPanel = {...controlPanel, 
+			editingRecord: {...controlPanel.editingRecord,
+				engagements: [...controlPanel.editingRecord.engagements]
+			}
+		};
+		controlPanel.editingRecord.engagements[action.serial] = q;
 		
 		return controlPanel;
 	}
 	
-	// clean out empty engagements including that 'new' one at the end
+	// clean out empty engagements including that 'new' one at the end;
+	// this is done just before saving
 	static cleanEngagementsList(engs) {
 		if (!engs)
 			return undefined;
@@ -194,24 +191,6 @@ export class Engagements extends Component {
 			return newEngs;
 	}
 
-	// action handler, called by the Add bar to add it.
-	static addNewEngagement(controlPanel, action) {
-		// what, when, notes was old arg list
-		// engagements is a new feature; failover
-		let newEngagements = [];
-		if (controlPanel.engagements)
-			newEngagements = {...controlPanel.engagements};
-		
-		newEngagements.push({
-			what: action.what, 
-			when: action.when, 
-			howLong: action.howLong, 
-			notes: action.notes, 
-			serial: newEngagements.length
-		});
-		return controlPanel;
-	}
-	
 }
 
 function mapStateToProps(state) {

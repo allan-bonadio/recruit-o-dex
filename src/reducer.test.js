@@ -72,7 +72,6 @@ describe('reducer ', () => {
 
 	it('should try Misc actions', () => {
 		testReducerAction(LoadSave, 'CANCEL_EDIT_ADD');
-		testReducerAction(Engagements, 'ADD_NEW_ENGAGEMENT');
 		testReducerAction(RecForm, 'CHANGE_TO_RECORD');
 		testReducerAction(Engagements, 'CHANGE_TO_ENGAGEMENT');
 		testReducerAction(JsonForm, 'CHANGE_TO_JSON');

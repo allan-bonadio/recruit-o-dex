@@ -141,10 +141,6 @@ function controlPanelReducer(controlPanel = initialState.wholeList, action) {
 		// user clicked Cancel button after opening control panel
 		return LoadSave.cancelEditAdd(controlPanel, action);
 		
-	case 'ADD_NEW_ENGAGEMENT':
-		// user clicked add in the engagements panel
-		return Engagements.addNewEngagement(controlPanel, action);
-	
 	case 'CHANGE_TO_RECORD':
 		// user typed, backspaced, cut or pasted inside one of those text blanks, or equivalent		
 		return RecForm.changeToRecord(controlPanel, action);
