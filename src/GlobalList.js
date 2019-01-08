@@ -199,6 +199,7 @@ export class GlobalList extends Component {
 }
 
 function mapStateToProps(state) {
+	console.info("MS2P global list");
 	if (state) {
 		return {
 			wholeList: state.wholeList,

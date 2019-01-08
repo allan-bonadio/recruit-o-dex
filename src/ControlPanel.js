@@ -163,6 +163,7 @@ class ControlPanel extends Component {
 
 
 function mapStateToProps(state) {
+	console.info("MS2P control panel");
 	return state ? state.controlPanel : {};  // i don't think i really use these props
 }
 

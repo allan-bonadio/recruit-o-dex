@@ -37,6 +37,7 @@ export class CrudCurtain extends Component {
 }
 
 function mapStateToProps(state) {
+	console.info("MS2P crud curtain");
 	return state ? state.controlPanel : {};
 }
 

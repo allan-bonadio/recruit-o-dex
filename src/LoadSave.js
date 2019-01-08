@@ -45,9 +45,6 @@ export class LoadSave {
 	// sets the existing rec passed in as the selected record for the control panel.
 	// called by reducer()
 	static startEditRecord(controlPanel, action) {
-		if (controlPanel.didChange)
-			throw "Cannot set new controlPanel while old one has changes";  // eslint-disable-line
-
 		$('div.App section.summary').removeClass('selected');
 		let node$ = $('section[serial='+ action.serial +']');
 		node$.addClass('selected');
@@ -68,9 +65,6 @@ export class LoadSave {
 			// setting the editingRecord will cause the control panel to appear
 			editingRecord: _.cloneDeep(record),  // this copy gets changed during editing
 			selectedSerial: action.serial,  
-			didChange: false,
-			
-////			scrapeDrawerOpen: false,
 		};
 		//window.editingRecord = controlPanel.editingRecord;  // so i can get at it in the debugger
 	}

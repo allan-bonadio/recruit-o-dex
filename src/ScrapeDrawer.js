@@ -145,6 +145,7 @@ export class ScrapeDrawer extends Component {
 }
 
 function mapStateToProps(state) {
+	console.info("MS2P crud curtain");
 	////console.info('mstp SD state: ', state);
 	return {
 		editingRecord: state.controlPanel.editingRecord,

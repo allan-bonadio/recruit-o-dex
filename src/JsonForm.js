@@ -124,8 +124,8 @@ export class JsonForm extends Component {
 }
 
 function mapStateToProps(state) {
-////	console.log('jf props <= state', state);////
-	return {selection: state.controlPanel, controlPanel: state.controlPanel, };
+	console.info("MS2P json form");
+	return {controlPanel: state.controlPanel, };
 }
 
 export default connect(mapStateToProps)(JsonForm);

@@ -110,6 +110,7 @@ export class RecForm extends Component {
 }
 
 function mapStateToProps(state) {
+	console.info("MS2P rec form");
 	return state.controlPanel;
 }
 

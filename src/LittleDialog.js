@@ -102,6 +102,7 @@ export class LittleDialog extends Component {
 }
 
 function mapStateToProps(state) {
+	console.info("MS2P little dialog");
 	return state ? state.littleDialog : {};
 }
 

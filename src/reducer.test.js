@@ -24,7 +24,7 @@ import LittleDialog from './LittleDialog';
 // initial state, what it should be
 const iState = {
 	selection: {},
-	controlPanel: {editingRecord: null, selectedSerial: -1,  didChange: false, originalBeforeChanges: null, 
+	controlPanel: {editingRecord: null, selectedSerial: -1,  originalBeforeChanges: null, 
 ////				scrapeDrawerOpen: false, 
 				jsonText: null, jsonError: null,}, 
 	littleDialog: {modal: false}, 

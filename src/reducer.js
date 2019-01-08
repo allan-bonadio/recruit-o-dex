@@ -24,7 +24,6 @@ export const initialState = {
 		// Null means no rec selected.
 		editingRecord: null,
 		selectedSerial: -1,  // index into state.recs or New if <0
-		didChange: false,  // and editingRecord should be saved
 		originalBeforeChanges: null,  // save this for Cancel or Undo
 
 ////		scrapeDrawerOpen: false,
