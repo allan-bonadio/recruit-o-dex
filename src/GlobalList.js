@@ -62,6 +62,10 @@ export class GlobalList extends Component {
 		this.changeSortCriterionEv = this.changeSortCriterionEv.bind(this);
 	}
 	
+	componentDidMount() {
+		this.props.dispatch({type: 'CHANGE_SORT_CRITERION', newCriterion: localStorage.sortCriterion || 0});
+	}
+	
 	// header cell with image and New button
 	renderTitleCell() {
 		let p = this.props;
@@ -79,7 +83,7 @@ export class GlobalList extends Component {
 					onChange={this.changeSearchQueryEv} defaultValue={p.searchQuery} />
 				<br />
 				sort:&nbsp;
-				<select id='sort-criterion' onChange={this.changeSortCriterionEv} >
+				<select id='sort-criterion' onChange={this.changeSortCriterionEv} defaultValue={localStorage.sortCriterion} >
 					{sortOptions}
 				</select>
 			</aside>
@@ -187,6 +191,8 @@ export class GlobalList extends Component {
 	static changeSortCriterion(wholeList, action) {
 		// do the sort
 		let newRecs = GlobalList.sortRecords(wholeList.recs, action.newCriterion);
+		
+		localStorage.sortCriterion = action.newCriterion;
 		
 		// now set the state that way
 		return {
