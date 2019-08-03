@@ -1,30 +1,34 @@
 #!/bin/bash
 
 echo "This starts up all the servers.  Checks so it won't start a second process."
+MONGODCMD='mongod --config /dvl/mongodb/mongod.conf'
 
-here=`dirname $0`
+# make sure I'm in the same dir as this script
+cd `dirname $0`
 
-# must start mongo for server to work
-echo ":::::::::::::::::::::::::::::::::::: Starting up mongo DB"
+# start mongo for rodex server to work
+echo ":::::::::::::::::::::::::::::::::::: Starting up mongo DB server"
 if ! pgrep -f mongod
 then
-	mongod &
+	$MONGODCMD &
 	sleep 2
 fi
 
 
-# must start server for webapp to run
-echo ":::::::::::::::::::::::::::::::::::: Starting up backend server"
+# must start rodex server for react webapp to run
+echo ":::::::::::::::::::::::::::::::::::: Starting up backend rodex server"
 if ! pgrep -f rodexServer
 then 
 	./rodexServer.js &
 	sleep 2
 fi
 
-# now run it
+# now run react server
 echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
 if ! pgrep -f react-scripts/scripts/start.js
 then 
 	PORT=3300 EDITOR= TERM= react-scripts start &
 	sleep 2
 fi
+echo "Go surf to http://localhost:3300"
+

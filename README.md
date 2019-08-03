@@ -14,15 +14,56 @@ This project is still early in development.  Sorry if it doesn't work for you.
 
 ## To Run
 ### once to install
-do 
-npm install
+#### install the software
+	git clone https://github.com/allan-bonadio/recruit-o-dex.git 
+	cd recruit-o-dex
+	npm install
+
+#### install mongo
+
+read this:
+
+[mongodb-on-os-x-tarball](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x-tarball)
+
+use this as a config file, adjusted to location:
+
+	# no tabs in this file!  must use spaces only.
+	#systemLog:
+	#   destination: file
+	#   path: "/dvl/mongodb/mongod.log"
+	#   logAppend: true
+	storage:
+	   dbPath: "/dvl/mongodb/db"
+	   journal:
+		  enabled: true
+	#
+
+
+add to your .profile (depending on location):
+
+	export PATH=$PATH:/dvl/mongodb/mongodb-osx-ssl/bin
+
+depending on location of above config file, you'll use a daemon startup command like:
+
+	mongod --config /dvl/mongodb/mongod.conf
+	
+so go and edit the start script to change it.
+
+
+#### first data
+
+Start it up with `npm start`.  (And diagnose any probs.)  The app should show up in chrome, if not, surf to [recruit-o-dex port 3300](http://localhost:3300)
+
 
 ### each time to run
-To start it, run ./start, which will start up mongo, the server & the app in the right order.  And open a Chrome window onto the webapp.
 
-To shut down all three, run ./stop.  It will stop all three, in turn.
+To start it, run `./start` or `npm start`, which will start up mongo, the server & the app in the right order.  And open a Chrome window onto the webapp.
 
-To mess with one or another independently, read the script and act accordingly.
+To shut down all three, run `./stop` or `npm stop`.  It will stop all three, in turn.
+
+To mess with one or another independently, read the script and act accordingly.  
+The start and stop scripts will carefully start up or shut down each 
+of the three depending on whether they're running.
 
 ### Concurrency
 
@@ -30,7 +71,7 @@ Do not have two mongoDB daemons or rodexServer.js daemons running at once.  Must
 
 
 
-# -------------- react boilerplate --------------
+# ----✁--------- react boilerplate readme ------✁--------
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
