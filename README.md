@@ -4,9 +4,9 @@ This project is still early in development.  Sorry if it doesn't work for you.
 
 
 ## subsystems
-* server.js - ajax server that talks to mongo.  standalone file run on nodejs.
+* rodexServer.js - ajax server that talks to mongo.  standalone file run on nodejs.
 * MongoDB - typical installation
-* webapp, consisting of
+* webapp in src, consisting of
 	* ReactJS
 	* my code
 	* webpack, standard with react
@@ -68,6 +68,8 @@ of the three depending on whether they're running.
 ### Concurrency
 
 Do not have two mongoDB daemons or rodexServer.js daemons running at once.  Must be one each.  The webapp can be shown on multiple tabs, just as long as they're talking to the same server.
+
+Maybe you coulld have two rodex servers, if at different ports, and your web pages would have to go to one or the other.  Not too useful.
 
 
 
