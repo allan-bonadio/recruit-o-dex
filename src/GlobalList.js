@@ -28,6 +28,16 @@ let sorters = [
 		},
 	},
 	{
+		name: 'Recruiter Name',
+		compare: function(aRec, bRec) {
+			let aStr = (aRec.recruiter_name || '').toLowerCase();
+			let bStr = (bRec.recruiter_name || '').toLowerCase();
+			if (aStr < bStr) return -1;
+			if (aStr > bStr) return 1;
+			return 0;
+		},
+	},
+	{
 		name: 'Latest Activity',
 		compare: function(aRec, bRec) {
 			// haha!  ISO dates sort alphanumerically.  Older records don't have updated but they should all have created date
