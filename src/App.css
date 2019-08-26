@@ -78,6 +78,13 @@ div.edit-blank input, div.edit-blank textarea {
 	margin: 5px;
 }
 
+div.edit-blank textarea {
+	width: 100%;
+	font-size: 10px;
+	
+	margin: 5px;
+}
+
 textarea.json-edit {
 	width: 27em;
 	height: 18em;
