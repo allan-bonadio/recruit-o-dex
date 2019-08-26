@@ -40,7 +40,7 @@ function EngagementRow(props) {
 					onChange={props.changeEngagement} />
 		</td>
 		<td>
-			<select name='howLong' defaultValue={props.engagement.howLong || 60} 
+			<select name='howLong' defaultValue={props.engagement.howLong || 30} 
 						onChange={props.changeEngagement} >
 				<option value='15'>15 m</option>
 				<option value='30'>30 m</option>
@@ -122,6 +122,7 @@ export class Engagements extends Component {
 				<option value='skype' >Skype Interview</option>
 				<option value='zoom' >Zoom Interview</option>
 				<option value='webex' >Webex Interview</option>
+				<option value='googlev' >Google Video Interview</option>
 				<option value='onsite' >On-Site Interview</option>
 			</datalist>
 			<table>
