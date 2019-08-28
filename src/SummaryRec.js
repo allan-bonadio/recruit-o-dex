@@ -11,9 +11,10 @@ import {rxStore} from './reducer';
 export class SummaryRec extends Component {
 	constructor(props) {
 		super(props);
-		this.clickEv = this.clickEv.bind(this);
+		this.mouseDownEv = this.mouseDownEv.bind(this);
+		this.mouseMoveEv = this.mouseMoveEv.bind(this);
+		this.mouseUpEv = this.mouseUpEv.bind(this);
 	}
-	
 	
 	render() {
 		
@@ -27,7 +28,8 @@ export class SummaryRec extends Component {
 		let r = this.props.record;
 		return <section 
 				className={'summary '+ (this.props.selectedSerial == this.props.serial ? 'selected' : '')}
-				onClick={this.clickEv} 
+				onMouseDown={this.mouseDownEv} onMouseMove={this.mouseMoveEv}
+				onMouseUp={this.mouseUpEv} onMouseLeave={this.mouseUpEv}
 				serial={this.props.serial} key={this.props.serial} >
 			<Field record={r} name='company_name' />
 			<Field record={r} name='recruiter_name' />
@@ -42,23 +44,36 @@ export class SummaryRec extends Component {
 		</section>;
 	}
 	
-// 	select this record, for editing, and populate the edit and json boxes
-// 	select(node, serial, record) {
-// 		$('div.App section.summary').removeClass('selected');
-// 		$(node).addClass('selected');
-// 		editRecord(serial, record);
-// 	}
+	/* ******************************************************** clicking */
+	// distinguish between a click and a drag.  If there's any moving, it's a drag.
+	// Then, ignore the drags; probably user selecting text.
+	
+	// remember where
+	mouseDownEv(ev) {
+		this.down = {x: ev.clientX, y: ev.clientY};
+	}
 
+	// see if it moved
+	mouseMoveEv(ev) {
+		if (!this.down)
+			return;
+		if (Math.abs(this.down.x - ev.clientX) + Math.abs(this.down.y - ev.clientY) > 5)
+			this.down = null;
+	}
 
-	// the only thing you can do is click one to open it in control panel
-	clickEv(ev) {
+	// start edit only if no movement
+	mouseUpEv(ev) {
+		if (!this.down)
+			return;
+			
+		// yes this was a click
+		this.down = null;
 		rxStore.dispatch({
 			type: 'START_EDIT_RECORD', 
 			serial: this.props.serial,
 			record: this.props.record,
 		});
-	};
-
+	}
 }
 
 export default SummaryRec;
