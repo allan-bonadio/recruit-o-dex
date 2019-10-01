@@ -27,7 +27,10 @@ export function moGetAll(callback) {
 	.then(
 		list => {
 			// {error: "MongoError: blah blah"} is what we get back if an error on the server.
-			if (! list.error) {
+			if (! list) {
+				callback({message: "loading from database: No data retrieved at all"}, null);
+			}
+			else if (! list.error) {
 				callback(null, list);
 			}
 			else {

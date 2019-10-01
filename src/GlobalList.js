@@ -103,10 +103,10 @@ export class GlobalList extends Component {
 	// the list of recs, or just a big message
 	renderBodyCells() {
 		let p = this.props;
-		if (p.globalListErrorObj) {
+		if (p.wholeList.globalListErrorObj) {
 			// no cells, just an error message
 			return [<section className='error' key='err' >
-				{p.globalListErrorObj.message}
+				{p.wholeList.globalListErrorObj.message}
 			</section>];
 		}
 		else {
