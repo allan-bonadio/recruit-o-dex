@@ -4,14 +4,16 @@
 cd `dirname $0`
 
 # default creates dump/jobs/twofiles
-/dvl/mongodb/mongodb-osx-ssl/bin/mongodump \
+#/dvl/mongodb/mongodb-osx-ssl/bin/
+mongodump \
 	--db=jobs --collection=recruiters
 
 # i also want a text json copy.  This isn't really json, it's json for each 
 # document, separated by newlines.  
 # Must convert it if you want to make it really json: \n => , wrap with [ ]
 # but I think mongoimport will read this.
-/dvl/mongodb/mongodb-osx-ssl/bin/mongoexport \
+#/dvl/mongodb/mongodb-osx-ssl/bin/
+mongoexport \
 	--db=jobs --collection=recruiters --out=dump/jobs/recruiters.json
 
 # make sure this works!
@@ -26,5 +28,7 @@ mv ./dump/jobs ./archives/jobs$d
 # fileName=` ls -1t archives | tail -n +$lineNum | head -1 `
 # /bin/rm -rf archives/$fileName
 
+# tell Allan
+open -a "Google Chrome" backedUp.html
 
 
