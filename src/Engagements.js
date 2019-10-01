@@ -207,8 +207,6 @@ export class Engagements extends Component {
 		if (!m)
 			return;  // Otherwise, let the paste continue.
 		
-debugger;////
-
 		// m1 is the date, m2 and 3 are the time, each in a format Date() recognizes
 		let startTime = new Date(m[1] +' '+ m[2]);
 		let endTime = new Date(m[1] +' '+ m[3]);
@@ -262,7 +260,6 @@ debugger;////
 
 	// reducer for above
 	static pasteToEngagement(controlPanel, action) {
-debugger;////
 		// find where it goes, creating stuff as needed
 		if (! controlPanel.editingRecord.engagements)
 			controlPanel.editingRecord.engagements = [defaultEngagement()]
