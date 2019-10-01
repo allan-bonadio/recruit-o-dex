@@ -11,7 +11,7 @@ import {connect} from 'react-redux';
 
 // a row in the Engagements table, that lets users enter new engagements
 function EngagementRow(props) {
-	let startTime = props.engagement.when;
+	let startTime = props.engagement.when;  // ISO datetime
 	if (startTime && startTime.length <= 10)
 		startTime += 'T06:00';  // compat with legacy data (6am=legacy)
 
@@ -31,17 +31,17 @@ function EngagementRow(props) {
 		<td>
 			<input name='what' list='engagement-whats' size='12' placeholder='choose what' 
 					defaultValue={props.engagement.what}
-					onChange={props.changeEngagement} />
+					onChange={props.changeEngagement}  onPaste={props.pasteEngagement} />
 		</td>
 		<td>
 			<input type='datetime-local' name='when' size='22'
 					defaultValue={startTime} 
-					min='2017-01-01T00:00:00Z' max='2030-01-01T00:00:00Z' 
-					onChange={props.changeEngagement} />
+					min='2019-01-01T00:00:00Z' max='2030-01-01T00:00:00Z' step='300'
+					onChange={props.changeEngagement}  onPaste={props.pasteEngagement} />
 		</td>
 		<td>
 			<select name='howLong' defaultValue={props.engagement.howLong || 30} 
-						onChange={props.changeEngagement} >
+						onChange={props.changeEngagement} onPaste={props.pasteEngagement} >
 				<option value='15'>15 m</option>
 				<option value='30'>30 m</option>
 				<option value='45'>45 m</option>
@@ -57,7 +57,7 @@ function EngagementRow(props) {
 		<td>
 			<textarea name='notes' rows='1'
 					defaultValue={props.engagement.notes} placeholder='enter notes'
-					onChange={props.changeEngagement} />
+					onChange={props.changeEngagement} onPaste={props.pasteEngagement} />
 		</td>
 		<td>
 			<input readOnly='1' className='calendarDesc' value={calStr}
@@ -90,6 +90,7 @@ export class Engagements extends Component {
 		Engagements.me = this;
 		
 		this.changeEngagement = this.changeEngagement.bind(this);
+		this.pasteEngagement = this.pasteEngagement.bind(this);
 	}
 	
 	
@@ -109,7 +110,8 @@ export class Engagements extends Component {
 				? es.map((engagement, serial) => 
 					<EngagementRow serial={serial} key={serial} 
 							engagement={engagement} company_name={p.rec.company_name}
-							changeEngagement={this.changeEngagement}/>
+							changeEngagement={this.changeEngagement}
+							pasteEngagement={this.pasteEngagement} />
 					)
 				: [];
 				
@@ -184,6 +186,105 @@ export class Engagements extends Component {
 			return undefined;
 		else
 			return newEngs;
+	}
+	
+	// parses what was pasted
+	parsePastedEngagement(clipBoardData) {
+		const ScheduledRegex = 
+			/^Scheduled: (\w\w\w \d\d?, \d\d\d\d) at (\d\d?:\d\d [AP]M) to (\d\d?:\d\d [AP]M)$/m;
+
+		for (let i = 0; i < clipBoardData.items.length; i++) {
+			let item = clipBoardData.items[i];
+			console.log("a clipBoardData item: kind %s, type %s, '%s'", 
+				item.kind, item.type, clipBoardData.getData(item.type));
+		}
+			
+		let pasteText = clipBoardData.getData('text/plain');
+		console.log("Pasted TExt\n", pasteText, '\n');
+		
+		// look for stuff we recognize.
+		let m = pasteText.match(ScheduledRegex);
+		if (!m)
+			return;  // Otherwise, let the paste continue.
+		
+debugger;////
+
+		// m1 is the date, m2 and 3 are the time, each in a format Date() recognizes
+		let startTime = new Date(m[1] +' '+ m[2]);
+		let endTime = new Date(m[1] +' '+ m[3]);
+		let duration = (endTime.getTime() - startTime.getTime()) / 60000;  // in minutes
+		
+		pasteText = pasteText.replace(m[0] + '\n', '');  // remove Scheduled: line
+		
+		// try to guess what kind of interview
+		let newWhat = 'phint';
+		if (pasteText.match(/skype/im))
+			newWhat = 'skype';
+		else if (pasteText.match(/zoom/im))
+			newWhat = 'zoom';
+		else if (pasteText.match(/webex/im))
+			newWhat = 'webex';
+		else if (pasteText.match(/google v/im))
+			newWhat = 'googlev';
+		else if (pasteText.match(/on-?site/im))
+			newWhat = 'onsite';
+		else if (pasteText.match(/f2f/im))
+			newWhat = 'onsite';
+
+		return {
+			newWhat,
+			newStart: startTime.toISOString().replace(/:00\.00.*$/, ''),  // datetime input so pickey
+			newDuration: duration,
+			newNotes: pasteText,
+		}
+	}
+	
+	// called whenuser pastes into an engagement row.  Note this gets attached to an
+	// EngagementRow component, not this one (see above)
+	pasteEngagement(ev) {
+		
+		let eng = this.parsePastedEngagement(ev.clipboardData);
+		if (!eng)
+			return;
+		
+		var targ = ev.target;
+		var tr = targ.parentElement.parentElement;
+		var serial = tr.getAttribute('serial');
+		
+		// this field is two levels down: editingRecord.engagements[4].fieldName
+		this.props.dispatch({
+					type: 'PASTE_TO_ENGAGEMENT', 
+					serial: serial,
+					...eng,
+				});
+		ev.preventDefault();
+	}
+
+	// reducer for above
+	static pasteToEngagement(controlPanel, action) {
+debugger;////
+		// find where it goes, creating stuff as needed
+		if (! controlPanel.editingRecord.engagements)
+			controlPanel.editingRecord.engagements = [defaultEngagement()]
+		let q = controlPanel.editingRecord.engagements
+		if (! q[action.serial])
+			q[action.serial] = defaultEngagement();  // used the bottom row = new row
+		q = q[action.serial];
+
+		// actually set the value into the engagement
+		q.what = action.newWhat;
+		q.when = action.newStart;
+		q.howLong = action.newDuration;
+		q.notes = action.newNotes;
+		
+		controlPanel = {...controlPanel, 
+			editingRecord: {...controlPanel.editingRecord,
+				engagements: [...controlPanel.editingRecord.engagements]
+			}
+		};
+		controlPanel.editingRecord.engagements[action.serial] = q;
+		
+		return controlPanel;
 	}
 
 }

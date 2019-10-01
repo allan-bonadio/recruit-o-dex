@@ -149,6 +149,10 @@ function controlPanelReducer(controlPanel = initialState.wholeList, action) {
 		// user typed etc into the JSON box
 		return JsonForm.changeToJson(controlPanel, action);
 
+	case 'PASTE_TO_ENGAGEMENT':
+		// paste an appointment (copy out of Calendar) into an engagement
+		return Engagements.pasteToEngagement(controlPanel, action);
+
 	case 'ERROR_PUT_POST':
 		// any error from saving to mongo
 		console.error("ERROR_PUT_POST", action);

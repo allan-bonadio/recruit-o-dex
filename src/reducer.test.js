@@ -73,6 +73,9 @@ describe('reducer ', () => {
 		testReducerAction(RecForm, 'CHANGE_TO_RECORD');
 		testReducerAction(Engagements, 'CHANGE_TO_ENGAGEMENT');
 		testReducerAction(JsonForm, 'CHANGE_TO_JSON');
+
+		testReducerAction(Engagements, 'PASTE_TO_ENGAGEMENT');
+
 		testReducerAction(GlobalList, 'CHANGE_SEARCH_QUERY');
 		testReducerAction(GlobalList, 'CHANGE_SORT_CRITERION');
 		
