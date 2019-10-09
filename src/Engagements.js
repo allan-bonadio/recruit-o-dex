@@ -96,7 +96,6 @@ export class Engagements extends Component {
 	
 	render() {
 		let p = this.props;
-		////let sel = p.editingEngagement || defaultEngagement();  // the unrecorded one the user is typing in
 		let es = p.engagements || [];  // the saved ones for this rec or undefined if none
 
 		// additional row at the bottom so you can make a new one
@@ -190,6 +189,7 @@ export class Engagements extends Component {
 	
 	// parses what was pasted
 	parsePastedEngagement(clipBoardData) {
+debugger;////
 		const ScheduledRegex = 
 			/^Scheduled: (\w\w\w \d\d?, \d\d\d\d) at (\d\d?:\d\d [AP]M) to (\d\d?:\d\d [AP]M)$/m;
 
@@ -240,6 +240,7 @@ export class Engagements extends Component {
 	// called whenuser pastes into an engagement row.  Note this gets attached to an
 	// EngagementRow component, not this one (see above)
 	pasteEngagement(ev) {
+debugger;////
 		
 		let eng = this.parsePastedEngagement(ev.clipboardData);
 		if (!eng)
@@ -260,6 +261,7 @@ export class Engagements extends Component {
 
 	// reducer for above
 	static pasteToEngagement(controlPanel, action) {
+debugger;////
 		// find where it goes, creating stuff as needed
 		if (! controlPanel.editingRecord.engagements)
 			controlPanel.editingRecord.engagements = [defaultEngagement()]

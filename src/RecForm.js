@@ -71,7 +71,7 @@ export class RecForm extends Component {
 			<RecField rec={rec} label='notes:' fieldName='notes' element='textarea' />
 			
 			<Engagements engagements={rec.engagements || rec.events} 
-						editingEngagement={s.editingEngagement} dispatch={this.props.dispatch}
+						dispatch={this.props.dispatch}
 						rec={rec}
 						 />
 		</section>;

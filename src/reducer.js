@@ -25,7 +25,6 @@ export const initialState = {
 		originalBeforeChanges: null,  // save this for Cancel or Undo
 
 		saving: false,
-		editingEngagement: {what: '', when: '', notes: '',},
 
 		// the text in json box, ONLY if it's unparsable.  
 		// If it's parsable, it's all loaded into editingRecord and this is null.
