@@ -8,24 +8,47 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
 /********************************************************************** engagement fields */
+function two(n) { return (n + 100).toString().substr(-2) }
+
+// given a Date() date, gimme the time part, local tz 24hr, like 14:00
+function dateToLocalTime(date) {
+	return date.toTimeString().substr(0, 5);
+}
+
+// convert a Date to the way the input[type=datetime-local] likes it
+function dateToLocalDate(date) {
+	return date.getFullYear() +'-'+ two(date.getMonth() + 1) +'-'+ 
+			two(date.getDate());
+}
 
 // a row in the Engagements table, that lets users enter new engagements
 function EngagementRow(props) {
-	let startTime = props.engagement.when;  // ISO datetime
+	console.log("EngagementRow:", props);
+	let startTime = props.engagement.when;  // ISO datetime or local if no Z
 	if (startTime && startTime.length <= 10)
-		startTime += 'T06:00';  // compat with legacy data (6am=legacy)
+		startTime = startTime.replace(/Z$/, '') + 'T12:00Z';  // compat with legacy data (6am=legacy) ???
 
 	let calStr = '';
-	if (props.engagement.what && startTime) {
-		// calculate the calendar string that i can cop/paste to Calendar + box
+	if (startTime) {
+		// calculate the calendar string that i can cop/paste to Calendar + box.
+		// SOme of these are ISO times (end in Z) and some pacific times (don't)
+		// Date does the right thing
 		let start = new Date(startTime);
 		let end = new Date( (props.engagement.howLong || 60) * 60000 + start.getTime() )
 
+		// separate date and time by space
 		calStr = props.engagement.what +' '+ 
 			(props.company_name || 'company') +' '+
-			start.toLocaleDateString() +' '+ start.toTimeString().substr(0, 5) +
-			' to '+ end.toTimeString().substr(0, 5);
+			dateToLocalDate(start) +' '+ dateToLocalTime(start) +
+			' to '+ dateToLocalTime(end);
+		
+		// control does NOT take a timezone!  And must have T separator
+		//  The format is "yyyy-MM-ddThh:mm" 
+		startTime = dateToLocalDate(start) +'T'+ dateToLocalTime(start);
+		if (startTime.substr(-1) == 'Z') debugger;////
 	}
+	
+	console.log("EngagementRow startTime: '%s'", startTime);
 	
 	return <tr className='engagement' serial={props.serial}>
 		<td>
@@ -35,8 +58,8 @@ function EngagementRow(props) {
 		</td>
 		<td>
 			<input type='datetime-local' name='when' size='22'
-					defaultValue={startTime} 
-					min='2019-01-01T00:00:00Z' max='2030-01-01T00:00:00Z' step='300'
+					value={startTime} 
+					min='2019-01-01T00:00' max='2030-01-01T00:00' step='300'
 					onChange={props.changeEngagement}  onPaste={props.pasteEngagement} />
 		</td>
 		<td>
@@ -189,7 +212,6 @@ export class Engagements extends Component {
 	
 	// parses what was pasted
 	parsePastedEngagement(clipBoardData) {
-debugger;////
 		const ScheduledRegex = 
 			/^Scheduled: (\w\w\w \d\d?, \d\d\d\d) at (\d\d?:\d\d [AP]M) to (\d\d?:\d\d [AP]M)$/m;
 
@@ -212,10 +234,10 @@ debugger;////
 		let endTime = new Date(m[1] +' '+ m[3]);
 		let duration = (endTime.getTime() - startTime.getTime()) / 60000;  // in minutes
 		
-		pasteText = pasteText.replace(m[0] + '\n', '');  // remove Scheduled: line
+		let notesText = pasteText.replace(m[0] + '\n', '');  // remove Scheduled: line
 		
 		// try to guess what kind of interview
-		let newWhat = 'phint';
+		let newWhat = '';
 		if (pasteText.match(/skype/im))
 			newWhat = 'skype';
 		else if (pasteText.match(/zoom/im))
@@ -231,17 +253,15 @@ debugger;////
 
 		return {
 			newWhat,
-			newStart: startTime.toISOString().replace(/:00\.00.*$/, ''),  // datetime input so pickey
+			newStart: startTime.toISOString().replace(/:00\.00.*$/, 'Z'),  // ISO std
 			newDuration: duration,
-			newNotes: pasteText,
+			newNotes: notesText,
 		}
 	}
 	
 	// called whenuser pastes into an engagement row.  Note this gets attached to an
 	// EngagementRow component, not this one (see above)
 	pasteEngagement(ev) {
-debugger;////
-		
 		let eng = this.parsePastedEngagement(ev.clipboardData);
 		if (!eng)
 			return;
@@ -261,7 +281,6 @@ debugger;////
 
 	// reducer for above
 	static pasteToEngagement(controlPanel, action) {
-debugger;////
 		// find where it goes, creating stuff as needed
 		if (! controlPanel.editingRecord.engagements)
 			controlPanel.editingRecord.engagements = [defaultEngagement()]
@@ -274,7 +293,8 @@ debugger;////
 		q.what = action.newWhat;
 		q.when = action.newStart;
 		q.howLong = action.newDuration;
-		q.notes = action.newNotes;
+		q.notes = action.newNotes.trim();
+		console.log("pasteToEngagement: new eng is ", q.when, q);
 		
 		controlPanel = {...controlPanel, 
 			editingRecord: {...controlPanel.editingRecord,
