@@ -37,7 +37,7 @@ else
 fi
 
 # now run react server
-if ! pgrep -f react-scripts/scripts/start.js
+if ! pgrep -f recruit-o-dex/node_modules/react-scripts/script
 then 
 	echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
 	PORT=3300 EDITOR= TERM= node_modules/.bin/react-scripts start &
