@@ -144,7 +144,7 @@ section.summary {
 
 	padding: 6px;
 	margin: 4px;
-	background-color: #ffc;
+	background-color: #ffd;
 	border: 1px solid #990;
 	border-radius: 6px;
 }
@@ -157,6 +157,26 @@ section.summary:hover {
 section.summary.selected {
 	background-color: #bef;
 	/* rgb(212, 227, 255) */
+}
+
+/* older than a day */
+section.summary.dayOld {
+	background-color: #ffa;
+}
+
+/* older than a week */
+section.summary.weekOld {
+	background-color: #ee9;
+}
+
+/* older than a month */
+section.summary.monthOld {
+	background-color: #dd8;
+}
+
+/* older than 3 months */
+section.summary.quarterOld {
+	background-color: #bb8;
 }
 
 

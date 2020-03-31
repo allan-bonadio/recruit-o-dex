@@ -26,8 +26,18 @@ export class SummaryRec extends Component {
 		}
 
 		let r = this.props.record;
+		let itsAge = Date.now() - (new Date(r.updated || r.created)).getTime();
+		itsAge = itsAge / 86400000;  // to days
+		let ageClass = itsAge > 90 ? 'quarterOld' 
+			: itsAge > 30 ? 'monthOld' 
+				: itsAge > 7 ? 'weekOld' 
+					: itsAge > 1 ? 'dayOld' : '';
 		return <section 
-				className={'summary '+ (this.props.selectedSerial == this.props.serial ? 'selected' : '')}
+				className={'summary '+
+					(this.props.selectedSerial == this.props.serial 
+						? 'selected ' 
+						: '') +
+					ageClass}
 				onMouseDown={this.mouseDownEv} onMouseMove={this.mouseMoveEv}
 				onMouseUp={this.mouseUpEv} onMouseLeave={this.mouseUpEv}
 				serial={this.props.serial} key={this.props.serial} >
