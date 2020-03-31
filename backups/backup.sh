@@ -5,7 +5,7 @@ cd `dirname $0`
 
 # default creates dump/jobs/twofiles
 #/dvl/mongodb/mongodb-osx-ssl/bin/
-mongodump \
+/usr/local/bin/mongodump \
 	--db=jobs --collection=recruiters
 
 # i also want a text json copy.  This isn't really json, it's json for each 
@@ -13,7 +13,7 @@ mongodump \
 # Must convert it if you want to make it really json: \n => , wrap with [ ]
 # but I think mongoimport will read this.
 #/dvl/mongodb/mongodb-osx-ssl/bin/
-mongoexport \
+/usr/local/bin/mongoexport \
 	--db=jobs --collection=recruiters --out=dump/jobs/recruiters.json
 
 # make sure this works!

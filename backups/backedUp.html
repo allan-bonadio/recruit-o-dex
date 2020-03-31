@@ -1,1 +1,31 @@
-<h1>Cron ran backup.sh to back up your recruiters</h1>
+<title>Rodex Backups</title>
+
+<body style="margin: 0; background-color: #edd">
+
+<h2 style="font-size: 1.5em; background-color: #400; color: #fee; margin: 1em; padding: 1em;">
+	<span id=dayTime ></span>
+	&nbsp;
+	Cron ran backup.sh to back up your recruiters
+	&nbsp;
+	<span id=ymd style="font-size: .5em;"></span>
+</h2>
+
+<main style="height: 70%; overflow-y: auto; border: dotted #ccc 1px; margin: 1.5em;">
+	<iframe id=dirListing src=archives width=900 height=2000 
+		style="border: 0 solid gray; background-color: #dde;">
+	</iframe>
+</main>
+
+<script>
+let now = new Date();
+let dayOfWeek = ['sun', 'mon', 'tues', 'wed', 'thurs', 'fri', 'sat'][now.getDay()];
+
+let dayTime = `${dayOfWeek} ${now.getHours()}:${now.getMinutes()}`;
+document.getElementById('dayTime').innerHTML = dayTime;
+
+let ymd = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} `
+document.getElementById('ymd').innerHTML = ymd;
+</script>
+
+</body>
+
