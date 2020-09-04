@@ -6,7 +6,7 @@
     "bootstrap": "^4.1.2",
     "cors": "^2.8.4",
     "jquery": "^3.2.1",
-    "mongodb": "^2.2.33",
+    "mongodb": "^3.6.1",
     "popper.js": "^1.14.3",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
