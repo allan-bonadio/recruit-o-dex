@@ -22,6 +22,7 @@ import LittleDialog from './LittleDialog';
 
 // the app itself, pretty simple
 export function App() {
+console.info('executing App');
 	return (
 		<Provider store={rxStore}>
 			<div className="App">

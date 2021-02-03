@@ -14,12 +14,16 @@ export class SummaryRec extends Component {
 		this.mouseDownEv = this.mouseDownEv.bind(this);
 		this.mouseMoveEv = this.mouseMoveEv.bind(this);
 		this.mouseUpEv = this.mouseUpEv.bind(this);
+console.info('constructed SummaryRec');
 	}
 	
 	render() {
+console.info('rendering SummaryRec');
 		
 		// for each field, make a <div with the current value in it
 		let Field = (props) => {
+console.info('executing Field');
+
 			return <div className={'summary-field '+ props.name}>	
 						{props.record ? props.record[props.name] : ''}
 					</div>;

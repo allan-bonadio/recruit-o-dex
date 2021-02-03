@@ -14,6 +14,7 @@ import {rxStore} from './reducer';
 
 // a function-based component: just renders a text field and its label
 function RecField(props) {
+console.info('executing RecField');
 	let fieldName = props.fieldName;
 	let dval = props.rec[fieldName] || '';
 	//console.log(":: field %s depicted with value %s", fieldName, dval);
@@ -46,10 +47,12 @@ export class RecForm extends Component {
 //		this.changeEngagements = this.changeEngagements.bind(this);
 		window.recForm = this;
 		RecForm.me = this;  // for singleton objects only
+console.info('constructed RecForm');
 	}
 	
 	// render the form with all the blanks and data populated in them
 	render() {
+console.info('rendering RecForm');
 		////redux let rec = this.state.record;
 		////console.log('this.props', this.props);////
 		let s = this.props;

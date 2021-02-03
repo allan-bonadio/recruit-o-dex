@@ -15,6 +15,7 @@ export class CrudCurtain extends Component {
 		super(props);
 		CrudCurtain.me = this;
 		this.curtainClick = this.curtainClick.bind(this);
+console.info('constructed CrudCurtain');
 	}
 	
 	// clicking on the CrudCurtain does a Save
@@ -26,6 +27,7 @@ export class CrudCurtain extends Component {
 	}
 	
 	render() {
+console.info('rendering CrudCurtain');
 		let sel = this.props;
 		if (!sel) return [];
 

@@ -35,9 +35,11 @@ class ControlPanel extends Component {
 // 		this.state = {display: 'none'};
 		this.cPanelX = 100;
 		this.cPanelY = 200;  // for doing it quickly
+console.info('constructed ControlPanel');
 	}
 
 	render() {
+console.info('rendering ControlPanel');
 		let sel = this.props;
 		if (!sel) return [];  // too early
 		////console.log("control pan sel:", sel);

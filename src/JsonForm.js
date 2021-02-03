@@ -32,6 +32,7 @@ export class JsonForm extends Component {
 		
 		this.typeInJson = this.typeInJson.bind(this);
 		JsonForm.me = this;
+console.info('constructed JsonForm');
 	}
 	
 	// a change event (keystroke/cut/paste/etc) in the Json box
@@ -108,6 +109,7 @@ export class JsonForm extends Component {
 	}
 	
 	render() {
+console.info('rendering JsonForm');
 		// if jsonText is there, it's the true text, otherwise use whatever record we have
 		////console.log('jf render this.props', this.props);////
 		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.controlPanel.editingRecord);

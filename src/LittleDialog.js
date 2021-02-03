@@ -21,9 +21,11 @@ export class LittleDialog extends Component {
 		LittleDialog.me = this;
 		this.clickOk = this.clickOk.bind(this);
 		this.clickCancel = this.clickCancel.bind(this);
+console.info('constructed LittleDialog');
 	}
 
 	render() {
+console.info('rendering LittleDialog');
 		return (
 			<div className='little-dialog' >
 				<Modal isOpen={this.props.modal} >

@@ -70,6 +70,7 @@ export class GlobalList extends Component {
 		this.clickNewRec = this.clickNewRec.bind(this);
 		this.changeSearchQueryEv = this.changeSearchQueryEv.bind(this);
 		this.changeSortCriterionEv = this.changeSortCriterionEv.bind(this);
+console.info('constructed GlobalList');
 	}
 	
 	componentDidMount() {
@@ -120,6 +121,7 @@ export class GlobalList extends Component {
 	
 	// returns a naked array of all the cells
 	render() {
+console.info('rendering GlobalList');
 		let titleCell = this.renderTitleCell();
 		let list = this.renderBodyCells();
 		

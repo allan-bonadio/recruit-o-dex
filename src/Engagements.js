@@ -23,6 +23,7 @@ function dateToLocalDate(date) {
 
 // a row in the Engagements table, that lets users enter new engagements
 function EngagementRow(props) {
+console.info('executing EngagementRow');
 	console.log("EngagementRow:", props);
 	let startTime = props.engagement.when;  // ISO datetime or local if no Z
 	if (startTime && startTime.length <= 10)
@@ -114,10 +115,12 @@ export class Engagements extends Component {
 		
 		this.changeEngagement = this.changeEngagement.bind(this);
 		this.pasteEngagement = this.pasteEngagement.bind(this);
+console.info('constructed Engagements');
 	}
 	
 	
 	render() {
+console.info('rendering Engagements');
 		let p = this.props;
 		let es = p.engagements || [];  // the saved ones for this rec or undefined if none
 
