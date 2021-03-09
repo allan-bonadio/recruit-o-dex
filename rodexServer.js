@@ -57,11 +57,13 @@ function setupServer() {
 	// Cross Origin Request System
 	let cors = require('cors');
 	app.use(cors());
-	
+
 	app.options('*', cors())
 
-	app.get('/getall', function (req, res) {
-		getAllRecords(function(records) {
+	app.get('/getall/:collectionName', function (req, res) {
+console.info(`---------------------  apt.get req:`, req);
+console.info(`---------------------  apt.get req.body:`, req.body);
+		getAllRecords(req.params.collectionName, function(records) {
 			if (records.error)
 				res.status(500).send({error: records.error});
 			else
@@ -69,7 +71,7 @@ function setupServer() {
 		});
 	})
 
-	// put.  update.  
+	// put.  update.
 	app.put('/one/:id', function (req, res) {
 		console.log("|| app.put /one: req started");    // too much text     , req);
 		console.log("|| %s %s %s", req.method, req.hostname, req.path);
@@ -77,10 +79,10 @@ function setupServer() {
 		console.log("    req.body: %j", req.body);
 		//console.log("    req.headers: %j", req.headers);
 		//console.log("|| the whole req: ", req, '------');
-	
+
 		if (isBodyBad(req, res))
 			return;
-	
+
 		delete req.body._id;
 		saveOneRecord(req.body, req.params.id, function(results) {
 			console.log("    saveOneRecord() gave me results %j", results);
@@ -91,17 +93,17 @@ function setupServer() {
 		});
 	})
 
-	// add.  insert.  post.  
+	// add.  insert.  post.
 	app.post('/one', function (req, res) {
 		console.log("|| app.post /one: req started");    // too much text     , req);
 		console.log("|| %s %s %s", req.method, req.hostname, req.path);
 		console.log("    req.params: %j", req.params);
 		console.log("    req.body: %j", req.body);
 		//console.log("    req.headers: %j", req.headers);
-	
+
 		if (isBodyBad(req, res))
 			return;
-	
+
 		addOneRecord(req.body, function(overall, results) {
 			console.log("    addOneRecord() gave me results ‹%s› %j", overall, results);
 			if (results.error)
@@ -115,7 +117,7 @@ function setupServer() {
 
 	// actually start the server
 	app.listen(portNum, function() {
-		console.info("Server now accepting connections on http://localhost:"+ portNum +
+		console.log("Server now accepting connections on http://localhost:"+ portNum +
 			'\n\n\n');
 	});
 }
@@ -126,29 +128,31 @@ function setupServer() {
 /**************************************************** mongo interface */
 
 // take care of Mongo details, I just want to write the code for col.find() or similar
-function AskMongo(inquirer) {
+function AskMongo(collectionName, inquirer) {
 	MongoClient.connect(mongoUrl, function(err, db) {
 		if (err) {
 			console.error(err);
 			process.exit(9);
 		}
-		
+
 		// inquirer must call this function when it's done with all its callbacks
 		function doneFunc() {
 			db.close();
 		}
-	
-		var col = db.collection('recruiters');
+
+		var col = db.collection(collectionName || 'recruiters');
+console.info(`--------------------- :142 collectionName`, collectionName, col);
 		inquirer(col, doneFunc);
-		
+
 		// must close ... later.  After all the callbacks in inquirer().  try this for now...
 		setTimeout(() => db.close(), 300);
 		//setTimeout(() => db.close(), 1000);
 	});
 }
 
-function getAllRecords(callback) {
-	AskMongo((col, doneFunc) => {
+function getAllRecords(collectionName, callback) {
+console.info(`--------------------- getAllRecords: collectionName`, collectionName);
+	AskMongo(collectionName, (col, doneFunc) => {
 		col.find({}).sort({company_name:1}).toArray(function(err, docs) {
 			if (err) {
 				console.error(err);  // includes traceback
@@ -159,11 +163,11 @@ function getAllRecords(callback) {
 			}
 			doneFunc();
 		});
-	
+
 	});
 }
 
-
+// save this record data under the id given.
 function saveOneRecord(record, id, callback) {
 	var debug = false;
 	if (debug) {
@@ -173,14 +177,15 @@ function saveOneRecord(record, id, callback) {
 		}, 300);
 		return;
 	}
-	
+
 	console.log("\n\nsaveOneRecord: actually saving this record %j", record);
-	
-	AskMongo((col, doneFunc) => {
+
+	// always to the current db!  even if it originated on some other.
+	AskMongo('recruiters', (col, doneFunc) => {
 		// it took me half a day to write the following line of code cuz it's nowhere in the docs
 		var query =  {_id: new ObjectID(id)};
 		// as in db.getCollection('recruiters').find({"_id" : ObjectId("5a0e0e81a45ced6059aa145d")})
-	
+
 		////console.log("|| Gonna search for same id="+ record._id +".");
 		col.find(
 			query
@@ -213,8 +218,8 @@ function saveOneRecord(record, id, callback) {
 
 function addOneRecord(record, callback) {
 	console.log("\n\n|| addOneRecord: actually saving this record %j", record);
-	
-	AskMongo((col, doneFunc) => {
+
+	AskMongo('recruiters', (col, doneFunc) => {
 
 		console.log("|| Gonna addOne on company_name="+ record.company_name +".");
 		col.insertOne(
@@ -239,12 +244,12 @@ function generateAAT() {
 		console.warn("process.env.ROX_AAT_TARGET undefined so no AAT file generated");
 		return;
 	}
-	
+
 	console.log("============");
 	console.log("generateAAT()");
 	console.log("============");
-	AskMongo((col, doneFunc) => {
-		
+	AskMongo('recruiters', (col, doneFunc) => {
+
 		// find, in the recruiters collection, all records, but just take the company names, sort, and then...
 		col
 				.find({}, {company_name: 1})  // just the company name
@@ -253,16 +258,16 @@ function generateAAT() {
 				.toArray(
 		function(err, docs) {
 			if (err) {
-				console.info('=================================== Error in generateAAT() =====');
+				console.log('=================================== Error in generateAAT() =====');
 				console.error(err);
-				console.info('================================================================');
+				console.log('================================================================');
 			}
 			else {
 				var content = docs
 							.map(doc => doc.company_name)
 							.filter(cname => cname)
 							.join('\n');
-			
+
 				// and get it out there before something else fails
 				fs.writeFileSync(process.env.ROX_AAT_TARGET, content);
 				fs.chmodSync(process.env.ROX_AAT_TARGET, 0o666);

@@ -159,6 +159,11 @@ section.summary.selected {
 	/* rgb(212, 227, 255) */
 }
 
+/* older than ... 2 hours? */
+section.summary.hoursOld {
+	background-color: #ffa;
+}
+
 /* older than a day */
 section.summary.dayOld {
 	background-color: #ffa;
@@ -196,7 +201,7 @@ section.summary .company_name {
 /* title cell */
 /* just like a summary but ... different */
 section.summary.title-cell {
-	min-height: 308px;
+	min-height: 412px;
 	width: 24.33em;
 	overflow-y: hidden;
 	background: url(shyster307.jpg) no-repeat bottom center #ffd;
@@ -236,5 +241,9 @@ section.title-cell big {
 }
 
 section.title-cell .sort-criterion {
+	float:right;
+}
+
+section.title-cell .database-name {
 	float:right;
 }

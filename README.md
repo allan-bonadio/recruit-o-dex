@@ -2,6 +2,20 @@
 
 This project is still early in development.  Sorry if it doesn't work for you.
 
+## wish list
+whoa boy.  What new features do we want?
+
+- ability to duplicate a record
+- more automatic coordination between rodex and calendar
+- Break up control panel into several tabs:
+	- rec
+	- JSON
+	- engagements
+	- notes
+- add fields: rate/salary, location, what company does
+- ability to search for string in ALL fields
+- use double click instead of click to  open summmaries
+
 
 ## subsystems
 * rodexServer.js - ajax server that talks to mongo.  standalone file run on nodejs.
@@ -50,14 +64,14 @@ depending on location of above config file, you'll use a daemon startup command 
 so go and edit the start script to change it.
 
 
-#### first data
+#### first run
 
 Start it up with `npm start`.  (And diagnose any probs.)  The app should show up in chrome, if not, surf to [recruit-o-dex port 3300](http://localhost:3300)
 
 
 ### each time to run
 
-To start it, run `./start` or `npm start`, which will start up mongo, the server & the app in the right order.  And open a Chrome window onto the webapp.
+To start it, run `./start` or `npm start`, which will start up mongo, the server & the app in the right order, and only if needed.  And open a Chrome window onto the webapp.
 
 To shut down all three, run `./stop` or `npm stop`.  It will stop all three, in turn.
 
@@ -70,6 +84,20 @@ of the three depending on whether they're running.
 Do not have two mongoDB daemons or rodexServer.js daemons running at once.  Must be one each.  The webapp can be shown on multiple tabs, just as long as they're talking to the same server.
 
 Maybe you coulld have two rodex servers, if at different ports, and your web pages would have to go to one or the other.  Not too useful.
+
+### Restarting
+
+When they can you, do this to reset the DB:
+- make sure backups/archives has a folder for the last time I was jobsearching.  If not, use backup.sh
+- use Robo 3T to browse the database.  Select all records, and rightclick, delete, OK.
+- If there's no connection for Robo3T, create a new one (that blue Create button).  Local, no SSL or SSH, default everything.
+
+## backups
+
+I'm installing the apr 2020 archive as collection with this command
+mongorestore --db=jobs --collection=rec2020  recruiters.bson
+
+See backup directory for all the backup tools and archives.
 
 
 

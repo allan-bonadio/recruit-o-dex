@@ -88,6 +88,9 @@ function wholeListReducer(wholeList = initialState.wholeList, action) {
 	case 'CHANGE_SORT_CRITERION':
 		return GlobalList.changeSortCriterion(wholeList, action);
 	
+	case 'CHANGE_COLLECTION_NAME':
+		return GlobalList.changeCollectionName(wholeList, action);
+	
 	case 'ERROR_GET_ALL':
 		// any error from retrieval from mongo
 		return GlobalList.errorGetAll(wholeList, action);

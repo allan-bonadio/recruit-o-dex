@@ -1,7 +1,25 @@
-#!/bin/bash
+#!/bin/bash -x
+
 # backs up your recruiter data.  The way I like it.  Use this for a cron job.
 # maybe like this: 47 11,18 * * 1-5 /dvl/recruit-o-dex/backups/backup.sh
+# '--onceTodayOnly' will make it quit if there's already an archive today.
+
 cd `dirname $0`
+
+# canceled always
+# if [ "$1" == '--onceTodayOnly' ]
+# then
+# 	today=`date +%Y-%m-%d`
+# 	hits=./archives/jobs$today*
+# 	if [ -n "$hits" ]
+# 	then
+# 		echo "Already did it today, quitting."
+# 		exit 0
+# 	fi
+# fi
+
+
+echo "now backing up..."
 
 # default creates dump/jobs/twofiles
 #/dvl/mongodb/mongodb-osx-ssl/bin/

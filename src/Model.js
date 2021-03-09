@@ -9,15 +9,16 @@ const RODEX_SERVER = window.location.protocol +'//'+ window.location.hostname +'
 
 export let simulateErrors = {};
 
-// download the whole thing.  
+// download the whole thing.
 // Call the callback either like (null, allData) or (errorObj, null) depending on success
-export function moGetAll(callback) {
+export function moGetAll(collectionName, callback) {
 	if (simulateErrors.getError) {
 		setTimeout(() => callback(simulateErrors.getError, null), 100);
 		return;
 	}
 
-	fetch(RODEX_SERVER +'/getall', {})
+console.info(`------------------- RODEX_SERVER +'/getall/'+ collectionName`, RODEX_SERVER +'/getall/'+ collectionName);
+	fetch(RODEX_SERVER +'/getall/'+ collectionName, {})
 	.then(resp => resp.json(),
 		err => {
 			err.message = "loading from database: "+ err.message;
@@ -37,7 +38,7 @@ export function moGetAll(callback) {
 				console.error("Server Error loading from database: ", list.error);
 				callback(list.error, null);
 			}
-		}, 
+		},
 		err => {
 			err.message = "reading json from from server: "+ err.message;
 			// special case: cors errors - they give us no clue as to what went wrong in js
@@ -47,13 +48,13 @@ export function moGetAll(callback) {
 	);
 }
 
-// put one to update an existing record. 
+// put one to update an existing record.
 export function moPutOne(record, callback) {
 	if (simulateErrors.putError) {
 		setTimeout(() => callback(simulateErrors.putError, 100));
 		return;
 	}
-	
+
 	let opts = {
 		method: 'PUT',
         headers: {'Content-Type': 'application/json; charset=utf-8'},
@@ -67,7 +68,7 @@ export function moPutOne(record, callback) {
 				callback(new Error("Error updating: "+ resp.status +': '+ resp.statusText));
 			else
 				callback(null);  // success
-		}, 
+		},
 		err => {
 			err.message = "updating database: "+ err.message;
 			// special case: cors errors - they give us no clue as to what went wrong in js
@@ -101,7 +102,7 @@ export function moPostOne(record, callback) {
 				callback(new Error("Error updating: "+ resp.status +': '+ resp.statusText));
 			else
 				callback(null);  // success
-		}, 
+		},
 		err => {
 			err.message = "inserting into database: "+ err.message;
 			// special case: cors errors - they give us no clue as to what went wrong in js
@@ -110,16 +111,16 @@ export function moPostOne(record, callback) {
 		}
 	);
 }
-	
+
 
 // delete an existing record
 export function moDeleteOne(record, callback) {
 	throw "never implemented";////
-	
+
 ////	$.ajax({
-////		url: RODEX_SERVER +'/one/'+ record._id, 
+////		url: RODEX_SERVER +'/one/'+ record._id,
 ////		method: 'delete',
-////		contentType: 'application/json',  
+////		contentType: 'application/json',
 ////		success: function(data, status, jqxhr) {
 ////			callback(null, jqxhr.status);
 ////		},

@@ -23,9 +23,9 @@ import LittleDialog from './LittleDialog';
 // initial state, what it should be
 const iState = {
 	selection: {},
-	controlPanel: {editingRecord: null, selectedSerial: -1,  originalBeforeChanges: null, 
-				jsonText: null, jsonError: null,}, 
-	littleDialog: {modal: false}, 
+	controlPanel: {editingRecord: null, selectedSerial: -1,  originalBeforeChanges: null,
+				jsonText: null, jsonError: null,},
+	littleDialog: {modal: false},
 	recs: [],
 };
 
@@ -45,21 +45,21 @@ describe('reducer ', () => {
 		}).join('');
 
 		let rv = Math.floor(Math.random() * 1000);
-		////console.info("rv, objClass, actionName, methodName:", rv, 
+		////console.info("rv, objClass, actionName, methodName:", rv,
 ////			obj.constructor.name, actionName, methodName);////
 		spyOn(obj, methodName).and.returnValue(rv);
 
 		let beforeState = {zork: 'vork nork'};
 		let ac = {type: actionName, pink: 'link mink'};
-		
+
 		let afterState = reducer(beforeState, ac);
-		
+
 		expect(obj[methodName]).toHaveBeenCalledWith(beforeState, ac);
 		expect(afterState).toEqual(rv);
 	}
 
 	it('should do Edit and Add actions', () => {
-		
+
 		testReducerAction(LoadSave, 'START_EDIT_RECORD');
 		testReducerAction(LoadSave, 'SAVE_EDIT_START');
 		testReducerAction(LoadSave, 'SAVE_EDIT_DONE');
@@ -78,7 +78,8 @@ describe('reducer ', () => {
 
 		testReducerAction(GlobalList, 'CHANGE_SEARCH_QUERY');
 		testReducerAction(GlobalList, 'CHANGE_SORT_CRITERION');
-		
+		testReducerAction(GlobalList, 'CHANGE_COLLECTION_NAME');
+
 		testReducerAction(LittleDialog, 'OPEN_LITTLE_DIALOG');
 		testReducerAction(LittleDialog, 'CLOSE_LITTLE_DIALOG');
 	});
@@ -88,10 +89,10 @@ describe('reducer ', () => {
 		testReducerAction(ControlPanel, 'ERROR_PUT_POST');
     	expect(console.error).toHaveBeenCalled();
     	expect(console.error).toHaveBeenCalledWith(
-    			"ERROR_PUT_POST", 
+    			"ERROR_PUT_POST",
     			{type: "ERROR_PUT_POST", pink: 'link mink'}
     	);
-    	
+
 	});
 
 	it('should create a good rxStore ', () => {

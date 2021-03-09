@@ -16,15 +16,15 @@ export class SummaryRec extends Component {
 		this.mouseUpEv = this.mouseUpEv.bind(this);
 console.info('constructed SummaryRec');
 	}
-	
+
 	render() {
 console.info('rendering SummaryRec');
-		
+
 		// for each field, make a <div with the current value in it
 		let Field = (props) => {
 console.info('executing Field');
 
-			return <div className={'summary-field '+ props.name}>	
+			return <div className={'summary-field '+ props.name}>
 						{props.record ? props.record[props.name] : ''}
 					</div>;
 		}
@@ -32,14 +32,15 @@ console.info('executing Field');
 		let r = this.props.record;
 		let itsAge = Date.now() - (new Date(r.updated || r.created)).getTime();
 		itsAge = itsAge / 86400000;  // to days
-		let ageClass = itsAge > 90 ? 'quarterOld' 
-			: itsAge > 30 ? 'monthOld' 
-				: itsAge > 7 ? 'weekOld' 
-					: itsAge > 1 ? 'dayOld' : '';
-		return <section 
+		let ageClass = itsAge > 90 ? 'quarterOld'
+			: itsAge > 30 ? 'monthOld'
+				: itsAge > 7 ? 'weekOld'
+					: itsAge > 1 ? 'dayOld'
+						: itsAge > .08 ? 'hoursOld' : '';
+		return <section
 				className={'summary '+
-					(this.props.selectedSerial == this.props.serial 
-						? 'selected ' 
+					(this.props.selectedSerial == this.props.serial
+						? 'selected '
 						: '') +
 					ageClass}
 				onMouseDown={this.mouseDownEv} onMouseMove={this.mouseMoveEv}
@@ -48,7 +49,7 @@ console.info('executing Field');
 			<Field record={r} name='company_name' />
 			<Field record={r} name='recruiter_name' />
 			<br clear="left" />
-			
+
 			<Field record={r} name='recruiter_email' />
 			<Field record={r} name='recruiter_phone' />
 			<Field record={r} name='agency' />
@@ -57,11 +58,11 @@ console.info('executing Field');
 			<Field record={r} name='notes' />
 		</section>;
 	}
-	
+
 	/* ******************************************************** clicking */
 	// distinguish between a click and a drag.  If there's any moving, it's a drag.
 	// Then, ignore the drags; probably user selecting text.
-	
+
 	// remember where
 	mouseDownEv(ev) {
 		this.down = {x: ev.clientX, y: ev.clientY};
@@ -79,11 +80,11 @@ console.info('executing Field');
 	mouseUpEv(ev) {
 		if (!this.down)
 			return;
-			
+
 		// yes this was a click
 		this.down = null;
 		rxStore.dispatch({
-			type: 'START_EDIT_RECORD', 
+			type: 'START_EDIT_RECORD',
 			serial: this.props.serial,
 			record: this.props.record,
 		});

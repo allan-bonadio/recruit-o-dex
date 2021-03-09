@@ -1,5 +1,5 @@
 /*
-** GlobalList -- the main display showing all records 
+** GlobalList -- the main display showing all records
 **
 ** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
@@ -40,13 +40,14 @@ let sorters = [
 	{
 		name: 'Latest Activity',
 		compare: function(aRec, bRec) {
-			// haha!  ISO dates sort alphanumerically.  Older records don't have updated but they should all have created date
+			// haha!  ISO dates sort alphanumerically.
+			// Older records don't have updated but they should all have created date
 			let aDate = aRec.updated || aRec.created || '2017-01-01';
 			let bDate = bRec.updated || bRec.created || '2017-01-01';
 			if (aDate < bDate) return 1;
 			if (aDate > bDate) return -1;
 			return 0;
-		},	
+		},
 	},
 
 ];
@@ -58,7 +59,8 @@ let sorters = [
 
 // having trouble getting GlobalList to exist at startup
 export function globalListUpdateList() {
-	GlobalList.me.updateList();
+	const gl = GlobalList.me;
+	gl.updateList(gl.props.wholeList.collectionName);
 }
 
 // list of all recruiters, for click selecting
@@ -66,41 +68,59 @@ export class GlobalList extends Component {
 	constructor(props) {
 		super(props);
 		GlobalList.me = this;
-		
+
 		this.clickNewRec = this.clickNewRec.bind(this);
 		this.changeSearchQueryEv = this.changeSearchQueryEv.bind(this);
 		this.changeSortCriterionEv = this.changeSortCriterionEv.bind(this);
-console.info('constructed GlobalList');
+		this.changeCollectionNameEv = this.changeCollectionNameEv.bind(this);
+		console.info('constructed GlobalList');////
 	}
-	
+
 	componentDidMount() {
-		this.props.dispatch({type: 'CHANGE_SORT_CRITERION', newCriterion: localStorage.sortCriterion || 0});
+		this.props.dispatch({type: 'CHANGE_SORT_CRITERION',
+			newCriterion: localStorage.sortCriterion || 0});
+		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
+			newName: localStorage.collectionName || 'recruiters'});
 	}
-	
+
 	// header cell with image and New button
 	renderTitleCell() {
 		let p = this.props;
-		
+
 		// fills in the menu.  Name is displayed, value is just a serial 0, 1, 2...
 		let sortOptions = sorters.map((s, ix) => <option key={ix} value={ix}>{s.name}</option>);
 		///console.log("sort options", sortOptions.debug());
-		
+
 		return <section className='summary title-cell' key='title-cell'>
 			<h1>Recruit-O-Dex</h1>
 			<button type='button' className='add' onClick={this.clickNewRec} >New Rec</button>
 			<aside>
-				<big><span aria-label='search' role='img'>🔍</span></big>
-				<input className='search-box' placeholder='search (not yet impl)'
-					onChange={this.changeSearchQueryEv} defaultValue={p.searchQuery} />
-				<br />
-				sort:&nbsp;
-				<select id='sort-criterion' onChange={this.changeSortCriterionEv} defaultValue={localStorage.sortCriterion} >
-					{sortOptions}
-				</select>
+				<p>
+					<big><span aria-label='search' role='img'>🔍</span></big>
+					<input className='search-box' placeholder='search (not yet impl)'
+						onChange={this.changeSearchQueryEv} defaultValue={p.searchQuery} />
+				</p>
+				<p>
+					sort:&nbsp;
+					<select id='sort-criterion' onChange={this.changeSortCriterionEv}
+						value={localStorage.sortCriterion} >
+						{sortOptions}
+					</select>
+				</p>
+				<p>
+					database:&nbsp;
+					<select id='database-name' onChange={this.changeCollectionNameEv}
+						value={localStorage.collectionName || 'recruiters'} >
+						<option key='recruiters' value='recruiters'>recruiters</option>
+						<option key='rec2020' value='rec2020'>rec2020</option>
+
+					</select>
+				</p>
+
 			</aside>
 		</section>;
 	}
-	
+
 	// the list of recs, or just a big message
 	renderBodyCells() {
 		let p = this.props;
@@ -113,29 +133,29 @@ console.info('constructed GlobalList');
 		else {
 			// all the other cells with records in them
 			return p.wholeList.recs.map(function(rec, ix) {
-				return <SummaryRec key={ix.toString()} serial={ix} 
+				return <SummaryRec key={ix.toString()} serial={ix}
 					record={rec} selectedSerial={p.selectedSerial} ></SummaryRec>;
 			});
 		}
 	}
-	
+
 	// returns a naked array of all the cells
 	render() {
-console.info('rendering GlobalList');
+		console.info('rendering GlobalList');
 		let titleCell = this.renderTitleCell();
 		let list = this.renderBodyCells();
-		
+
 		// stick in the header cell in the upper left with the photo
 		list.unshift(titleCell);
 
 		return list;
 	}
-	
+
 	// reducer handler
 	static setWholeList(wholeList, action) {
 		return {
 			...wholeList,
-			
+
 			// all new data
 			recs: action.recs,
 		};
@@ -145,10 +165,12 @@ console.info('rendering GlobalList');
 		return initialState.controlPanel;
 	}
 
-	// called at various times to re-read the jobs table and display it again
-	updateList() {
+	// called at various times to re-read the jobs table and display it again,
+	// and to set the displayed collection.  Often the collection
+	// name is as stored in the Store
+	updateList(collectionName) {
 		let p = this.props;
-		moGetAll((err, newRecs) => {
+		moGetAll(collectionName, (err, newRecs) => {
 			if (err)
 				p.dispatch({type: 'ERROR_GET_ALL', errorObj: err})
 			else {
@@ -160,7 +182,7 @@ console.info('rendering GlobalList');
 			}
 		});
 	}
-	
+
 	static errorGetAll(wholeList, action) {
 		console.error("ERROR_GET_ALL", action);
 		// if mongo & server aren't started,
@@ -170,7 +192,7 @@ console.info('rendering GlobalList');
 			globalListErrorObj: action.errorObj,
 		};
 	}
-	
+
 	// a click on the New Rec button to raise the control panel with a prospective rec
 	clickNewRec(ev) {
 		this.props.dispatch({type: 'START_ADD_RECORD'})
@@ -193,24 +215,47 @@ console.info('rendering GlobalList');
 	static sortRecords(recs, criterion) {
 		return [...recs].sort(sorters[criterion].compare);
 	}
-	
+
 	// any change in the menu, direct event handler
 	changeSortCriterionEv(ev) {
-		this.props.dispatch({type: 'CHANGE_SORT_CRITERION', newCriterion: ev.target.value});
+		this.props.dispatch({type: 'CHANGE_SORT_CRITERION',
+			newCriterion: ev.target.value});
 	}
-	
+
 	// same, called from the resolver
 	static changeSortCriterion(wholeList, action) {
 		// do the sort
-		let newRecs = GlobalList.sortRecords(wholeList.recs, action.newCriterion);
-		
+		let newRecs = GlobalList.sortRecords(wholeList.recs,
+			action.newCriterion);
+
 		localStorage.sortCriterion = action.newCriterion;
-		
+
 		// now set the state that way
 		return {
 			...wholeList,
 			sortCriterion: action.newCriterion,
 			recs: newRecs,
+		};
+	}
+
+	/* *********************************************************** which collection */
+	changeCollectionNameEv(ev) {
+		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
+			newName: ev.target.value});
+	}
+
+	// same, called from the resolver
+	static changeCollectionName(wholeList, action) {
+		// re-retrieve with different collection
+
+		GlobalList.me.updateList(action.newName);
+
+		localStorage.collectionName = action.newName;
+
+		return {
+			...wholeList,
+			collectionName: action.newName,
+			////recs: newRecs,
 		};
 	}
 
@@ -228,12 +273,13 @@ function mapStateToProps(state) {
 		// during startup, no state in place yet
 		return {
 			wholeList:  {
-				recs: [], 
-				globalListErrorObj: null, 
-				searchQuery: '', 
-				sortCriterion: 0
+				recs: [],
+				globalListErrorObj: null,
+				searchQuery: '',
+				sortCriterion: 0,
+				collectionName: 'recruiters'
 			},
-			selectedSerial: -1, 
+			selectedSerial: -1,
 		};
 	}
 }
