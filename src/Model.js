@@ -115,7 +115,7 @@ export function moPostOne(record, callback) {
 
 // delete an existing record
 export function moDeleteOne(record, callback) {
-	throw "never implemented";////
+	throw new Error("never implemented");////
 
 ////	$.ajax({
 ////		url: RODEX_SERVER +'/one/'+ record._id,
