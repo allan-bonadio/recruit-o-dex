@@ -29,7 +29,7 @@ whoa boy.  What new features do we want?
 ## To Run
 ### once to install
 #### install the software
-	git clone https://github.com/allan-bonadio/recruit-o-dex.git 
+	git clone https://github.com/allan-bonadio/recruit-o-dex.git
 	cd recruit-o-dex
 	npm install
 
@@ -60,7 +60,7 @@ add to your .profile (depending on location):
 depending on location of above config file, you'll use a daemon startup command like:
 
 	mongod --config /dvl/mongodb/mongod.conf
-	
+
 so go and edit the start script to change it.
 
 
@@ -71,21 +71,21 @@ Start it up with `npm start`.  (And diagnose any probs.)  The app should show up
 
 ### each time to run
 
-To start it, run `./start` or `npm start`, which will start up mongo, the server & the app in the right order, and only if needed.  And open a Chrome window onto the webapp.
+To start it, run `./start` or `npm start`, which will start up mongo, the server & the app in the right order, and only if needed.  And it'll open a Chrome window onto the webapp.
 
 To shut down all three, run `./stop` or `npm stop`.  It will stop all three, in turn.
 
-To mess with one or another independently, read the script and act accordingly.  
-The start and stop scripts will carefully start up or shut down each 
+To mess with one or another independently, read the script and act accordingly.
+The start and stop scripts will carefully start up or shut down each
 of the three depending on whether they're running.
 
 ### Concurrency
 
 Do not have two mongoDB daemons or rodexServer.js daemons running at once.  Must be one each.  The webapp can be shown on multiple tabs, just as long as they're talking to the same server.
 
-Maybe you coulld have two rodex servers, if at different ports, and your web pages would have to go to one or the other.  Not too useful.
+Maybe you could have two rodex servers, if at different ports, and your web pages would have to go to one or the other.  Not too useful.  Never tried it.
 
-### Restarting
+### Restarting Job Search
 
 When they can you, do this to reset the DB:
 - make sure backups/archives has a folder for the last time I was jobsearching.  If not, use backup.sh
@@ -388,7 +388,7 @@ In the WebStorm menu `Run` select `Edit Configurations...`. Then click `+` and s
 
 Start your app by running `npm start`, then press `^D` on macOS or `F9` on Windows and Linux or click the green debug icon to start debugging in WebStorm.
 
-The same way you can debug your application in IntelliJ IDEA Ultimate, PhpStorm, PyCharm Pro, and RubyMine. 
+The same way you can debug your application in IntelliJ IDEA Ultimate, PhpStorm, PyCharm Pro, and RubyMine.
 
 ## Formatting Code Automatically
 
@@ -1874,7 +1874,7 @@ If you’re using [Apache HTTP Server](https://httpd.apache.org/), you need to c
     RewriteRule ^ index.html [QSA,L]
 ```
 
-It will get copied to the `build` folder when you run `npm run build`. 
+It will get copied to the `build` folder when you run `npm run build`.
 
 If you’re using [Apache Tomcat](http://tomcat.apache.org/), you need to follow [this Stack Overflow answer](https://stackoverflow.com/a/41249464/4878474).
 

@@ -30,6 +30,7 @@ console.info('executing Field');
 		}
 
 		let r = this.props.record;
+
 		let itsAge = Date.now() - (new Date(r.updated || r.created)).getTime();
 		itsAge = itsAge / 86400000;  // to days
 		let ageClass = itsAge > 90 ? 'quarterOld'
