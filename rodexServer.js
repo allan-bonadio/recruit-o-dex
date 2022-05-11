@@ -240,8 +240,8 @@ function addOneRecord(record, callback) {
 
 // generate a list of companies in the db. ANd store it in the alreadyappliedto.txt file.
 function generateAAT() {
-	if (! process.env.ROX_AAT_TARGET) {
-		console.warn("process.env.ROX_AAT_TARGET undefined so no AAT file generated");
+	if (! process.env.RODEX_AAT_TARGET) {
+		console.warn("process.env.RODEX_AAT_TARGET undefined so no AAT file generated");
 		return;
 	}
 
@@ -269,8 +269,8 @@ function generateAAT() {
 							.join('\n');
 
 				// and get it out there before something else fails
-				fs.writeFileSync(process.env.ROX_AAT_TARGET, content);
-				fs.chmodSync(process.env.ROX_AAT_TARGET, 0o666);
+				fs.writeFileSync(process.env.RODEX_AAT_TARGET, content);
+				fs.chmodSync(process.env.RODEX_AAT_TARGET, 0o666);
 			}
 		});
 	});
