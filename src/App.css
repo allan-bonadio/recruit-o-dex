@@ -31,7 +31,7 @@ button {
 	top: 200px;
 	padding: .5em;
 	border: black 1px outset;
-	
+
 	/* all odd so avg with white is even integer */
 	background-color: rgba(171, 201, 255, 0.5);
 	/*background-image: linear-gradient(45deg, rgba(170, 200, 255, 0.5), rgba(200, 170, 255, 0.5));*/
@@ -52,7 +52,7 @@ section.edit-col {
 }
 
 /* the label is opaque so you can read without distractions behind.
-** For it to match the transparent control panel background, must be 
+** For it to match the transparent control panel background, must be
 **		(panelbg + white) / 2   */
 label.edit-label {
 	width: 5em;
@@ -74,21 +74,21 @@ div.edit-blank {
 div.edit-blank input, div.edit-blank textarea {
 	width: 100%;
 	font-size: 16px;
-	
+
 	margin: 5px;
 }
 
 div.edit-blank textarea {
 	width: 100%;
 	font-size: 10px;
-	
+
 	margin: 5px;
 }
 
 textarea.json-edit {
 	width: 27em;
 	height: 18em;
-	
+
 	margin: 5px;
 }
 
@@ -134,116 +134,3 @@ div.crud-curtain {
 
 /********************************************** Summary and Global List */
 
-section.summary {
-	float:left;
-	z-index: 10;
-	width: 24em;
-	min-height: 96px;
-	max-height: 96px;
-	overflow-y: hidden;
-
-	padding: 6px;
-	margin: 4px;
-	background-color: #ffd;
-	border: 1px solid #990;
-	border-radius: 6px;
-}
-
-/* auto-scrollbar these so they tend to reset to the start */
-section.summary:hover {
-	overflow-y: auto;
-}
-
-section.summary.selected {
-	background-color: #bef;
-	/* rgb(212, 227, 255) */
-}
-
-/* older than ... 2 hours? */
-section.summary.hoursOld {
-	background-color: #ffa;
-}
-
-/* older than a day */
-section.summary.dayOld {
-	background-color: #ffa;
-}
-
-/* older than a week */
-section.summary.weekOld {
-	background-color: #ee9;
-}
-
-/* older than a month */
-section.summary.monthOld {
-	background-color: #dd8;
-}
-
-/* older than 3 months */
-section.summary.quarterOld {
-	background-color: #bb8;
-}
-
-
-section.summary .recruiter_name {
-	font-size: 1.4em;
-	float: left;
-	max-width: 11em;
-}
-
-section.summary .company_name {
-	font-size: 1.4em;
-	float: right;
-	text-align: right;
-	max-width: 11em;
-}
-
-/* title cell */
-/* just like a summary but ... different */
-section.summary.title-cell {
-	min-height: 412px;
-	width: 24.33em;
-	overflow-y: hidden;
-	background: url(shyster307.jpg) no-repeat bottom center #ffd;
-
-	border-width: 0 1px 1px 0;
-	border-radius: 0 0 6px 0;
-	padding: 11px 6px 6px 11px;
-	margin: 0 4px 4px 0;
-}
-
-section.summary.title-cell button.add {
-	font-size: 18px;
-	/*position: relative;*/
-	float: left;
-	border-radius: 6px;
-	background-color: green;
-	color: #FFa;
-}
-
-section.title-cell aside {
-	float: right;
-	width: 14em;
-	text-align: right;
-}
-
-section.title-cell input.search-box {
-	float: right;
-	margin-bottom: .5em;
-	border: #fea solid 1px;
-	background-color: #fff);
-	text-align: right;
-} 
-
-section.title-cell big {
-	float: right;
-	margin: 0 0 .5em .2em;
-}
-
-section.title-cell .sort-criterion {
-	float:right;
-}
-
-section.title-cell .database-name {
-	float:right;
-}
