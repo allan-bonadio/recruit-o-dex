@@ -5,7 +5,7 @@
   "dependencies": {
     "bootstrap": "^4.1.2",
     "cors": "^2.8.4",
-    "jquery": "^3.2.1",
+    "jquery": "^3.6.0",
     "mongodb": "^2.2.33",
     "popper.js": "^1.14.3",
     "react": "^16.0.0",
@@ -29,7 +29,8 @@
   "devDependencies": {
     "enzyme": "^3.4.1",
     "enzyme-adapter-react-16": "^1.2.0",
-    "eslint-plugin-react": "^7.12.3"
+    "eslint-plugin-react": "^7.12.3",
+    "sass": "^1.51.0"
   },
   "browserslist": {}
 }
