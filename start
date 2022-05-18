@@ -3,12 +3,14 @@
 echo "This starts up all the servers.  Checks so it won't start a second process."
 # panama
 mongoconf=/usr/local/etc/mongod.conf
-if [ ! -f "$mongoconf" ]
-then mongoconf=/dvl/mongodb/mongod.conf
-	   # flores
-fi
+
+# old
+#if [ ! -f "$mongoconf" ]
+#then mongoconf=/dvl/mongodb/mongod.conf
+#	   # flores
+#fi
+
 MONGODCMD="mongod --config $mongoconf"
-#MONGODCMD='mongod --config /usr/local/etc/mongod.conf'
 echo mongo launch cmd: $MONGODCMD
 
 
@@ -28,7 +30,7 @@ fi
 
 # must start rodex server for react webapp to run
 if ! pgrep -f rodexServer
-then 
+then
 	echo ":::::::::::::::::::::::::::::::::::: Starting up backend rodex server"
 	./rodexServer.js &
 	sleep 2
@@ -38,7 +40,7 @@ fi
 
 # now run react server
 if ! pgrep -f recruit-o-dex/node_modules/react-scripts/script
-then 
+then
 	echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
 	PORT=3300 EDITOR= TERM= node_modules/.bin/react-scripts start &
 	sleep 2
