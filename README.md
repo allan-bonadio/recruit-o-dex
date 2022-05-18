@@ -94,12 +94,29 @@ When they can you, do this to reset the DB:
 
 ## backups
 
-I'm installing the apr 2020 archive as collection with this command
-mongorestore --db=jobs --collection=rec2020  recruiters.bson
-
 See backup directory for all the backup tools and archives.
 
+Probably easiest to just use restore.sh in the backups dir.
 
+raw example, not sure if it even still works: I'm installing the apr 2020 archive as collection with this command
+
+mongorestore --db=jobs --collection=rec2020  recruiters.bson
+
+
+
+# Buglist / Wishlist
+
+- control panel: make tabs for different parts, it's too crouded!
+	• info for the initial blanks
+	• one for JD only
+	• one for JSON only
+	• one for engagements
+
+- want a way to copy info for a recruiter from other records
+
+- insert more fields into copyout for Quick+ button for Calendar
+
+- fix lint warnings
 
 # ----✁--------- react boilerplate readme ------✁--------
 
