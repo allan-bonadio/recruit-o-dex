@@ -17,7 +17,7 @@ function dateToLocalTime(date) {
 
 // convert a Date to the way the input[type=datetime-local] likes it
 function dateToLocalDate(date) {
-	return date.getFullYear() +'-'+ two(date.getMonth() + 1) +'-'+ 
+	return date.getFullYear() +'-'+ two(date.getMonth() + 1) +'-'+
 			two(date.getDate());
 }
 
@@ -38,33 +38,33 @@ console.info('executing EngagementRow');
 		let end = new Date( (props.engagement.howLong || 60) * 60000 + start.getTime() )
 
 		// separate date and time by space
-		calStr = props.engagement.what +' '+ 
+		calStr = props.engagement.what +' '+
 			(props.company_name || 'company') +' '+
 			dateToLocalDate(start) +' '+ dateToLocalTime(start) +
 			' to '+ dateToLocalTime(end);
-		
+
 		// control does NOT take a timezone!  And must have T separator
-		//  The format is "yyyy-MM-ddThh:mm" 
+		//  The format is "yyyy-MM-ddThh:mm"
 		startTime = dateToLocalDate(start) +'T'+ dateToLocalTime(start);
 		if (startTime.substr(-1) == 'Z') debugger;////
 	}
-	
+
 	console.log("EngagementRow startTime: '%s'", startTime);
-	
+
 	return <tr className='engagement' serial={props.serial}>
 		<td>
-			<input name='what' list='engagement-whats' size='12' placeholder='choose what' 
+			<input name='what' list='engagement-whats' size='12' placeholder='choose what'
 					defaultValue={props.engagement.what}
 					onChange={props.changeEngagement}  onPaste={props.pasteEngagement} />
 		</td>
 		<td>
 			<input type='datetime-local' name='when' size='22'
-					value={startTime} 
+					value={startTime}
 					min='2019-01-01T00:00' max='2030-01-01T00:00' step='300'
 					onChange={props.changeEngagement}  onPaste={props.pasteEngagement} />
 		</td>
 		<td>
-			<select name='howLong' defaultValue={props.engagement.howLong || 30} 
+			<select name='howLong' defaultValue={props.engagement.howLong || 30}
 						onChange={props.changeEngagement} onPaste={props.pasteEngagement} >
 				<option value='15'>15 m</option>
 				<option value='30'>30 m</option>
@@ -91,14 +91,14 @@ console.info('executing EngagementRow');
 }
 
 
-// construct the default 'environments' state, not what's stored in the record, 
+// construct the default 'environments' state, not what's stored in the record,
 // but instead just today's date in the date box
 function defaultEngagement() {
 	function twoDigit(n) { return String(n + 100).substr(1) }
 	let tomorrow = new Date(Date.now() + 86400000)
 	return {
-		what: '', 
-		when: tomorrow.getFullYear() +'-'+ twoDigit(tomorrow.getMonth()+1) +'-'+ 
+		what: '',
+		when: tomorrow.getFullYear() +'-'+ twoDigit(tomorrow.getMonth()+1) +'-'+
 					twoDigit(tomorrow.getDate()) +'T11:00',
 		howLong: '60',
 		notes: '',
@@ -112,13 +112,13 @@ export class Engagements extends Component {
 	constructor(props) {
 		super(props);
 		Engagements.me = this;
-		
+
 		this.changeEngagement = this.changeEngagement.bind(this);
 		this.pasteEngagement = this.pasteEngagement.bind(this);
 console.info('constructed Engagements');
 	}
-	
-	
+
+
 	render() {
 console.info('rendering Engagements');
 		let p = this.props;
@@ -129,17 +129,17 @@ console.info('rendering Engagements');
 		// but don't show it in the json panel
 		es = [...es];
 		es.push({what: '', date: '', notes: ''});
-		
+
 		// generate the rows for existing engs
 		let eRows =  es
-				? es.map((engagement, serial) => 
-					<EngagementRow serial={serial} key={serial} 
+				? es.map((engagement, serial) =>
+					<EngagementRow serial={serial} key={serial}
 							engagement={engagement} company_name={p.rec.company_name}
 							changeEngagement={this.changeEngagement}
 							pasteEngagement={this.pasteEngagement} />
 					)
 				: [];
-				
+
 		// assemble final table
 		return <div>
 			<datalist id='engagement-whats'>
@@ -150,6 +150,7 @@ console.info('rendering Engagements');
 				<option value='zoom' >Zoom Interview</option>
 				<option value='webex' >Webex Interview</option>
 				<option value='googlev' >Google Video Interview</option>
+				<option value='msteams' >MS Teams Interview</option>
 				<option value='onsite' >On-Site Interview</option>
 			</datalist>
 			<table>
@@ -163,20 +164,20 @@ console.info('rendering Engagements');
 	// event handler for a keystroke or other change to that new engagement
 	changeEngagement(ev) {
 		var targ = ev.target;
-		
+
 		var tr = targ.parentElement.parentElement;
 		var serial = tr.getAttribute('serial');
-		
+
 		// this field is two levels down: editingRecord.engagements[4].fieldName
 		this.props.dispatch({
-					type: 'CHANGE_TO_ENGAGEMENT', 
+					type: 'CHANGE_TO_ENGAGEMENT',
 					serial: serial,
 					fieldName: targ.name,
 					newValue: targ.value,
 				});
 		ev.stopPropagation();
 	}
-	
+
 	// reducer for such change
 	static changeToEngagement(controlPanel, action) {
 		// find where it goes, creating stuff as needed
@@ -189,56 +190,56 @@ console.info('rendering Engagements');
 
 		// actually set the value into the engagement
 		q[action.fieldName] = action.newValue;
-		
-		controlPanel = {...controlPanel, 
+
+		controlPanel = {...controlPanel,
 			editingRecord: {...controlPanel.editingRecord,
 				engagements: [...controlPanel.editingRecord.engagements]
 			}
 		};
 		controlPanel.editingRecord.engagements[action.serial] = q;
-		
+
 		return controlPanel;
 	}
-	
+
 	// clean out empty engagements including that 'new' one at the end;
 	// this is done just before saving
 	static cleanEngagementsList(engs) {
 		if (!engs)
 			return undefined;
-		
+
 		let newEngs = engs.filter(eng => eng.what || eng.notes);
 		if (newEngs.length <= 0)
 			return undefined;
 		else
 			return newEngs;
 	}
-	
+
 	// parses what was pasted
 	parsePastedEngagement(clipBoardData) {
-		const ScheduledRegex = 
+		const ScheduledRegex =
 			/^Scheduled: (\w\w\w \d\d?, \d\d\d\d) at (\d\d?:\d\d [AP]M) to (\d\d?:\d\d [AP]M)$/m;
 
 		for (let i = 0; i < clipBoardData.items.length; i++) {
 			let item = clipBoardData.items[i];
-			console.log("a clipBoardData item: kind %s, type %s, '%s'", 
+			console.log("a clipBoardData item: kind %s, type %s, '%s'",
 				item.kind, item.type, clipBoardData.getData(item.type));
 		}
-			
+
 		let pasteText = clipBoardData.getData('text/plain');
 		console.log("Pasted TExt\n", pasteText, '\n');
-		
+
 		// look for stuff we recognize.
 		let m = pasteText.match(ScheduledRegex);
 		if (!m)
 			return;  // Otherwise, let the paste continue.
-		
+
 		// m1 is the date, m2 and 3 are the time, each in a format Date() recognizes
 		let startTime = new Date(m[1] +' '+ m[2]);
 		let endTime = new Date(m[1] +' '+ m[3]);
 		let duration = (endTime.getTime() - startTime.getTime()) / 60000;  // in minutes
-		
+
 		let notesText = pasteText.replace(m[0] + '\n', '');  // remove Scheduled: line
-		
+
 		// try to guess what kind of interview
 		let newWhat = '';
 		if (pasteText.match(/skype/im))
@@ -261,21 +262,21 @@ console.info('rendering Engagements');
 			newNotes: notesText,
 		}
 	}
-	
+
 	// called whenuser pastes into an engagement row.  Note this gets attached to an
 	// EngagementRow component, not this one (see above)
 	pasteEngagement(ev) {
 		let eng = this.parsePastedEngagement(ev.clipboardData);
 		if (!eng)
 			return;
-		
+
 		var targ = ev.target;
 		var tr = targ.parentElement.parentElement;
 		var serial = tr.getAttribute('serial');
-		
+
 		// this field is two levels down: editingRecord.engagements[4].fieldName
 		this.props.dispatch({
-					type: 'PASTE_TO_ENGAGEMENT', 
+					type: 'PASTE_TO_ENGAGEMENT',
 					serial: serial,
 					...eng,
 				});
@@ -298,14 +299,14 @@ console.info('rendering Engagements');
 		q.howLong = action.newDuration;
 		q.notes = action.newNotes.trim();
 		console.log("pasteToEngagement: new eng is ", q.when, q);
-		
-		controlPanel = {...controlPanel, 
+
+		controlPanel = {...controlPanel,
 			editingRecord: {...controlPanel.editingRecord,
 				engagements: [...controlPanel.editingRecord.engagements]
 			}
 		};
 		controlPanel.editingRecord.engagements[action.serial] = q;
-		
+
 		return controlPanel;
 	}
 
