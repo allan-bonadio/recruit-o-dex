@@ -1,5 +1,5 @@
 /*
-** SummaryRec -- per-rec summary box
+** SummaryRec -- per-rec summary box, displayed in yellow, seen in global list
 */
 
 import React, {Component} from 'react';
