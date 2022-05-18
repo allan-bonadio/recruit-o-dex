@@ -18,6 +18,15 @@ cd `dirname $0`
 # 	fi
 # fi
 
+# if the database has no changes since the last BU archive, bag it
+if [ /usr/local/var/mongodb -ot /tibusiness/recruit-o-dex/backups/archives ]
+then
+	# OR, no output means no email, right?
+	echo "backup not needed: " `date '+%F %R'`
+	ls -lt /usr/local/var/mongodb  /tibusiness/recruit-o-dex/backups/archives
+	exit 0
+fi
+
 
 echo "now backing up..."
 
@@ -48,5 +57,4 @@ fileName=` ls -1t archives | tail -n +$lineNum | head -1 `
 
 # tell Allan
 open -a "Google Chrome" backedUp.html
-
 
