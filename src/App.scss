@@ -100,24 +100,6 @@ div.json-errors {
 	background-color: #fee;
 }
 
-section.button-area {
-	float: left;
-	width: 7em;
-	height: 20em;
-}
-
-/* the save and cancel buttons are all of this general type */
-section.button-area button.main-button {
-	font-size: 141.42%;
-	border-radius: 5px;
-	border: outset 1px #aaa;
-	margin-top: 2em;
-	width: 4.2em;
-}
-section.button-area button.save-button { color: #00c; background: #eef; }
-section.button-area button.add-button { color: #080; background: #efe; }
-section.button-area button.cancel-button { color: #800; background: #fee; }
-
 
 /********************************************** crudCurtain */
 
@@ -132,5 +114,4 @@ div.crud-curtain {
 	background-color: rgba(255, 255, 255, 0.5);
 }
 
-/********************************************** Summary and Global List */
 

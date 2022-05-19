@@ -101,7 +101,7 @@ section.title-cell input.search-box {
 	float: right;
 	margin-bottom: .5em;
 	border: #fea solid 1px;
-	background-color: #fff);
+	background-color: #fff;
 	text-align: right;
 }
 
@@ -117,3 +117,23 @@ section.title-cell .sort-criterion {
 section.title-cell .database-name {
 	float:right;
 }
+
+section.button-area {
+	text-align: right;
+	float: left;
+	width: 7em;
+	height: 20em;
+}
+
+/* the save and cancel buttons are all of this general type */
+section.button-area button.main-button {
+	font-size: 141.42%;
+	border-radius: 5px;
+	border: outset 1px #aaa;
+	margin-top: 2em;
+	width: 4.2em;
+}
+section.button-area button.save-button { color: #00c; background: #eef; }
+section.button-area button.add-button { color: #080; background: #efe; }
+section.button-area button.cancel-button { color: #800; background: #fee; }
+

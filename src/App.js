@@ -1,5 +1,5 @@
 /*
-** App -- the main code for the RecruitMan page
+** App -- the main code for the Recruit-O-Dex page
 **
 ** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
