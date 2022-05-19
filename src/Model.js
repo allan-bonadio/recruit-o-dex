@@ -17,7 +17,7 @@ export function moGetAll(collectionName, callback) {
 		return;
 	}
 
-console.info(`------------------- RODEX_SERVER +'/getall/'+ collectionName`, RODEX_SERVER +'/getall/'+ collectionName);
+	// console.info(`------------------- RODEX_SERVER +'/getall/'+ collectionName`, RODEX_SERVER +'/getall/'+ collectionName);
 	fetch(RODEX_SERVER +'/getall/'+ collectionName, {})
 	.then(resp => resp.json(),
 		err => {

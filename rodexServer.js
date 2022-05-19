@@ -61,8 +61,8 @@ function setupServer() {
 	app.options('*', cors())
 
 	app.get('/getall/:collectionName', function (req, res) {
-console.info(`---------------------  apt.get req:`, req);
-console.info(`---------------------  apt.get req.body:`, req.body);
+	// console.info(`---------------------  apt.get req:`, req);
+	// console.info(`---------------------  apt.get req.body:`, req.body);
 		getAllRecords(req.params.collectionName, function(records) {
 			if (records.error)
 				res.status(500).send({error: records.error});
@@ -73,10 +73,10 @@ console.info(`---------------------  apt.get req.body:`, req.body);
 
 	// put.  update.
 	app.put('/one/:id', function (req, res) {
-		console.log("|| app.put /one: req started");    // too much text     , req);
-		console.log("|| %s %s %s", req.method, req.hostname, req.path);
-		console.log("    req.params: %j", req.params);
-		console.log("    req.body: %j", req.body);
+		// console.log("|| app.put /one: req started");    // too much text     , req);
+		// console.log("|| %s %s %s", req.method, req.hostname, req.path);
+		// console.log("    req.params: %j", req.params);
+		// console.log("    req.body: %j", req.body);
 		//console.log("    req.headers: %j", req.headers);
 		//console.log("|| the whole req: ", req, '------');
 
@@ -95,17 +95,17 @@ console.info(`---------------------  apt.get req.body:`, req.body);
 
 	// add.  insert.  post.
 	app.post('/one', function (req, res) {
-		console.log("|| app.post /one: req started");    // too much text     , req);
-		console.log("|| %s %s %s", req.method, req.hostname, req.path);
-		console.log("    req.params: %j", req.params);
-		console.log("    req.body: %j", req.body);
+		// console.log("|| app.post /one: req started");    // too much text     , req);
+		// console.log("|| %s %s %s", req.method, req.hostname, req.path);
+		// console.log("    req.params: %j", req.params);
+		// console.log("    req.body: %j", req.body);
 		//console.log("    req.headers: %j", req.headers);
 
 		if (isBodyBad(req, res))
 			return;
 
 		addOneRecord(req.body, function(overall, results) {
-			console.log("    addOneRecord() gave me results ‹%s› %j", overall, results);
+			//console.log("    addOneRecord() gave me results ‹%s› %j", overall, results);
 			if (results.error)
 				res.status(500).send({error: records.error});
 			else
@@ -141,7 +141,7 @@ function AskMongo(collectionName, inquirer) {
 		}
 
 		var col = db.collection(collectionName || 'recruiters');
-console.info(`--------------------- :142 collectionName`, collectionName, col);
+		//console.info(`--------------------- :142 collectionName`, collectionName, col);
 		inquirer(col, doneFunc);
 
 		// must close ... later.  After all the callbacks in inquirer().  try this for now...
@@ -151,7 +151,7 @@ console.info(`--------------------- :142 collectionName`, collectionName, col);
 }
 
 function getAllRecords(collectionName, callback) {
-console.info(`--------------------- getAllRecords: collectionName`, collectionName);
+	//console.info(`--------------------- getAllRecords: collectionName`, collectionName);
 	AskMongo(collectionName, (col, doneFunc) => {
 		col.find({}).sort({company_name:1}).toArray(function(err, docs) {
 			if (err) {
