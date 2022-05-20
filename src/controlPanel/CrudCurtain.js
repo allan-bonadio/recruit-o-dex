@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-import LoadSave from './LoadSave';
+import LoadSave from '../LoadSave';
 
 // the white translucent sheet behind the control panel; signifies you're changing a record
 export class CrudCurtain extends Component {
@@ -17,7 +17,7 @@ export class CrudCurtain extends Component {
 		this.curtainClick = this.curtainClick.bind(this);
 console.info('constructed CrudCurtain');
 	}
-	
+
 	// clicking on the CrudCurtain does a Save
 	curtainClick(ev) {
 		if (this.props.selectedSerial >= 0)
@@ -25,13 +25,13 @@ console.info('constructed CrudCurtain');
 		else
 			LoadSave.saveAddRecord();
 	}
-	
+
 	render() {
 console.info('rendering CrudCurtain');
 		let sel = this.props;
 		if (!sel) return [];
 
-		return <div className='crud-curtain' 
+		return <div className='crud-curtain'
 			onClick={this.curtainClick}
 			style={{display: sel.editingRecord ? 'block' : 'none'}}>
 		</div>;

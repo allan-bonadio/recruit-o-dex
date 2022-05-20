@@ -3,12 +3,13 @@
 **
 ** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
+/* eslint-disable eqeqeq, default-case */
 
 import _ from "lodash";
 
-import ControlPanel from './ControlPanel';
-import Engagements from './Engagements';
-import {globalListUpdateList} from './GlobalList';
+import ControlPanel from './controlPanel/ControlPanel';
+import Engagements from './controlPanel/Engagements';
+import {globalListUpdateList} from './globalList/GlobalList';
 import {moPutOne, moPostOne} from './Model';
 import {rxStore, initialState} from './reducer';
 
@@ -23,7 +24,7 @@ function noChanges(controlPanel) {
 	let cur = JSON.stringify(controlPanel.editingRecord);
 	return (obc == cur);
 }
-	
+
 
 export class LoadSave {
 	// just before saving, clear out stuff, mostly empty fields
@@ -35,15 +36,15 @@ export class LoadSave {
 			record.engagements = e
 		else
 			delete record.engagements;
-		
+
 		return record;
 	}
-	
+
 	/********************************************** Edit Existing */
 
 	// sets the existing rec passed in as the selected record for the control panel.
 	// called by reducer()
-	static startEditRecord(controlPanel, action) {	
+	static startEditRecord(controlPanel, action) {
 		let record = action.record;
 
 		// the NEW selection to be handed in to state
@@ -53,27 +54,27 @@ export class LoadSave {
 
 			// setting the editingRecord will cause the control panel to appear
 			editingRecord: _.cloneDeep(record),  // this copy gets changed during editing
-			selectedSerial: action.serial,  
+			selectedSerial: action.serial,
 		};
 	}
-	
-	
+
+
 	// a click event on Save, or just on the background.  Does the request and dispatches actions.
 	static saveEditRecord() {
 		let cp = rxStore.getState().controlPanel;
-		
+
 		// wait!  has there been any changes?  If not, don't actually save, leave it.
 		if (noChanges(cp)) {
 			ControlPanel.cancelControlPanel()
 			return;
 		}
-		
+
 		rxStore.dispatch({type: 'SAVE_EDIT_START'});
 
 		// update, will happen soon.  Don't update the recs till the save is successful!
 		var rec = LoadSave.cleanupRecord(cp.editingRecord);
 		rec.updated = timestampString();
-		
+
 		moPutOne(rec, function(errorObj) {
 			if (! errorObj) {
 				rxStore.dispatch({type: 'SAVE_EDIT_DONE'});
@@ -86,24 +87,24 @@ export class LoadSave {
 		});
 
 	}
-	
-	
+
+
 	// resolver for initial PUT request - before doing the req
 	static saveEditStart(controlPanel, action) {
 		return {...controlPanel, saving: true};
 	}
 
 	static saveEditDone(controlPanel, action) {
-		return {...controlPanel, saving: false}; 
+		return {...controlPanel, saving: false};
 	}
-	
+
 
 	/********************************************** Add New */
 	// start editing a new blank record.  Called when user clicks New Rec.
 	static startAddRecord(controlPanel, action) {
 		// the template for a new Recruiter
 		let initial = {status: 'applied', created: timestampString()};
-	
+
 		// most important, make a controlPanel pointing to the new prototype rec
 		return {
 			...controlPanel,
@@ -145,9 +146,9 @@ export class LoadSave {
 	static saveAddDone(controlPanel, action) {
 		return {...controlPanel};
 	}
-	
+
 	/********************************************************************** cancel */
-	
+
 	// reducer for edit and add
 	static cancelEditAdd(controlPanel, action) {
 		// no selection

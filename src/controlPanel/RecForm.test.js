@@ -9,7 +9,7 @@ import {Provider} from 'react-redux';
 import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import {rxStore} from './reducer';
+import {rxStore} from '../reducer';
 import {RecForm} from './RecForm';
 
 configure({ adapter: new Adapter() });
@@ -28,7 +28,7 @@ describe('<RecForm', () => {
 		// count up what I get for a deep render
 		const w = mount(<RecForm controlPanel={{editingRecord: {}}} />);
 		////console.log("w dot debug: ", w.debug());////
-		
+
 		expect(w.find('section.edit-col.edit-form').length).toEqual(1);
 		expect(w.find('input').length).toEqual(9);
 		expect(w.find('textarea').length).toEqual(2);
@@ -40,6 +40,6 @@ describe('<RecForm', () => {
 		expect(w.find('textarea[name="notes"]').length).toEqual(2);  // one for main notes, one for engagement
 		expect(w.find('input[list="engagement-whats"]').length).toEqual(1);
 	});
-	
+
 });
 

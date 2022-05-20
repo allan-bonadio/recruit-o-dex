@@ -9,7 +9,7 @@ import {Provider} from 'react-redux';
 import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import {rxStore} from './reducer';
+import {rxStore} from '../reducer';
 import {CrudCurtain} from './CrudCurtain';
 
 
@@ -25,7 +25,7 @@ describe('<CrudCurtain', () => {
 		let curt = CrudCurtain.me,
 			wasCalledWith,
 			oldProps = curt.props;
-		
+
 		// i would have used a spy but the function isn't even there.  So rig this up.
 		curt.props = {dispatch: (argz) => {
 			expect(argz).toBeTruthy();
@@ -41,7 +41,7 @@ describe('<CrudCurtain', () => {
 		wasCalledWith = null;
 		curt.curtainClick({});
 		expect(wasCalledWith).toEqual({type: 'SAVE_ADD_START'});
-		
+
 		curt.props = oldProps;
 	});
 });

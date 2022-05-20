@@ -9,7 +9,7 @@ import {Provider} from 'react-redux';
 import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import {rxStore} from './reducer';
+import {rxStore} from '../reducer';
 import {JsonForm} from './JsonForm';
 
 
@@ -35,7 +35,7 @@ describe('<JsonForm', () => {
 
 	it('should show jsonText if there', () => {
 		const wrapper = shallow(<JsonForm controlPanel={{}} controlPanel={mockControlPanel} />);
-		
+
 		// must verify value.  Only way I know how is with the .debug() dumper
 		let ta = wrapper.find('textarea').debug();
 		expect(ta).toMatch(/ value="token words"/);

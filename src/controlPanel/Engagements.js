@@ -3,6 +3,7 @@
 **
 ** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
+/* eslint-disable eqeqeq, default-case */
 
 import React, { Component } from 'react';
 import {connect} from 'react-redux';

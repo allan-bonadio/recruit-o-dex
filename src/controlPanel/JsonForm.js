@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 //import $ from "jquery";
 import {connect} from 'react-redux';
 
-import {rxStore} from './reducer';
+import {rxStore} from '../reducer';
 
 
 // format this object as json, but instead of total tightness, try to indent it nicely
@@ -24,32 +24,32 @@ export class JsonForm extends Component {
 	constructor(props) {
 		super(props);
 		////console.log('JsonForm cons this.props', props);////
-		
+
 		// the state is the whole record, plus the field jsonText.
 		// In states where the user's text doesn't parse, set jsonText to the text.
 		// that signals unparsable json and um something happens after...
 		////this.state = {jsonText: null, jsonErrors: '', record: {}};
-		
+
 		this.typeInJson = this.typeInJson.bind(this);
 		JsonForm.me = this;
 console.info('constructed JsonForm');
 	}
-	
+
 	// a change event (keystroke/cut/paste/etc) in the Json box
 	typeInJson(ev) {
 		////console.log("json key stroke detected");
 		let goodJson, goodTree;
-		
+
 		// if the JSON is good, echo this over to the edit box
 		try {
 			//let goodJson = $('textarea.json-edit').val();
 			goodJson = ev.currentTarget.value;
-			
+
 			// try parsing, and turn off the error message if it's good
 			goodTree = JSON.parse(goodJson);
 			//$('div.json-errors').text('');
 			////theControlPanel.setCPRecord(goodJson);
-			
+
 			// now change the whole value of the record tree
 			rxStore.dispatch({type: 'CHANGE_TO_JSON', newRecord: goodTree});
 		} catch (ex) {
@@ -57,29 +57,29 @@ console.info('constructed JsonForm');
 			// so the text is transitional but becomes part of the state anyway
 			var message = ex.message || ex;
 			console.warn("parse error parsing json: "+ message);
-			
+
 			// wait make a nice context that shows where the error is
 			let m = message.match(IN_JSON_RE);
 			if (m) {
 				let pos = +m[1];
-				
+
 				let beforePos = pos - 10;
 				let before = goodJson.substring(beforePos, pos);
 				if (beforePos > 0)
 					before = '...'+ before;
-					
+
 				let afterPos = pos + 10;
 				let after = goodJson.substring(pos, afterPos);
 				if (afterPos < goodJson.length)
 					after += '...';
-				
+
 				message = message.replace(IN_JSON_RE, before +'▼'+ after);
 			}
-			
+
 			// figure out how to do this thru react someday
 			//$('div.json-errors').text(message);
 			////this.setBadState(goodJson, message);
-			
+
 			// some special treatment, save the malformed text instead of the tree
 			rxStore.dispatch({type: 'CHANGE_TO_JSON', newJson: goodJson, errorMessage: message});
 		}
@@ -107,17 +107,17 @@ console.info('constructed JsonForm');
 			};
 		}
 	}
-	
+
 	render() {
 console.info('rendering JsonForm');
 		// if jsonText is there, it's the true text, otherwise use whatever record we have
 		////console.log('jf render this.props', this.props);////
 		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.controlPanel.editingRecord);
-		
+
 		////rxStore.getState().jsonText || rxStore.getState().record);
 		////console.log(`Text is '${text}', cuz `+ (this.state.jsonText ? 'uncompiled test' : 'compiled object'));
 		return <section className='edit-col' >
-			<textarea className="json-edit" onChange={this.typeInJson} 
+			<textarea className="json-edit" onChange={this.typeInJson}
 						value={text}>
 			</textarea>
 			<div className='json-errors'>{this.props.controlPanel.errorMessage}</div>

@@ -8,14 +8,12 @@ import React from 'react';
 import {Provider} from 'react-redux';
 
 
-////import $ from "jquery";
-
-import GlobalList from './GlobalList';
-import './App.css';
+import GlobalList from './globalList/GlobalList';
+import './App.scss';
 import {rxStore} from './reducer';
 
-import ControlPanel from './ControlPanel';
-import CrudCurtain from './CrudCurtain';
+import ControlPanel from './controlPanel/ControlPanel';
+import CrudCurtain from './controlPanel/CrudCurtain';
 ////import {getBySerial} from './Model';
 
 import LittleDialog from './LittleDialog';

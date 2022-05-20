@@ -1,0 +1,97 @@
+/*
+** App -- most css for recruit-o-dex
+**
+** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+*/
+
+#control-panel {
+	position: fixed;
+	z-index: 30;
+	left: 100px;
+	top: 200px;
+	padding: .5em;
+	border: black 1px outset;
+
+	/* all odd so avg with white is even integer */
+	background-color: rgba(171, 201, 255, 0.5);
+	/*background-image: linear-gradient(45deg, rgba(170, 200, 255, 0.5), rgba(200, 170, 255, 0.5));*/
+}
+
+#control-panel.adding {
+	background-color: rgba(101, 231, 101, 0.5);
+}
+
+
+#control-panel input, #control-panel textarea {
+	background-color: rgba(255, 255, 255, .85);
+}
+
+section.edit-col {
+	width: 27em;
+	float: left;
+}
+
+/* the label is opaque so you can read without distractions behind.
+** For it to match the transparent control panel background, must be
+**		(panelbg + white) / 2   */
+label.edit-label {
+	width: 5em;
+	float: left;
+	clear: left;
+	text-align: right;
+	margin: 6px 0;
+	background-color: rgb(213, 228, 255);
+}
+#control-panel.adding label.edit-label {
+	background-color: rgba(178, 243, 178, 0.5);
+}
+
+div.edit-blank {
+	width: 21em;
+	float: left;
+}
+
+div.edit-blank input, div.edit-blank textarea {
+	width: 100%;
+	font-size: 16px;
+
+	margin: 5px;
+}
+
+div.edit-blank textarea {
+	width: 100%;
+	font-size: 10px;
+
+	margin: 5px;
+}
+
+textarea.json-edit {
+	width: 27em;
+	height: 18em;
+
+	margin: 5px;
+}
+
+div.json-errors {
+	width: 27em;
+	line-height: 2em;
+	margin-left: 5px;
+	color: #800;
+	background-color: #fee;
+}
+
+
+/********************************************** crudCurtain */
+
+div.crud-curtain {
+	display: none;
+	position: fixed;
+	z-index: 20;
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+

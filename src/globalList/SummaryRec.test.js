@@ -9,7 +9,7 @@ import {Provider} from 'react-redux';
 import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import {rxStore} from './reducer';
+import {rxStore} from '../reducer';
 import {SummaryRec} from './SummaryRec';
 
 configure({ adapter: new Adapter() });
@@ -31,7 +31,7 @@ describe('<SummaryRec', () => {
 ////		console.log(wrapper.debug());
 		expect(wrapper.find('Field[name]').length).toBeGreaterThan(4);
 		expect(wrapper.find('Field[name] div.summary-field').length).toBeGreaterThan(4);
-		
+
 		expect(wrapper.find('Field[name="recruiter_name"]').length).toEqual(1);
 		expect(wrapper.find('Field[name="recruiter_email"]').length).toEqual(1);
 		expect(wrapper.find('Field[name="agency"]').length).toEqual(1);

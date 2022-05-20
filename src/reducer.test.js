@@ -13,11 +13,11 @@ import {rxStore, reducer, initialState} from './reducer';
 
 // for all the functions i gotta test
 import LoadSave from './LoadSave';
-import Engagements from './Engagements';
-import ControlPanel from './ControlPanel';
-import RecForm from './RecForm';
-import JsonForm from './JsonForm';
-import GlobalList from './GlobalList';
+import Engagements from './controlPanel/Engagements';
+import ControlPanel from './controlPanel/ControlPanel';
+import RecForm from './controlPanel/RecForm';
+import JsonForm from './controlPanel/JsonForm';
+import GlobalList from './globalList/GlobalList';
 import LittleDialog from './LittleDialog';
 
 // initial state, what it should be

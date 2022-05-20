@@ -3,13 +3,14 @@
 **
 ** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
+/* eslint-disable eqeqeq, default-case */
 
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 ////import {userChangedRecord} from './ControlPanel';
 import {Engagements} from './Engagements';
-import {rxStore} from './reducer';
+import {rxStore} from '../reducer';
 
 
 // a function-based component: just renders a text field and its label

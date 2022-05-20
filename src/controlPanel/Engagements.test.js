@@ -9,7 +9,7 @@ import {Provider} from 'react-redux';
 import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import {rxStore} from './reducer';
+import {rxStore} from '../reducer';
 import {Engagements} from './Engagements';
 
 
@@ -29,7 +29,7 @@ describe('<Engagements', () => {
 		expect(w.find('button.add-engagement').length).toEqual(1);
 		expect(w.find('table').length).toEqual(1);
 	});
-	
+
 
 	it('list has the right pieces', () => {
 		const w = mount(<Engagements engagements={[{what: 'pico', date: 'fermi', notes: 'nano'}]} />);
@@ -37,10 +37,10 @@ describe('<Engagements', () => {
 		expect(w.find('input[name="what"]').length).toEqual(2);
 		expect(w.find('input[name="when"]').length).toEqual(2);
 		expect(w.find('textarea[name="notes"]').length).toEqual(2);
-		
+
 		expect(w.find('input[name="what"]').debug().indexOf('pico')).toBeGreaterThan(-1);
 		////expect(w.find('input[name="when"]').debug().indexOf('fermi')).toBeGreaterThan(-1);
 		expect(w.find('textarea[name="notes"]').debug().indexOf('nano')).toBeGreaterThan(-1);
 	});
-	
+
 });

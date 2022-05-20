@@ -9,7 +9,7 @@ import {Provider} from 'react-redux';
 import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import {rxStore} from './reducer';
+import {rxStore} from '../reducer';
 import {GlobalList} from './GlobalList';
 
 configure({ adapter: new Adapter() });
@@ -34,7 +34,7 @@ describe('<GlobalList', () => {
 		expect(w.find('section.summary.title-cell').length).toEqual(1);
 		expect(w.find('section.summary').length).toEqual(1);
 	});
-	
+
 	it('can render two recs', () => {
 		const w = mount(<GlobalList recs={[{}, {}]} />);
 		expect(w.find('section.summary.title-cell').length).toEqual(1);

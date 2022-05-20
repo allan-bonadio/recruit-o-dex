@@ -7,10 +7,9 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 import SummaryRec from './SummaryRec';
-import {moGetAll} from './Model';
-import {initialState} from './reducer';
+import {moGetAll} from '../Model';
+import {initialState} from '../reducer';
 import './GlobalList.scss';
-
 
 
 

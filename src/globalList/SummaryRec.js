@@ -1,10 +1,11 @@
 /*
 ** SummaryRec -- per-rec summary box, displayed in yellow, seen in global list
 */
+/* eslint-disable eqeqeq, default-case */
 
 import React, {Component} from 'react';
 
-import {rxStore} from './reducer';
+import {rxStore} from '../reducer';
 
 // each recruiter/job cell, shown in the Global List, the front page.
 // This is NOT a redux component because I need multiple ones of them.
