@@ -2,30 +2,6 @@
 
 This project is still early in development.  Sorry if it doesn't work for you.
 
-## wish list
-whoa boy.  What new features do we want?
-
-- ability to duplicate a record
-- more automatic coordination between rodex and calendar
-- Break up control panel into several tabs:
-	- rec
-	- JSON
-	- engagements
-	- notes
-- add fields: rate/salary, location, what company does
-- ability to search for string in ALL fields
-- use double click instead of click to  open summmaries
-
-
-## subsystems
-* rodexServer.js - ajax server that talks to mongo.  standalone file run on nodejs.
-* MongoDB - typical installation
-* webapp in src, consisting of
-	* ReactJS
-	* my code
-	* webpack, standard with react
-
-
 ## To Run
 ### once to install
 #### install the software
@@ -92,6 +68,15 @@ When they can you, do this to reset the DB:
 - use Robo 3T to browse the database.  Select all records, and rightclick, delete, OK.
 - If there's no connection for Robo3T, create a new one (that blue Create button).  Local, no SSL or SSH, default everything.
 
+## subsystems
+* rodexServer.js - ajax server that talks to mongo.  standalone file run on nodejs.
+* MongoDB - typical installation
+* webapp in src, consisting of
+	* ReactJS
+	* my code
+	* webpack, standard with react
+
+
 ## backups
 
 See backup directory for all the backup tools and archives.
@@ -106,17 +91,25 @@ mongorestore --db=jobs --collection=rec2020  recruiters.bson
 
 # Buglist / Wishlist
 
-- control panel: make tabs for different parts, it's too crouded!
-	• info for the initial blanks
-	• one for JD only
-	• one for JSON only
-	• one for engagements
+whoa boy.  What new features do we want?
 
-- want a way to copy info for a recruiter from other records
+- ability to duplicate a record
+- more automatic coordination between rodex and calendar
+- control panel: make tabs for different parts, it's too crouded!
+	- info for the initial/rec blanks
+	- one for JD only
+	- one for JSON only
+	- one for engagements
+	- notes
+- add fields: rate/salary, location, what company does
+- ability to search for string in ALL fields
 
 - insert more fields into copyout for Quick+ button for Calendar
 
 - fix lint warnings
+
+
+
 
 # ----✁--------- react boilerplate readme ------✁--------
 
