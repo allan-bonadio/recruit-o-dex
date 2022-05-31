@@ -8,8 +8,8 @@
 		"jquery": "^3.6.0",
 		"mongodb": "^2.2.33",
 		"popper.js": "^1.14.3",
-		"react": "^16.0.0",
-		"react-dom": "^16.0.0",
+		"react": "^16.14.0",
+		"react-dom": "^16.14.0",
 		"react-redux": "^5.0.7",
 		"react-scripts": "^3.0.1",
 		"reactstrap": "^6.3.0",
@@ -25,7 +25,7 @@
 		"enzyme": "^3.4.1",
 		"enzyme-adapter-react-16": "^1.2.0",
 		"eslint-plugin-react": "^7.12.3",
-		"sass": "^1.51.0"
+		"sass": "^1.52.1"
 	},
 	"browserslist": {}
 }
