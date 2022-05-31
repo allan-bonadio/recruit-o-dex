@@ -24,7 +24,7 @@ console.info('constructed SummaryRec');
 
 		// for each field, make a <div with the current value in it
 		let Field = (props) => {
-console.info('executing Field');
+			//console.info('executing Field');
 
 			return <div className={'summary-field '+ props.name}>
 						{props.record ? props.record[props.name] : ''}

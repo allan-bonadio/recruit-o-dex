@@ -136,7 +136,7 @@ export class GlobalList extends Component {
 
 	// a click on the New Rec button to raise the control panel with a prospective rec
 	clickNewRec(ev) {
-		this.props.dispatch({type: 'START_ADD_RECORD'})
+		this.props.dispatch({type: 'START_ADD_RECORD'});
 	}
 
 	/* *********************************************************** refresher */
@@ -151,7 +151,7 @@ export class GlobalList extends Component {
 
 	// called by several places
 	static mouseMoved() {
-		console.info(`mouse moves  ⏰`);
+		//console.info(`mouse moves  ⏰`);
 		GlobalList.latestMouseMove = Date.now();
 	}
 
