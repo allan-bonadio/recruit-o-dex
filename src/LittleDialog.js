@@ -14,10 +14,10 @@ import {connect} from 'react-redux';
 export class LittleDialog extends Component {
 	constructor(props) {
 		super(props);
-		
+
 		// gee can i have a non-redux component in a redux app?
 		////this.state = {modal: false};
-		
+
 		LittleDialog.me = this;
 		this.clickOk = this.clickOk.bind(this);
 		this.clickCancel = this.clickCancel.bind(this);
@@ -25,7 +25,7 @@ console.info('constructed LittleDialog');
 	}
 
 	render() {
-console.info('rendering LittleDialog');
+		//console.info('rendering LittleDialog');
 		return (
 			<div className='little-dialog' >
 				<Modal isOpen={this.props.modal} >
@@ -42,14 +42,14 @@ console.info('rendering LittleDialog');
 			</div>
 		);
 	}
-	
+
 	clickOk(ev) {
 		this.props.dispatch({type: 'CLOSE_LITTLE_DIALOG'});
 		if (this.props.callback)
 			this.props.callback('ok', this.props.message);
 		////this.setState({modal: false});
 	}
-	
+
 	clickCancel(ev) {
 		this.props.dispatch({type: 'CLOSE_LITTLE_DIALOG'});
 		if (this.props.callback)
@@ -67,11 +67,11 @@ console.info('rendering LittleDialog');
 				message: action.message,
 				callback: action.callback,
 			},
-			
+
 		};
 		return state;
 	}
-	
+
 	// reducer handler - get rid of dialog
 	static closeLittleDialog(state, action) {
 		state = {
@@ -79,13 +79,13 @@ console.info('rendering LittleDialog');
 			littleDialog: {
 				modal: false,
 			},
-			
+
 		};
 		return state;
 	}
-	
+
 	/******************************************************************* end-user functions */
-	
+
 	// call this to make a popup alert = dialog with simple message.
 	// Actual dialog comes up just after, in the next event loop
 	static alert(title, message, callback) {
@@ -93,18 +93,18 @@ console.info('rendering LittleDialog');
 		// cannot dispatch from inside a reducer, so do it later
 		setTimeout(() => {
 			LittleDialog.me.props.dispatch({
-				type: 'OPEN_LITTLE_DIALOG', 
+				type: 'OPEN_LITTLE_DIALOG',
 				title,
 				message,
 				callback,
 			});
 		}, 0);
 	}
-	
+
 }
 
 function mapStateToProps(state) {
-	console.info("MS2P little dialog");
+	//console.info("MS2P little dialog");
 	return state ? state.littleDialog : {};
 }
 

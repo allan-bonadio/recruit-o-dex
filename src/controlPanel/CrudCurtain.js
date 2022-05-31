@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+import {rxStore} from '../reducer';
 
 import LoadSave from '../LoadSave';
 
@@ -15,12 +16,14 @@ export class CrudCurtain extends Component {
 		super(props);
 		CrudCurtain.me = this;
 		this.curtainClick = this.curtainClick.bind(this);
-console.info('constructed CrudCurtain');
+		//console.info('constructed CrudCurtain');
 	}
 
 	// clicking on the CrudCurtain does a Save
 	curtainClick(ev) {
-		LoadSave.this.props.selectedSerial(this.props.selectedSerial);
+		let state = rxStore.getState();
+
+		LoadSave.saveAddEditRecord(state.controlPanel.selectedSerial);
 	}
 
 	render() {

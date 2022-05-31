@@ -121,7 +121,7 @@ console.info('constructed Engagements');
 
 
 	render() {
-console.info('rendering Engagements');
+		//console.info('rendering Engagements');
 		let p = this.props;
 		let es = p.engagements || [];  // the saved ones for this rec or undefined if none
 

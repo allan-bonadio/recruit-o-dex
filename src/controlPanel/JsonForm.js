@@ -109,7 +109,7 @@ console.info('constructed JsonForm');
 	}
 
 	render() {
-console.info('rendering JsonForm');
+		//console.info('rendering JsonForm');
 		// if jsonText is there, it's the true text, otherwise use whatever record we have
 		////console.log('jf render this.props', this.props);////
 		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.controlPanel.editingRecord);
@@ -126,7 +126,7 @@ console.info('rendering JsonForm');
 }
 
 function mapStateToProps(state) {
-	console.info("MS2P json form");
+	//console.info("MS2P json form");
 	return {controlPanel: state.controlPanel, };
 }
 

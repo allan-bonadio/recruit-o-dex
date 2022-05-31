@@ -20,7 +20,7 @@ console.info('constructed SummaryRec');
 	}
 
 	render() {
-console.info('rendering SummaryRec');
+		//console.info('rendering SummaryRec');
 
 		// for each field, make a <div with the current value in it
 		let Field = (props) => {

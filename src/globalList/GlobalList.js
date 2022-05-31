@@ -299,7 +299,7 @@ export class GlobalList extends Component {
 
 	// returns a naked array of all the cells
 	render() {
-		console.info('rendering GlobalList');
+		//console.info('rendering GlobalList');
 		let titleCell = this.renderTitleCell();
 		let list = this.renderBodyCells();
 
@@ -312,7 +312,7 @@ export class GlobalList extends Component {
 }
 
 function mapStateToProps(state) {
-	console.info("MS2P global list");
+	//console.info("MS2P global list");
 	if (state) {
 		return {
 			wholeList: state.wholeList,
