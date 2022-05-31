@@ -8,9 +8,16 @@ import {connect} from 'react-redux';
 
 import SummaryRec from './SummaryRec';
 import {moGetAll} from '../Model';
-import {initialState} from '../reducer';
+import {rxStore, initialState} from '../reducer';
+import {} from '../reducer';
 import './GlobalList.scss';
 
+/* eslint-disable no-self-assign  */
+
+// refresher timing
+const CHECKING_PERIOD = 3600 * 1000;
+const MOUSE_INACTION_DELAY = 60 * 1000 ;
+const PAGE_LOAD_AGE = 3 * 3600 * 1000;
 
 
 /* *************************************************************************** sorters */
@@ -81,7 +88,158 @@ export class GlobalList extends Component {
 			newCriterion: localStorage.sortCriterion || 0});
 		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
 			newName: localStorage.collectionName || 'recruiters'});
+		this.setupRefresher();
 	}
+
+
+	// reducer handler
+	static setWholeList(wholeList, action) {
+		return {
+			...wholeList,
+
+			// all new data
+			recs: action.recs,
+		};
+	}
+
+	static resetSelection(controlPanel, action) {
+		return initialState.controlPanel;
+	}
+
+	// called at various times to re-read the jobs table and display it again,
+	// and to set the displayed collection.  Often the collection
+	// name is as stored in the Store
+	updateList(collectionName) {
+		let p = this.props;
+		moGetAll(collectionName, (err, newRecs) => {
+			if (err)
+				p.dispatch({type: 'ERROR_GET_ALL', errorObj: err})
+			else {
+				let list = GlobalList.sortRecords(newRecs, this.props.wholeList.sortCriterion);
+
+			 	// triggers a repaint, using this list of new raw data presumably from mongo
+				this.props.dispatch({type: 'SET_WHOLE_LIST', recs: list});
+				this.props.dispatch({type: 'RESET_SELECTION'});
+			}
+		});
+	}
+
+	static errorGetAll(wholeList, action) {
+		console.error("ERROR_GET_ALL", action);
+		// if mongo & server aren't started,
+		// GlobalList is undefined and I can't even check for it!!
+		return {
+			...wholeList,
+			globalListErrorObj: action.errorObj,
+		};
+	}
+
+	// a click on the New Rec button to raise the control panel with a prospective rec
+	clickNewRec(ev) {
+		this.props.dispatch({type: 'START_ADD_RECORD'})
+	}
+
+	/* *********************************************************** refresher */
+	// reload the page every so often so the colors don't misrepresent the ages
+
+	// called once when page reloads
+	setupRefresher() {
+		GlobalList.pageLoaded = Date.now();
+		setInterval(GlobalList.checkTheTime, CHECKING_PERIOD);
+		GlobalList.latestMouseMove = GlobalList.pageLoaded = Date.now();
+	}
+
+	// called by several places
+	static mouseMoved() {
+		console.info(`mouse moves  ⏰`);
+		GlobalList.latestMouseMove = Date.now();
+	}
+
+	// called when we decide it's time to refresh
+	static tryRefresh() {
+		// not while control panel is up!!
+		if (rxStore.getState().controlPanel.editingRecord) {
+			console.info(`not while control panel is up!!  ⏰`);
+			return;
+		}
+
+		window.location = window.location;
+	}
+
+	// runs every hour or so
+	static checkTheTime() {
+		let now = Date.now();
+
+		console.info(`checkTheTime  ⏰   at ${(new Date()).toLocaleTimeString()}, page load age: ${(now - GlobalList.pageLoaded)/1000}, mouse inaction: ${(now - GlobalList.latestMouseMove)/1000}`);
+
+		if (now - GlobalList.pageLoaded > PAGE_LOAD_AGE &&
+			now - GlobalList.latestMouseMove > MOUSE_INACTION_DELAY) {
+			GlobalList.tryRefresh();
+		}
+	}
+
+	/* *********************************************************** searching */
+	// any input in the search box
+	changeSearchQueryEv(ev) {
+		this.props.dispatch({type: 'CHANGE_SEARCH_QUERY', newQuery: ev.target.value});
+	}
+
+	static changeSearchQuery(wholeList, action) {
+		return {
+			...wholeList,
+			searchQuery: action.newQuery,
+		};
+	}
+
+	/* *********************************************************** sorting */
+	static sortRecords(recs, criterion) {
+		return [...recs].sort(sorters[criterion].compare);
+	}
+
+	// any change in the menu, direct event handler
+	changeSortCriterionEv(ev) {
+		this.props.dispatch({type: 'CHANGE_SORT_CRITERION',
+			newCriterion: ev.target.value});
+	}
+
+	// same, called from the resolver
+	static changeSortCriterion(wholeList, action) {
+		// do the sort
+		let newRecs = GlobalList.sortRecords(wholeList.recs,
+			action.newCriterion);
+
+		localStorage.sortCriterion = action.newCriterion;
+
+		// now set the state that way
+		return {
+			...wholeList,
+			sortCriterion: action.newCriterion,
+			recs: newRecs,
+		};
+	}
+
+	/* *********************************************************** which collection */
+	changeCollectionNameEv(ev) {
+		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
+			newName: ev.target.value});
+	}
+
+	// same, called from the resolver
+	static changeCollectionName(wholeList, action) {
+		// re-retrieve with different collection
+
+		GlobalList.me.updateList(action.newName);
+
+		localStorage.collectionName = action.newName;
+
+		return {
+			...wholeList,
+			collectionName: action.newName,
+			////recs: newRecs,
+		};
+	}
+
+	/* *********************************************************** rendering */
 
 	// header cell with image and New button
 	renderTitleCell() {
@@ -151,114 +309,6 @@ export class GlobalList extends Component {
 		return list;
 	}
 
-	// reducer handler
-	static setWholeList(wholeList, action) {
-		return {
-			...wholeList,
-
-			// all new data
-			recs: action.recs,
-		};
-	}
-
-	static resetSelection(controlPanel, action) {
-		return initialState.controlPanel;
-	}
-
-	// called at various times to re-read the jobs table and display it again,
-	// and to set the displayed collection.  Often the collection
-	// name is as stored in the Store
-	updateList(collectionName) {
-		let p = this.props;
-		moGetAll(collectionName, (err, newRecs) => {
-			if (err)
-				p.dispatch({type: 'ERROR_GET_ALL', errorObj: err})
-			else {
-				let list = GlobalList.sortRecords(newRecs, this.props.wholeList.sortCriterion);
-
-			 	// triggers a repaint, using this list of new raw data presumably from mongo
-				this.props.dispatch({type: 'SET_WHOLE_LIST', recs: list});
-				this.props.dispatch({type: 'RESET_SELECTION'});
-			}
-		});
-	}
-
-	static errorGetAll(wholeList, action) {
-		console.error("ERROR_GET_ALL", action);
-		// if mongo & server aren't started,
-		// GlobalList is undefined and I can't even check for it!!
-		return {
-			...wholeList,
-			globalListErrorObj: action.errorObj,
-		};
-	}
-
-	// a click on the New Rec button to raise the control panel with a prospective rec
-	clickNewRec(ev) {
-		this.props.dispatch({type: 'START_ADD_RECORD'})
-	}
-
-	/* *********************************************************** searching */
-	// any input in the search box
-	changeSearchQueryEv(ev) {
-		this.props.dispatch({type: 'CHANGE_SEARCH_QUERY', newQuery: ev.target.value});
-	}
-
-	static changeSearchQuery(wholeList, action) {
-		return {
-			...wholeList,
-			searchQuery: action.newQuery,
-		};
-	}
-
-	/* *********************************************************** sorting */
-	static sortRecords(recs, criterion) {
-		return [...recs].sort(sorters[criterion].compare);
-	}
-
-	// any change in the menu, direct event handler
-	changeSortCriterionEv(ev) {
-		this.props.dispatch({type: 'CHANGE_SORT_CRITERION',
-			newCriterion: ev.target.value});
-	}
-
-	// same, called from the resolver
-	static changeSortCriterion(wholeList, action) {
-		// do the sort
-		let newRecs = GlobalList.sortRecords(wholeList.recs,
-			action.newCriterion);
-
-		localStorage.sortCriterion = action.newCriterion;
-
-		// now set the state that way
-		return {
-			...wholeList,
-			sortCriterion: action.newCriterion,
-			recs: newRecs,
-		};
-	}
-
-	/* *********************************************************** which collection */
-	changeCollectionNameEv(ev) {
-		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
-			newName: ev.target.value});
-	}
-
-	// same, called from the resolver
-	static changeCollectionName(wholeList, action) {
-		// re-retrieve with different collection
-
-		GlobalList.me.updateList(action.newName);
-
-		localStorage.collectionName = action.newName;
-
-		return {
-			...wholeList,
-			collectionName: action.newName,
-			////recs: newRecs,
-		};
-	}
-
 }
 
 function mapStateToProps(state) {
@@ -270,7 +320,7 @@ function mapStateToProps(state) {
 		};
 	}
 	else {
-		// during startup, no state in place yet
+		// during startup, no state in place yet so fake it
 		return {
 			wholeList:  {
 				recs: [],

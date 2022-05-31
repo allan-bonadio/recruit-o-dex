@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import $ from "jquery";
 
-import {globalListUpdateList} from '../globalList/GlobalList';
+import GlobalList, {globalListUpdateList} from '../globalList/GlobalList';
 import LoadSave from '../LoadSave';
 import LittleDialog from '../LittleDialog';
 import JsonForm from './JsonForm';
@@ -142,6 +142,8 @@ console.info('rendering ControlPanel');
 
 	// every yank of the sleeve comes through here
 	mouseMove(ev) {
+		GlobalList.mouseMoved();
+
 		// through normal fast means
 		this.cPanelX += ev.clientX - this.lastX;
 		this.cPanelY += ev.clientY - this.lastY;
