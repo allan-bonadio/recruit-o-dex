@@ -31,10 +31,10 @@ class ControlPanel extends Component {
 		this.mouseMove = this.mouseMove.bind(this);
 		this.mouseUp = this.mouseUp.bind(this);
 
-		this.saveEditClick = this.saveEditClick.bind(this);
 		this.saveAddClick = this.saveAddClick.bind(this);
+		this.saveEditClick = this.saveEditClick.bind(this);
+		this.dupRecClick = this.dupRecClick.bind(this);
 
-// 		this.state = {display: 'none'};
 		this.cPanelX = 100;
 		this.cPanelY = 200;  // for doing it quickly
 console.info('constructed ControlPanel');
@@ -71,7 +71,7 @@ console.info('constructed ControlPanel');
 			<div style={{display: 'block'}}>
 				<button type='button'
 							className='dup-button main-button'
-							onClick={ControlPanel.dupRec}>
+							onClick={this.dupRecClick}>
 					Dup
 				</button>
 			</div>
@@ -103,6 +103,10 @@ console.info('constructed ControlPanel');
 		LoadSave.saveAddEditRecord(-1);
 	}
 
+	dupRecClick(ev) {
+		LoadSave.dupCurrentRecord(this.props.selectedSerial);
+	}
+
 	// Cancel current editing, either during edit or add.   Can be used as event handler or just a function to call
 	static cancelControlPanel(ev) {
 		// reload the screen. kindof overkill but works
@@ -111,10 +115,6 @@ console.info('constructed ControlPanel');
 		rxStore.dispatch({type: 'CANCEL_EDIT_ADD'});
 	}
 
-
-	dupRec(ev) {
-
-	}
 
 	// got error during saving.  do dialog.
 	static errorPutPost(controlPanel, action) {

@@ -106,13 +106,17 @@ function controlPanelReducer(controlPanel = initialState.wholeList, action) {
 		return GlobalList.resetSelection(controlPanel, action);
 
 	/*********************************************** control panel operations */
+	case 'START_ADD_RECORD':
+		// create and load a new record into control panel (after user clicked New Rec)
+		return LoadSave.startAddRecord(controlPanel, action);
+
 	case 'START_EDIT_RECORD':
 		// select and load a record into control panel (after user clicks it in the GlobalList)
 		return LoadSave.startEditRecord(controlPanel, action);
 
-	case 'START_ADD_RECORD':
-		// create and load a new record into control panel (after user clicked New Rec)
-		return LoadSave.startAddRecord(controlPanel, action);
+	case 'START_DUP_RECORD':
+		// Make a new one by cloning the currently edited one.  After that, pretend to be an Add.
+		return LoadSave.startDupRecord(controlPanel, action);
 
 	case 'SAVE_ADD_START':
 	case 'SAVE_EDIT_START':

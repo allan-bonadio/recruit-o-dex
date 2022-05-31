@@ -40,7 +40,22 @@ export class LoadSave {
 		return record;
 	}
 
-	/********************************************** Edit Existing */
+	/********************************************** Starting add/edit/dup */
+	// action handlers
+
+	// start editing a new blank record.  Called when user clicks New Rec.
+	static startAddRecord(controlPanel, action) {
+		// the template for a new Recruiter
+		let initial = {status: 'applied', created: timestampString()};
+
+		// most important, make a controlPanel pointing to the new prototype rec
+		return {
+			...controlPanel,
+			originalBeforeChanges: initial,  // brand new
+			editingRecord: initial,
+			selectedSerial: -1,    // says this is add, not edit
+		};
+	}
 
 	// sets the existing rec passed in as the selected record for the control panel.
 	// called by reducer()
@@ -58,86 +73,35 @@ export class LoadSave {
 		};
 	}
 
+	// reducer: a click event on Save to save a new rec: before save
+	static saveAddEditStart(controlPanel, action) {
+		return {...controlPanel, saving: true,};
+	}
 
-	// a click event on Save, or just on the background.  Does the request and dispatches actions.
-//	static saveEditRecord() {
-// 		let cp = rxStore.getState().controlPanel;
-//
-// 		// wait!  has there been any changes?  If not, don't actually save, leave it.
-// 		if (noChanges(cp)) {
-// 			ControlPanel.cancelControlPanel()
-// 			return;
-// 		}
-//
-// 		rxStore.dispatch({type: 'SAVE_EDIT_START'});
-//
-// 		// update, will happen soon.  Don't update the recs till the save is successful!
-// 		var rec = LoadSave.cleanupRecord(cp.editingRecord);
-// 		rec.updated = timestampString();
-//
-// 		moPutOne(rec, function(errorObj) {
-// 			if (! errorObj) {
-// 				rxStore.dispatch({type: 'SAVE_EDIT_DONE'});
-//
-// 				// reload the screen. kindof overkill but works
-// 				globalListUpdateList();
-// 			}
-// 			else
-// 				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
-// 		});
-//
-// 	}
+	// reducer: done with save
+	static saveAddEditDone(controlPanel, action) {
+		return {...controlPanel, saving: false};
+	}
 
+	// kindof a mix of Add and Edit
+	static startDupRecord(controlPanel, action) {
+		let record = _.cloneDeep(action.record);
+		delete record._id;  // tells mongo that it's new
 
-// 	// resolver for initial PUT request - before doing the req
-// 	static saveEditStart(controlPanel, action) {
-// 		return {...controlPanel, saving: true};
-// 	}
-//
-// 	static saveEditDone(controlPanel, action) {
-// 		return {...controlPanel, saving: false};
-// 	}
-
-
-	/********************************************** Add New */
-	// start editing a new blank record.  Called when user clicks New Rec.
-	static startAddRecord(controlPanel, action) {
-		// the template for a new Recruiter
-		let initial = {status: 'applied', created: timestampString()};
-
-		// most important, make a controlPanel pointing to the new prototype rec
+		// the NEW selection to be handed in to state
 		return {
 			...controlPanel,
-			originalBeforeChanges: initial,  // brand new
-			editingRecord: initial,
-			selectedSerial: -1,    // says this is add, not edit
+			originalBeforeChanges:  record,
+
+			// setting the editingRecord will cause the control panel to appear
+			editingRecord: _.cloneDeep(record),  // this copy gets changed during editing
+			selectedSerial: -1  // makes it new
 		};
 	}
 
-	// call this to save the record after user is done filling in blanks
-// 	static saveAddRecord() {
-// 		let cp = rxStore.getState().controlPanel;
-// 		if (noChanges(cp)) {
-// 			ControlPanel.cancelControlPanel();  // don't save empty record
-// 			return;
-// 		}
-//
-// 		rxStore.dispatch({type: 'SAVE_ADD_START'});
-//
-// 		var rec = LoadSave.cleanupRecord(cp.editingRecord);
-// 		moPostOne(rec, function(errorObj) {
-// 			if (! errorObj) {
-// 				rxStore.dispatch({type: 'SAVE_ADD_DONE', controlPanel: cp});
-//
-// 				// reload the screen. kindof overkill but works
-// 				globalListUpdateList();
-// 			}
-// 			else
-// 				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
-// 		});
-// 	}
 
 	/********************************************************************** add & edit */
+	// initiate commands
 
 		// call this to save the record after user is done filling in blanks.
 	// selectedSerial = -1 for Add, 0...n for edit
@@ -177,16 +141,13 @@ export class LoadSave {
 		});
 	}
 
+	// duplicate.  If currently edited rec has unsaved changes, those go to the new rec instead of the old
+	static dupCurrentRecord(selectedSerial) {
+		let cp = rxStore.getState().controlPanel;
 
-	// reducer: a click event on Save to save a new rec: before save
-	static saveAddEditStart(controlPanel, action) {
-		return {...controlPanel, saving: true,};
+		rxStore.dispatch({type: 'START_DUP_RECORD', record: cp.editingRecord});
 	}
 
-	// reducer: done with save
-	static saveAddEditDone(controlPanel, action) {
-		return {...controlPanel, saving: false};
-	}
 
 
 	/********************************************************************** cancel */
