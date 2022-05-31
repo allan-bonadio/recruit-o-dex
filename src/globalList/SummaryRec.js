@@ -4,8 +4,9 @@
 /* eslint-disable eqeqeq, default-case */
 
 import React, {Component} from 'react';
-
 import {rxStore} from '../reducer';
+
+import GlobalList from './GlobalList';
 
 // each recruiter/job cell, shown in the Global List, the front page.
 // This is NOT a redux component because I need multiple ones of them.
@@ -38,7 +39,7 @@ console.info('executing Field');
 			: itsAge > 30 ? 'monthOld'
 				: itsAge > 7 ? 'weekOld'
 					: itsAge > 1 ? 'dayOld'
-						: itsAge > .08 ? 'hoursOld' : '';
+						: itsAge > .08 ? 'hoursOld' : 'minutesOld';
 		return <section
 				className={'summary '+
 					(this.props.selectedSerial == this.props.serial
@@ -72,6 +73,8 @@ console.info('executing Field');
 
 	// see if it moved
 	mouseMoveEv(ev) {
+		GlobalList.mouseMoved();
+
 		if (!this.down)
 			return;
 		if (Math.abs(this.down.x - ev.clientX) + Math.abs(this.down.y - ev.clientY) > 5)

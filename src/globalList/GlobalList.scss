@@ -29,9 +29,14 @@ section.summary.selected {
 	/* rgb(212, 227, 255) */
 }
 
+/* less than 2 hrs */
+section.summary.minutesOld {
+	background-color: #fff;
+}
+
 /* older than ... 2 hours? */
 section.summary.hoursOld {
-	background-color: #ffa;
+	background-color: #ffe;
 }
 
 /* older than a day */
@@ -46,12 +51,12 @@ section.summary.weekOld {
 
 /* older than a month */
 section.summary.monthOld {
-	background-color: #dd8;
+	background-color: #dd7;
 }
 
 /* older than 3 months */
 section.summary.quarterOld {
-	background-color: #bb8;
+	background-color: #bb4;
 }
 
 
