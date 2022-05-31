@@ -12,8 +12,8 @@ import GlobalList from './globalList/GlobalList';
 import './App.scss';
 import {rxStore} from './reducer';
 
-import ControlPanel from './controlPanel/ControlPanel';
-import CrudCurtain from './controlPanel/CrudCurtain';
+import EditPanel from './editPanel/EditPanel';
+import CrudCurtain from './editPanel/CrudCurtain';
 ////import {getBySerial} from './Model';
 
 import LittleDialog from './LittleDialog';
@@ -25,7 +25,7 @@ console.info('executing App');
 		<Provider store={rxStore}>
 			<div className="App">
 				<div>
-					<ControlPanel />
+					<EditPanel />
 					<GlobalList />
 				</div>
 				<CrudCurtain />

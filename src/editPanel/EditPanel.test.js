@@ -10,27 +10,27 @@ import {configure, shallow, mount, render} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 import {rxStore} from '../reducer';
-import {ControlPanel} from './ControlPanel';
+import {EditPanel} from './EditPanel';
 
 configure({ adapter: new Adapter() });
 
-xdescribe('<ControlPanel', () => {
+xdescribe('<EditPanel', () => {
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
 		console.info('rxStore:', rxStore, 'div~', div);
-		ReactDOM.render(<Provider store={rxStore}><ControlPanel /></Provider>, div);
-		let pcp = <Provider store={rxStore}><ControlPanel /></Provider>;
+		ReactDOM.render(<Provider store={rxStore}><EditPanel /></Provider>, div);
+		let pcp = <Provider store={rxStore}><EditPanel /></Provider>;
 		ReactDOM.render(pcp, div);
 	});
 
 	it('should be a div', () => {
-		let cp = <ControlPanel />;
+		let cp = <EditPanel />;
 		const wrapper = shallow(cp);
 		expect(wrapper.is('div#control-panel')).toBeTruthy();
 	});
 
 	it('should have some buttons', () => {
-		const wrapper = shallow(<ControlPanel />);
+		const wrapper = shallow(<EditPanel />);
 
 		console.log('wrap.find button: ', wrapper.find('button.save-button'));
 		expect(wrapper.find('button.save-button').length).toBe(1);

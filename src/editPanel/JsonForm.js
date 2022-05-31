@@ -48,7 +48,7 @@ console.info('constructed JsonForm');
 			// try parsing, and turn off the error message if it's good
 			goodTree = JSON.parse(goodJson);
 			//$('div.json-errors').text('');
-			////theControlPanel.setCPRecord(goodJson);
+			////theEditPanel.setCPRecord(goodJson);
 
 			// now change the whole value of the record tree
 			rxStore.dispatch({type: 'CHANGE_TO_JSON', newRecord: goodTree});
@@ -86,12 +86,12 @@ console.info('constructed JsonForm');
 	}
 
 	// action handler for a keystroke in the json box
-	static changeToJson(controlPanel, action) {
+	static changeToJson(editPanel, action) {
 		////state = _.cloneDeep(state);
 		if (action.newRecord) {
 			// good json parsed to tree, replace record
 			return {
-				...controlPanel,
+				...editPanel,
 				editingRecord: action.newRecord,
 				jsonText: null,
 				errorMessage: null,
@@ -101,7 +101,7 @@ console.info('constructed JsonForm');
 			// json that flunked the parser.   Don't touch the record, just these others.
 				// leave the selection as-is, record doesn't change
 			return {
-				...controlPanel,
+				...editPanel,
 				jsonText: action.newJson,
 				errorMessage: action.errorMessage,
 			};
@@ -112,7 +112,7 @@ console.info('constructed JsonForm');
 		//console.info('rendering JsonForm');
 		// if jsonText is there, it's the true text, otherwise use whatever record we have
 		////console.log('jf render this.props', this.props);////
-		let text = this.props.controlPanel.jsonText || stringifyJson(this.props.controlPanel.editingRecord);
+		let text = this.props.editPanel.jsonText || stringifyJson(this.props.editPanel.editingRecord);
 
 		////rxStore.getState().jsonText || rxStore.getState().record);
 		////console.log(`Text is '${text}', cuz `+ (this.state.jsonText ? 'uncompiled test' : 'compiled object'));
@@ -120,14 +120,14 @@ console.info('constructed JsonForm');
 			<textarea className="json-edit" onChange={this.typeInJson}
 						value={text}>
 			</textarea>
-			<div className='json-errors'>{this.props.controlPanel.errorMessage}</div>
+			<div className='json-errors'>{this.props.editPanel.errorMessage}</div>
 		</section>;
 	}
 }
 
 function mapStateToProps(state) {
 	//console.info("MS2P json form");
-	return {controlPanel: state.controlPanel, };
+	return {editPanel: state.editPanel, };
 }
 
 export default connect(mapStateToProps)(JsonForm);

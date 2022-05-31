@@ -8,7 +8,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
-////import {userChangedRecord} from './ControlPanel';
+////import {userChangedRecord} from './EditPanel';
 import {Engagements} from './Engagements';
 import {rxStore} from '../reducer';
 
@@ -104,18 +104,18 @@ console.info('constructed RecForm');
 				fieldName: targ.name, newValue: targ.value});
 	}
 
-	static changeToRecord(controlPanel, action) {
+	static changeToRecord(editPanel, action) {
 		// action.fieldName and .newValue tells you what changed,
-		controlPanel = {...controlPanel,
-			editingRecord: {...controlPanel.editingRecord,
+		editPanel = {...editPanel,
+			editingRecord: {...editPanel.editingRecord,
 				[action.fieldName]: action.newValue}};
-		return controlPanel;
+		return editPanel;
 	}
 }
 
 function mapStateToProps(state) {
 	//console.info("MS2P rec form");
-	return state.controlPanel;
+	return state.editPanel;
 }
 
 export default connect(mapStateToProps)(RecForm);

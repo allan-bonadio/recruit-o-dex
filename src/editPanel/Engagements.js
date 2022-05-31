@@ -180,11 +180,11 @@ console.info('constructed Engagements');
 	}
 
 	// reducer for such change
-	static changeToEngagement(controlPanel, action) {
+	static changeToEngagement(editPanel, action) {
 		// find where it goes, creating stuff as needed
-		if (! controlPanel.editingRecord.engagements)
-			controlPanel.editingRecord.engagements = [defaultEngagement()]
-		let q = controlPanel.editingRecord.engagements
+		if (! editPanel.editingRecord.engagements)
+			editPanel.editingRecord.engagements = [defaultEngagement()]
+		let q = editPanel.editingRecord.engagements
 		if (! q[action.serial])
 			q[action.serial] = defaultEngagement();  // used the bottom row = new row
 		q = q[action.serial];
@@ -192,14 +192,14 @@ console.info('constructed Engagements');
 		// actually set the value into the engagement
 		q[action.fieldName] = action.newValue;
 
-		controlPanel = {...controlPanel,
-			editingRecord: {...controlPanel.editingRecord,
-				engagements: [...controlPanel.editingRecord.engagements]
+		editPanel = {...editPanel,
+			editingRecord: {...editPanel.editingRecord,
+				engagements: [...editPanel.editingRecord.engagements]
 			}
 		};
-		controlPanel.editingRecord.engagements[action.serial] = q;
+		editPanel.editingRecord.engagements[action.serial] = q;
 
-		return controlPanel;
+		return editPanel;
 	}
 
 	// clean out empty engagements including that 'new' one at the end;
@@ -285,11 +285,11 @@ console.info('constructed Engagements');
 	}
 
 	// reducer for above
-	static pasteToEngagement(controlPanel, action) {
+	static pasteToEngagement(editPanel, action) {
 		// find where it goes, creating stuff as needed
-		if (! controlPanel.editingRecord.engagements)
-			controlPanel.editingRecord.engagements = [defaultEngagement()]
-		let q = controlPanel.editingRecord.engagements
+		if (! editPanel.editingRecord.engagements)
+			editPanel.editingRecord.engagements = [defaultEngagement()]
+		let q = editPanel.editingRecord.engagements
 		if (! q[action.serial])
 			q[action.serial] = defaultEngagement();  // used the bottom row = new row
 		q = q[action.serial];
@@ -301,14 +301,14 @@ console.info('constructed Engagements');
 		q.notes = action.newNotes.trim();
 		console.log("pasteToEngagement: new eng is ", q.when, q);
 
-		controlPanel = {...controlPanel,
-			editingRecord: {...controlPanel.editingRecord,
-				engagements: [...controlPanel.editingRecord.engagements]
+		editPanel = {...editPanel,
+			editingRecord: {...editPanel.editingRecord,
+				engagements: [...editPanel.editingRecord.engagements]
 			}
 		};
-		controlPanel.editingRecord.engagements[action.serial] = q;
+		editPanel.editingRecord.engagements[action.serial] = q;
 
-		return controlPanel;
+		return editPanel;
 	}
 
 }
@@ -316,9 +316,9 @@ console.info('constructed Engagements');
 function mapStateToProps(state) {
 	debugger;  // this never gets hit?
 	console.log("|| Engagements#mapStateToProps: state=", state);
-	let s = state.controlPanel;
+	let s = state.editPanel;
 	return {
-		controlPanel: s,
+		editPanel: s,
 		engagements: s.engagements,
 	};
 }

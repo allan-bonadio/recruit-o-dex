@@ -8,18 +8,18 @@
 import {createStore, combineReducers} from 'redux';
 
 import LoadSave from './LoadSave';
-import Engagements from './controlPanel/Engagements';
-import ControlPanel from './controlPanel/ControlPanel';
-import RecForm from './controlPanel/RecForm';
-import JsonForm from './controlPanel/JsonForm';
+import Engagements from './editPanel/Engagements';
+import EditPanel from './editPanel/EditPanel';
+import RecForm from './editPanel/RecForm';
+import JsonForm from './editPanel/JsonForm';
 import GlobalList from './globalList/GlobalList';
 import LittleDialog from './LittleDialog';
 
 // the initial, default state.  Try to put in normally-absent fields so we can document them here.
 export const initialState = {
 	// stuff about the control panel, including the selected record
-	controlPanel: {
-		// the record being edited by the ControlPanel; a separate copy.
+	editPanel: {
+		// the record being edited by the EditPanel; a separate copy.
 		// Null means no rec selected.
 		editingRecord: null,
 		selectedSerial: -1,  // index into state.recs or New if <0
@@ -54,12 +54,12 @@ export const initialState = {
 Object.freeze(initialState);
 
 
-////// get me just the .controlPanel property of the state
+////// get me just the .editPanel property of the state
 ////export function getStateSelection() {
 ////	let state = rxStore.getState();
 ////	//console.warn("|| getStateSelection from state", state);
 ////	if (state)
-////		return state.controlPanel;
+////		return state.editPanel;
 ////	else
 ////		return null;  // too early during strtup?
 ////}
@@ -99,64 +99,64 @@ function wholeListReducer(wholeList = initialState.wholeList, action) {
 	return wholeList;
 }
 
-function controlPanelReducer(controlPanel = initialState.wholeList, action) {
+function editPanelReducer(editPanel = initialState.wholeList, action) {
 	switch (action.type) {
 	case 'RESET_SELECTION':
 		// set to no control panel, no record selected
-		return GlobalList.resetSelection(controlPanel, action);
+		return GlobalList.resetSelection(editPanel, action);
 
 	/*********************************************** control panel operations */
 	case 'START_ADD_RECORD':
 		// create and load a new record into control panel (after user clicked New Rec)
-		return LoadSave.startAddRecord(controlPanel, action);
+		return LoadSave.startAddRecord(editPanel, action);
 
 	case 'START_EDIT_RECORD':
 		// select and load a record into control panel (after user clicks it in the GlobalList)
-		return LoadSave.startEditRecord(controlPanel, action);
+		return LoadSave.startEditRecord(editPanel, action);
 
 	case 'START_DUP_RECORD':
 		// Make a new one by cloning the currently edited one.  After that, pretend to be an Add.
-		return LoadSave.startDupRecord(controlPanel, action);
+		return LoadSave.startDupRecord(editPanel, action);
 
 	case 'SAVE_ADD_START':
 	case 'SAVE_EDIT_START':
 		// initiate save after START_ADD_RECORD (after user clicks Add or on drapes
 		// create and load a record into control panel
-		return LoadSave.saveAddEditStart(controlPanel, action);
+		return LoadSave.saveAddEditStart(editPanel, action);
 
 	case 'SAVE_ADD_DONE':
 	case 'SAVE_EDIT_DONE':
 		// success
-		return LoadSave.saveAddEditStart(controlPanel, action);
+		return LoadSave.saveAddEditStart(editPanel, action);
 
 	/********************************************************************** misc */
 
 	case 'CANCEL_EDIT_ADD':
 		// user clicked Cancel button after opening control panel
-		return LoadSave.cancelEditAdd(controlPanel, action);
+		return LoadSave.cancelEditAdd(editPanel, action);
 
 	case 'CHANGE_TO_RECORD':
 		// user typed, backspaced, cut or pasted inside one of those text blanks, or equivalent
-		return RecForm.changeToRecord(controlPanel, action);
+		return RecForm.changeToRecord(editPanel, action);
 
 	case 'CHANGE_TO_ENGAGEMENT':
 		// inside a text blank in an engagement
-		return Engagements.changeToEngagement(controlPanel, action);
+		return Engagements.changeToEngagement(editPanel, action);
 
 	case 'CHANGE_TO_JSON':
 		// user typed etc into the JSON box
-		return JsonForm.changeToJson(controlPanel, action);
+		return JsonForm.changeToJson(editPanel, action);
 
 	case 'PASTE_TO_ENGAGEMENT':
 		// paste an appointment (copy out of Calendar) into an engagement
-		return Engagements.pasteToEngagement(controlPanel, action);
+		return Engagements.pasteToEngagement(editPanel, action);
 
 	case 'ERROR_PUT_POST':
 		// any error from saving to mongo
 		console.error("ERROR_PUT_POST", action);
-		return ControlPanel.errorPutPost(controlPanel, action);
+		return EditPanel.errorPutPost(editPanel, action);
 	}
-	return controlPanel;
+	return editPanel;
 }
 
 function littleDialogReducer(littleDialog = initialState.littleDialog, action) {
@@ -173,7 +173,7 @@ function littleDialogReducer(littleDialog = initialState.littleDialog, action) {
 // unify the reducers
 export const reducer = combineReducers({
 	wholeList: wholeListReducer,
-	controlPanel: controlPanelReducer,
+	editPanel: editPanelReducer,
 	littleDialog: littleDialogReducer,
 });
 

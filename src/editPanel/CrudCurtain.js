@@ -23,7 +23,7 @@ export class CrudCurtain extends Component {
 	curtainClick(ev) {
 		let state = rxStore.getState();
 
-		LoadSave.saveAddEditRecord(state.controlPanel.selectedSerial);
+		LoadSave.saveAddEditRecord(state.editPanel.selectedSerial);
 	}
 
 	render() {
@@ -40,7 +40,7 @@ export class CrudCurtain extends Component {
 
 function mapStateToProps(state) {
 	//console.info("MS2P crud curtain");
-	return state ? state.controlPanel : {};
+	return state ? state.editPanel : {};
 }
 
 export default connect(mapStateToProps)(CrudCurtain);

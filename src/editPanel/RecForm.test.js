@@ -21,12 +21,12 @@ let mockSelection = {
 describe('<RecForm', () => {
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
-		ReactDOM.render(<Provider store={rxStore}><RecForm controlPanel={mockSelection} /></Provider>, div);
+		ReactDOM.render(<Provider store={rxStore}><RecForm editPanel={mockSelection} /></Provider>, div);
 	});
 
 	it('has the right fields and pieces', () => {
 		// count up what I get for a deep render
-		const w = mount(<RecForm controlPanel={{editingRecord: {}}} />);
+		const w = mount(<RecForm editPanel={{editingRecord: {}}} />);
 		////console.log("w dot debug: ", w.debug());////
 
 		expect(w.find('section.edit-col.edit-form').length).toEqual(1);

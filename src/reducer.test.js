@@ -13,17 +13,17 @@ import {rxStore, reducer, initialState} from './reducer';
 
 // for all the functions i gotta test
 import LoadSave from './LoadSave';
-import Engagements from './controlPanel/Engagements';
-import ControlPanel from './controlPanel/ControlPanel';
-import RecForm from './controlPanel/RecForm';
-import JsonForm from './controlPanel/JsonForm';
+import Engagements from './editPanel/Engagements';
+import EditPanel from './editPanel/EditPanel';
+import RecForm from './editPanel/RecForm';
+import JsonForm from './editPanel/JsonForm';
 import GlobalList from './globalList/GlobalList';
 import LittleDialog from './LittleDialog';
 
 // initial state, what it should be
 const iState = {
 	selection: {},
-	controlPanel: {editingRecord: null, selectedSerial: -1,  originalBeforeChanges: null,
+	editPanel: {editingRecord: null, selectedSerial: -1,  originalBeforeChanges: null,
 				jsonText: null, jsonError: null,},
 	littleDialog: {modal: false},
 	recs: [],
@@ -86,7 +86,7 @@ describe('reducer ', () => {
 
 	it('should try ERROR_PUT_POST ', () => {
 		spyOn(console, 'error');
-		testReducerAction(ControlPanel, 'ERROR_PUT_POST');
+		testReducerAction(EditPanel, 'ERROR_PUT_POST');
     	expect(console.error).toHaveBeenCalled();
     	expect(console.error).toHaveBeenCalledWith(
     			"ERROR_PUT_POST",

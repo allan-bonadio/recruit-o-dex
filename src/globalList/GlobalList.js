@@ -102,8 +102,8 @@ export class GlobalList extends Component {
 		};
 	}
 
-	static resetSelection(controlPanel, action) {
-		return initialState.controlPanel;
+	static resetSelection(editPanel, action) {
+		return initialState.editPanel;
 	}
 
 	// called at various times to re-read the jobs table and display it again,
@@ -158,7 +158,7 @@ export class GlobalList extends Component {
 	// called when we decide it's time to refresh
 	static tryRefresh() {
 		// not while control panel is up!!
-		if (rxStore.getState().controlPanel.editingRecord) {
+		if (rxStore.getState().editPanel.editingRecord) {
 			console.info(`not while control panel is up!!  ⏰`);
 			return;
 		}
@@ -316,7 +316,7 @@ function mapStateToProps(state) {
 	if (state) {
 		return {
 			wholeList: state.wholeList,
-			selectedSerial: state.controlPanel.selectedSerial,
+			selectedSerial: state.editPanel.selectedSerial,
 		};
 	}
 	else {

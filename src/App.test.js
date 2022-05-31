@@ -43,7 +43,7 @@ describe('<App', () => {
 	it('should have a control-panel', () => {
 		const wrapper = mount(<App />);
 		////console.log(wrapper.debug());
-		expect(wrapper.find('ControlPanel').length).toEqual(1);
+		expect(wrapper.find('EditPanel').length).toEqual(1);
 		wrapper.unmount();
 	});
 

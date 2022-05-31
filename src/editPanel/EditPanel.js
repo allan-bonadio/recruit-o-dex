@@ -15,17 +15,17 @@ import JsonForm from './JsonForm';
 import RecForm from './RecForm';
 import {rxStore} from '../reducer';
 
-import './ControlPanel.scss';
+import './EditPanel.scss';
 
 
 /********************************************************************** Control Panel root */
-export let theControlPanel;
+export let theEditPanel;
 
-class ControlPanel extends Component {
+class EditPanel extends Component {
 	constructor() {
 		super();
-		theControlPanel = this;
-		window.theControlPanel = this;
+		theEditPanel = this;
+		window.theEditPanel = this;
 
 		this.mouseDown = this.mouseDown.bind(this);
 		this.mouseMove = this.mouseMove.bind(this);
@@ -37,11 +37,11 @@ class ControlPanel extends Component {
 
 		this.cPanelX = 100;
 		this.cPanelY = 200;  // for doing it quickly
-console.info('constructed ControlPanel');
+console.info('constructed EditPanel');
 	}
 
 	render() {
-		//console.info('rendering ControlPanel');
+		//console.info('rendering EditPanel');
 		let sel = this.props;
 		if (!sel) return [];  // too early
 		////console.log("control pan sel:", sel);
@@ -64,7 +64,7 @@ console.info('constructed ControlPanel');
 			<div style={{display: 'block'}}>
 				<button type='button'
 							className='cancel-button main-button'
-							onClick={ControlPanel.cancelControlPanel}>
+							onClick={EditPanel.cancelEditPanel}>
 					Cancel
 				</button>
 			</div>
@@ -108,7 +108,7 @@ console.info('constructed ControlPanel');
 	}
 
 	// Cancel current editing, either during edit or add.   Can be used as event handler or just a function to call
-	static cancelControlPanel(ev) {
+	static cancelEditPanel(ev) {
 		// reload the screen. kindof overkill but works
 		globalListUpdateList();
 
@@ -117,7 +117,7 @@ console.info('constructed ControlPanel');
 
 
 	// got error during saving.  do dialog.
-	static errorPutPost(controlPanel, action) {
+	static errorPutPost(editPanel, action) {
 		let message = 'no message';
 		if (action.httpStatus)
 			message = "http status "+ action.httpStatus;
@@ -127,7 +127,7 @@ console.info('constructed ControlPanel');
 		LittleDialog.alert('Error Saving', message);
 
 		// we put up a dialog but other than that no state change.
-		return controlPanel;
+		return editPanel;
 	}
 
 
@@ -179,9 +179,9 @@ console.info('constructed ControlPanel');
 
 function mapStateToProps(state) {
 	//console.info("MS2P control panel");
-	return state ? state.controlPanel : {};  // i don't think i really use these props
+	return state ? state.editPanel : {};  // i don't think i really use these props
 }
 
-export default connect(mapStateToProps)(ControlPanel);
+export default connect(mapStateToProps)(EditPanel);
 
 
