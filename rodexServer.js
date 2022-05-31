@@ -50,7 +50,7 @@ function setupServer() {
 			console.error(">> isBodyBad no data in body");
 			return true;
 		}
-		console.log(">> isBodyBad ... OK!  it's not.");
+		//console.log(">> isBodyBad ... OK!  it's not.");
 		return false;  // ok
 	}
 
@@ -178,7 +178,7 @@ function saveOneRecord(record, id, callback) {
 		return;
 	}
 
-	console.log("\n\nsaveOneRecord: actually saving this record %j", record);
+	//console.log("\n\nsaveOneRecord: actually saving this record %j", record);
 
 	// always to the current db!  even if it originated on some other.
 	AskMongo('recruiters', (col, doneFunc) => {
@@ -217,7 +217,7 @@ function saveOneRecord(record, id, callback) {
 }
 
 function addOneRecord(record, callback) {
-	console.log("\n\n|| addOneRecord: actually saving this record %j", record);
+	//console.log("\n\n|| addOneRecord: actually saving this record %j", record);
 
 	AskMongo('recruiters', (col, doneFunc) => {
 
