@@ -60,43 +60,43 @@ export class LoadSave {
 
 
 	// a click event on Save, or just on the background.  Does the request and dispatches actions.
-	static saveEditRecord() {
-		let cp = rxStore.getState().controlPanel;
+//	static saveEditRecord() {
+// 		let cp = rxStore.getState().controlPanel;
+//
+// 		// wait!  has there been any changes?  If not, don't actually save, leave it.
+// 		if (noChanges(cp)) {
+// 			ControlPanel.cancelControlPanel()
+// 			return;
+// 		}
+//
+// 		rxStore.dispatch({type: 'SAVE_EDIT_START'});
+//
+// 		// update, will happen soon.  Don't update the recs till the save is successful!
+// 		var rec = LoadSave.cleanupRecord(cp.editingRecord);
+// 		rec.updated = timestampString();
+//
+// 		moPutOne(rec, function(errorObj) {
+// 			if (! errorObj) {
+// 				rxStore.dispatch({type: 'SAVE_EDIT_DONE'});
+//
+// 				// reload the screen. kindof overkill but works
+// 				globalListUpdateList();
+// 			}
+// 			else
+// 				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
+// 		});
+//
+// 	}
 
-		// wait!  has there been any changes?  If not, don't actually save, leave it.
-		if (noChanges(cp)) {
-			ControlPanel.cancelControlPanel()
-			return;
-		}
 
-		rxStore.dispatch({type: 'SAVE_EDIT_START'});
-
-		// update, will happen soon.  Don't update the recs till the save is successful!
-		var rec = LoadSave.cleanupRecord(cp.editingRecord);
-		rec.updated = timestampString();
-
-		moPutOne(rec, function(errorObj) {
-			if (! errorObj) {
-				rxStore.dispatch({type: 'SAVE_EDIT_DONE'});
-
-				// reload the screen. kindof overkill but works
-				globalListUpdateList();
-			}
-			else
-				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
-		});
-
-	}
-
-
-	// resolver for initial PUT request - before doing the req
-	static saveEditStart(controlPanel, action) {
-		return {...controlPanel, saving: true};
-	}
-
-	static saveEditDone(controlPanel, action) {
-		return {...controlPanel, saving: false};
-	}
+// 	// resolver for initial PUT request - before doing the req
+// 	static saveEditStart(controlPanel, action) {
+// 		return {...controlPanel, saving: true};
+// 	}
+//
+// 	static saveEditDone(controlPanel, action) {
+// 		return {...controlPanel, saving: false};
+// 	}
 
 
 	/********************************************** Add New */
@@ -115,19 +115,59 @@ export class LoadSave {
 	}
 
 	// call this to save the record after user is done filling in blanks
-	static saveAddRecord() {
+// 	static saveAddRecord() {
+// 		let cp = rxStore.getState().controlPanel;
+// 		if (noChanges(cp)) {
+// 			ControlPanel.cancelControlPanel();  // don't save empty record
+// 			return;
+// 		}
+//
+// 		rxStore.dispatch({type: 'SAVE_ADD_START'});
+//
+// 		var rec = LoadSave.cleanupRecord(cp.editingRecord);
+// 		moPostOne(rec, function(errorObj) {
+// 			if (! errorObj) {
+// 				rxStore.dispatch({type: 'SAVE_ADD_DONE', controlPanel: cp});
+//
+// 				// reload the screen. kindof overkill but works
+// 				globalListUpdateList();
+// 			}
+// 			else
+// 				rxStore.dispatch({type: 'ERROR_PUT_POST', errorObj});
+// 		});
+// 	}
+
+	/********************************************************************** add & edit */
+
+		// call this to save the record after user is done filling in blanks.
+	// selectedSerial = -1 for Add, 0...n for edit
+	static saveAddEditRecord(selectedSerial) {
 		let cp = rxStore.getState().controlPanel;
+
+		// wait!  has there been any changes?  If not, don't actually save, leave it.
 		if (noChanges(cp)) {
-			ControlPanel.cancelControlPanel();  // don't save empty record
+			ControlPanel.cancelControlPanel()
 			return;
 		}
 
-		rxStore.dispatch({type: 'SAVE_ADD_START'});
+		let startActionType =  'SAVE_EDIT_START';
+		let modelFunc = moPutOne;
+		let doneActionType = 'SAVE_EDIT_DONE';
+		if (selectedSerial<0 ) {
+			// it's Add, not Edit
+			startActionType =  'SAVE_ADD_START';
+			modelFunc = moPostOne;
+			doneActionType = 'SAVE_ADD_DONE';
+		}
+
+		rxStore.dispatch({type: startActionType});
 
 		var rec = LoadSave.cleanupRecord(cp.editingRecord);
-		moPostOne(rec, function(errorObj) {
+		modelFunc(rec, function(errorObj) {
 			if (! errorObj) {
-				rxStore.dispatch({type: 'SAVE_ADD_DONE', controlPanel: cp});
+				rxStore.dispatch({
+					type: doneActionType,
+					controlPanel: cp});
 
 				// reload the screen. kindof overkill but works
 				globalListUpdateList();
@@ -137,15 +177,17 @@ export class LoadSave {
 		});
 	}
 
+
 	// reducer: a click event on Save to save a new rec: before save
-	static saveAddStart(controlPanel, action) {
+	static saveAddEditStart(controlPanel, action) {
 		return {...controlPanel, saving: true,};
 	}
 
 	// reducer: done with save
-	static saveAddDone(controlPanel, action) {
-		return {...controlPanel};
+	static saveAddEditDone(controlPanel, action) {
+		return {...controlPanel, saving: false};
 	}
+
 
 	/********************************************************************** cancel */
 

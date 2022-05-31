@@ -109,30 +109,21 @@ function controlPanelReducer(controlPanel = initialState.wholeList, action) {
 	case 'START_EDIT_RECORD':
 		// select and load a record into control panel (after user clicks it in the GlobalList)
 		return LoadSave.startEditRecord(controlPanel, action);
-		//return {...state};  // ??
-
-	case 'SAVE_EDIT_START':
-		// initiate save after START_EDIT_RECORD (after user clicked Save)
-		//return theControlPanel.saveEditStart(state, action);
-		return LoadSave.saveEditStart(controlPanel, action);
-
-	case 'SAVE_EDIT_DONE':
-		// save of existing record in CP was a success
-		// select and load a record into control panel
-		return LoadSave.saveEditDone(controlPanel, action);
 
 	case 'START_ADD_RECORD':
 		// create and load a new record into control panel (after user clicked New Rec)
 		return LoadSave.startAddRecord(controlPanel, action);
 
 	case 'SAVE_ADD_START':
+	case 'SAVE_EDIT_START':
 		// initiate save after START_ADD_RECORD (after user clicks Add or on drapes
 		// create and load a record into control panel
-		return LoadSave.saveAddStart(controlPanel, action);
+		return LoadSave.saveAddEditStart(controlPanel, action);
 
 	case 'SAVE_ADD_DONE':
+	case 'SAVE_EDIT_DONE':
 		// success
-		return LoadSave.saveAddDone(controlPanel, action);
+		return LoadSave.saveAddEditStart(controlPanel, action);
 
 	/********************************************************************** misc */
 

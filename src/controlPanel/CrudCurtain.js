@@ -20,14 +20,11 @@ console.info('constructed CrudCurtain');
 
 	// clicking on the CrudCurtain does a Save
 	curtainClick(ev) {
-		if (this.props.selectedSerial >= 0)
-			LoadSave.saveEditRecord();
-		else
-			LoadSave.saveAddRecord();
+		LoadSave.this.props.selectedSerial(this.props.selectedSerial);
 	}
 
 	render() {
-console.info('rendering CrudCurtain');
+		//console.info('rendering CrudCurtain');
 		let sel = this.props;
 		if (!sel) return [];
 
@@ -39,7 +36,7 @@ console.info('rendering CrudCurtain');
 }
 
 function mapStateToProps(state) {
-	console.info("MS2P crud curtain");
+	//console.info("MS2P crud curtain");
 	return state ? state.controlPanel : {};
 }
 

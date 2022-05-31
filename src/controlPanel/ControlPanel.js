@@ -41,7 +41,7 @@ console.info('constructed ControlPanel');
 	}
 
 	render() {
-console.info('rendering ControlPanel');
+		//console.info('rendering ControlPanel');
 		let sel = this.props;
 		if (!sel) return [];  // too early
 		////console.log("control pan sel:", sel);
@@ -68,6 +68,13 @@ console.info('rendering ControlPanel');
 					Cancel
 				</button>
 			</div>
+			<div style={{display: 'block'}}>
+				<button type='button'
+							className='dup-button main-button'
+							onClick={ControlPanel.dupRec}>
+					Dup
+				</button>
+			</div>
 		</section>;
 
 
@@ -87,13 +94,13 @@ console.info('rendering ControlPanel');
 
 	// a click event on Save, save existing rec, pre-dispatch
 	saveEditClick(ev) {
-		LoadSave.saveEditRecord();
+		LoadSave.saveAddEditRecord(this.props.selectedSerial);
 	}
 
 	// a click event on Add to save a new rec, just click handler that dispatches
 	saveAddClick(ev) {
 		////console.log("saveAddClick starting...");
-		LoadSave.saveAddRecord();
+		LoadSave.saveAddEditRecord(-1);
 	}
 
 	// Cancel current editing, either during edit or add.   Can be used as event handler or just a function to call
@@ -104,6 +111,10 @@ console.info('rendering ControlPanel');
 		rxStore.dispatch({type: 'CANCEL_EDIT_ADD'});
 	}
 
+
+	dupRec(ev) {
+
+	}
 
 	// got error during saving.  do dialog.
 	static errorPutPost(controlPanel, action) {
@@ -167,7 +178,7 @@ console.info('rendering ControlPanel');
 
 
 function mapStateToProps(state) {
-	console.info("MS2P control panel");
+	//console.info("MS2P control panel");
 	return state ? state.controlPanel : {};  // i don't think i really use these props
 }
 
