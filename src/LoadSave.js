@@ -86,7 +86,11 @@ export class LoadSave {
 	// kindof a mix of Add and Edit
 	static startDupRecord(editPanel, action) {
 		let record = _.cloneDeep(action.record);
+
+		// make it like brand new
 		delete record._id;  // tells mongo that it's new
+		record.created = timestampString();
+		delete record.updated;
 
 		// the NEW selection to be handed in to state
 		return {
@@ -106,10 +110,10 @@ export class LoadSave {
 		// call this to save the record after user is done filling in blanks.
 	// selectedSerial = -1 for Add, 0...n for edit
 	static saveAddEditRecord(selectedSerial) {
-		let cp = rxStore.getState().editPanel;
+		let ep = rxStore.getState().editPanel;
 
 		// wait!  has there been any changes?  If not, don't actually save, leave it.
-		if (noChanges(cp)) {
+		if (noChanges(ep)) {
 			EditPanel.cancelEditPanel()
 			return;
 		}
@@ -123,15 +127,17 @@ export class LoadSave {
 			modelFunc = moPostOne;
 			doneActionType = 'SAVE_ADD_DONE';
 		}
+		else
+			ep.editingRecord.updated = timestampString();
 
 		rxStore.dispatch({type: startActionType});
 
-		var rec = LoadSave.cleanupRecord(cp.editingRecord);
+		var rec = LoadSave.cleanupRecord(ep.editingRecord);
 		modelFunc(rec, function(errorObj) {
 			if (! errorObj) {
 				rxStore.dispatch({
 					type: doneActionType,
-					editPanel: cp});
+					editPanel: ep});
 
 				// reload the screen. kindof overkill but works
 				globalListUpdateList();
@@ -143,9 +149,9 @@ export class LoadSave {
 
 	// duplicate.  If currently edited rec has unsaved changes, those go to the new rec instead of the old
 	static dupCurrentRecord(selectedSerial) {
-		let cp = rxStore.getState().editPanel;
+		let ep = rxStore.getState().editPanel;
 
-		rxStore.dispatch({type: 'START_DUP_RECORD', record: cp.editingRecord});
+		rxStore.dispatch({type: 'START_DUP_RECORD', record: ep.editingRecord});
 	}
 
 
