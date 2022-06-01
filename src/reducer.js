@@ -120,7 +120,7 @@ function editPanelReducer(editPanel = initialState.wholeList, action) {
 
 	case 'SAVE_ADD_START':
 	case 'SAVE_EDIT_START':
-		// initiate save after START_ADD_RECORD (after user clicks Add or on drapes
+		// initiate save after START_ADD_RECORD (after user clicks Add or on Dup
 		// create and load a record into control panel
 		return LoadSave.saveAddEditStart(editPanel, action);
 
