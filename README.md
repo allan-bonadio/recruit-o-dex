@@ -74,7 +74,7 @@ When they can you, do this to reset the DB:
 * webapp in src, consisting of
 	* ReactJS
 	* my code
-	* webpack, standard with react
+	* webpack, standard with create-react-app
 
 
 ## backups
@@ -93,7 +93,6 @@ mongorestore --db=jobs --collection=rec2020  recruiters.bson
 
 whoa boy.  What new features do we want?
 
-- ability to duplicate a record
 - more automatic coordination between rodex and calendar
 - control panel: make tabs for different parts, it's too crouded!
 	- info for the initial/rec blanks
@@ -106,8 +105,7 @@ whoa boy.  What new features do we want?
 
 - insert more fields into copyout for Quick+ button for Calendar
 
-- fix lint warnings
-
+- need a way to search through ALL of ALL records
 
 
 
