@@ -18,4 +18,7 @@ sleep 2
 # I guess you can keep this running, whatever
 echo ":::::::::::::::::::::::::::::::::::: stopping mongo DB"
 # recommended way, kill -2 or sigint also is recommended
-pkill -2 -f mongod
+pkill -15 -f mongod
+
+#pkill -2 -f mongod
+# but it doesn't work; had to use kill -15
