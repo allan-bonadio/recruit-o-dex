@@ -10,7 +10,7 @@ cd `dirname $0`
 # if [ "$1" == '--onceTodayOnly' ]
 # then
 # 	today=`date +%Y-%m-%d`
-# 	hits=./archives/jobs$today*
+# 	hits=./archives/Jobs$today*
 # 	if [ -n "$hits" ]
 # 	then
 # 		echo "Already did it today, quitting."
@@ -28,12 +28,11 @@ then
 fi
 
 
-echo "now backing up..."
+echo "backup needed.  now backing up..." `date`
 
-# default creates dump/jobs/twofiles
-#/dvl/mongodb/mongodb-osx-ssl/bin/
+# default creates dump/Jobs/twofiles
 /usr/local/bin/mongodump \
-	--db=jobs --collection=recruiters
+	--db=Jobs --collection=recruiters
 
 # i also want a text json copy.  This isn't really json, it's json for each
 # document, separated by newlines.
@@ -41,19 +40,20 @@ echo "now backing up..."
 # but I think mongoimport will read this.
 #/dvl/mongodb/mongodb-osx-ssl/bin/
 /usr/local/bin/mongoexport \
-	--db=jobs --collection=recruiters --out=dump/jobs/recruiters.json
+	--db=Jobs --collection=recruiters --out=dump/Jobs/recruiters.json
 
 # make sure this works!
 mkdir -pv ./dump ./archives
 
 # so label and store them
 d=`date +%Y-%m-%d,%H.%M`
-mv ./dump/jobs ./archives/jobs$d
+mv ./dump/Jobs ./archives/Jobs$d
 
 # now delete an old one.  Randomly chosen, but keep around the most recent 2.
-lineNum=$(( $RANDOM * 8 / 32768 + 2 ))
-fileName=` ls -1t archives | tail -n +$lineNum | head -1 `
-/bin/rm -rfv archives/$fileName
+# NO NO NO I just deleted my whole archive directory. cuz $fileName was empty.
+#lineNum=$(( $RANDOM * 8 / 32768 + 2 ))
+#fileName=` ls -1t archives | tail -n +$lineNum | head -1 `
+#/bin/rm -rfv archives/$fileName
 
 # tell Allan
 open -a "Google Chrome" backedUp.html
