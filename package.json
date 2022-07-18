@@ -1,31 +1,44 @@
 {
-	"name": "recruit-o-dex",
-	"version": "0.5.0",
-	"private": true,
-	"dependencies": {
-		"bootstrap": "^4.1.2",
-		"cors": "^2.8.4",
-		"jquery": "^3.6.0",
-		"mongodb": "^2.2.33",
-		"popper.js": "^1.14.3",
-		"react": "^16.14.0",
-		"react-dom": "^16.14.0",
-		"react-redux": "^5.0.7",
-		"react-scripts": "^3.0.1",
-		"reactstrap": "^6.3.0",
-		"redux": "^4.0.0"
-	},
-	"scripts": {
-		"start": "./start",
-		"stop": "./stop",
-		"build": "react-scripts build",
-		"test": "react-scripts test --env=jsdom"
-	},
-	"devDependencies": {
-		"enzyme": "^3.4.1",
-		"enzyme-adapter-react-16": "^1.2.0",
-		"eslint-plugin-react": "^7.12.3",
-		"sass": "^1.52.1"
-	},
-	"browserslist": {}
+  "name": "recruit-o-dex",
+  "version": "0.6.0",
+  "private": true,
+  "dependencies": {
+    "@babel/core": "^7.18.6",
+    "bootstrap": "^4.6.1",
+    "cors": "^2.8.4",
+    "jquery": "^3.6.0",
+    "mongodb": "^4.8.0",
+    "popper.js": "^1.16.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-redux": "^5.1.2",
+    "react-scripts": "^3.4.4",
+    "reactstrap": "^9.1.1",
+    "redux": "^4.2.0"
+  },
+  "scripts": {
+    "start": "./start",
+    "stop": "./stop",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "commentOnStuffITookOUtThatSOmethingMaybeNeeds": "took out typescript: ^4.7.4"
+  },
+  "devDependencies": {
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
+    "eslint-plugin-react": "^7.30.1",
+    "sass": "^1.53.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
