@@ -67,7 +67,8 @@ let sorters = [
 // having trouble getting GlobalList to exist at startup
 export function globalListUpdateList() {
 	const gl = GlobalList.me;
-	gl.updateList(gl.props.wholeList.collectionName);
+	gl.updateList();
+	//gl.updateList(gl.props.wholeList.collectionName);
 }
 
 // list of all recruiters, for click selecting
@@ -79,15 +80,15 @@ export class GlobalList extends Component {
 		this.clickNewRec = this.clickNewRec.bind(this);
 		this.changeSearchQueryEv = this.changeSearchQueryEv.bind(this);
 		this.changeSortCriterionEv = this.changeSortCriterionEv.bind(this);
-		this.changeCollectionNameEv = this.changeCollectionNameEv.bind(this);
+// 		this.changeCollectionNameEv = this.changeCollectionNameEv.bind(this);
 		console.info('constructed GlobalList');////
 	}
 
 	componentDidMount() {
 		this.props.dispatch({type: 'CHANGE_SORT_CRITERION',
 			newCriterion: localStorage.sortCriterion || 0});
-		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
-			newName: localStorage.collectionName || 'recruiters'});
+// 		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
+// 			newName: localStorage.collectionName || 'recruiters'});
 		this.setupRefresher();
 	}
 
@@ -109,9 +110,9 @@ export class GlobalList extends Component {
 	// called at various times to re-read the jobs table and display it again,
 	// and to set the displayed collection.  Often the collection
 	// name is as stored in the Store
-	updateList(collectionName) {
+	updateList() {
 		let p = this.props;
-		moGetAll(collectionName, (err, newRecs) => {
+		moGetAll((err, newRecs) => {
 			if (err)
 				p.dispatch({type: 'ERROR_GET_ALL', errorObj: err})
 			else {
@@ -219,25 +220,25 @@ export class GlobalList extends Component {
 	}
 
 	/* *********************************************************** which collection */
-	changeCollectionNameEv(ev) {
-		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
-			newName: ev.target.value});
-	}
+//	changeCollectionNameEv(ev) {
+// 		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
+// 			newName: ev.target.value});
+//	}
 
 	// same, called from the resolver
-	static changeCollectionName(wholeList, action) {
-		// re-retrieve with different collection
-
-		GlobalList.me.updateList(action.newName);
-
-		localStorage.collectionName = action.newName;
-
-		return {
-			...wholeList,
-			collectionName: action.newName,
-			////recs: newRecs,
-		};
-	}
+// 	static changeCollectionName(wholeList, action) {
+// 		// re-retrieve with different collection
+//
+// 		GlobalList.me.updateList(action.newName);
+//
+// 		localStorage.collectionName = action.newName;
+//
+// 		return {
+// 			...wholeList,
+// 			collectionName: action.newName,
+// 			////recs: newRecs,
+// 		};
+// 	}
 
 	/* *********************************************************** rendering */
 
@@ -267,12 +268,14 @@ export class GlobalList extends Component {
 				</p>
 				<p>
 					database:&nbsp;
-					<select id='database-name' onChange={this.changeCollectionNameEv}
+{/*					<select id='database-name' onChange={this.changeCollectionNameEv}
 						value={localStorage.collectionName || 'recruiters'} >
 						<option key='recruiters' value='recruiters'>recruiters</option>
 						<option key='rec2020' value='rec2020'>rec2020</option>
 
 					</select>
+*/}
+
 				</p>
 
 			</aside>
@@ -327,7 +330,7 @@ function mapStateToProps(state) {
 				globalListErrorObj: null,
 				searchQuery: '',
 				sortCriterion: 0,
-				collectionName: 'recruiters'
+				//collectionName: 'recruiters'
 			},
 			selectedSerial: -1,
 		};

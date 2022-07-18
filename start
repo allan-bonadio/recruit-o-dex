@@ -2,17 +2,13 @@
 
 echo "This starts up all the servers.  Checks so it won't start a second process."
 # panama
-mongoconf=/usr/local/etc/mongod.conf
+#mongoconf=/usr/local/etc/mongod.conf
 
 # old
 #if [ ! -f "$mongoconf" ]
 #then mongoconf=/dvl/mongodb/mongod.conf
 #	   # flores
 #fi
-
-MONGODCMD="mongod --config $mongoconf"
-echo mongo launch cmd: $MONGODCMD
-
 
 # make sure I'm in the same dir as this script
 cd `dirname $0`
@@ -21,8 +17,13 @@ cd `dirname $0`
 if ! pgrep -f mongod
 then
 	echo ":::::::::::::::::::::::::::::::::::: Starting up mongo DB server"
+
+	MONGODCMD="/dvl/mongo/startMongo.sh"
+	#MONGODCMD="mongod --config $mongoconf"
+	echo mongo launch cmd: $MONGODCMD
+
 	$MONGODCMD &
-	sleep 2
+	sleep 20
 else
 	echo "mongod already running"
 fi
@@ -42,10 +43,11 @@ fi
 if ! pgrep -f recruit-o-dex/node_modules/react-scripts/script
 then
 	echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
-	PORT=3300 EDITOR= TERM= node_modules/.bin/react-scripts start &
+	# pipe this through cat so it won't clear the screen all the time
+	PORT=3300 EDITOR= TERM= node_modules/.bin/react-scripts start | cat &
 	sleep 2
 else
 	echo "react server already running"
 fi
-echo "Go surf to http://localhost:3300"
+echo "Servers Started!  Go surf to http://localhost:3300"
 

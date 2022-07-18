@@ -78,7 +78,7 @@ describe('reducer ', () => {
 
 		testReducerAction(GlobalList, 'CHANGE_SEARCH_QUERY');
 		testReducerAction(GlobalList, 'CHANGE_SORT_CRITERION');
-		testReducerAction(GlobalList, 'CHANGE_COLLECTION_NAME');
+// 		testReducerAction(GlobalList, 'CHANGE_COLLECTION_NAME');
 
 		testReducerAction(LittleDialog, 'OPEN_LITTLE_DIALOG');
 		testReducerAction(LittleDialog, 'CLOSE_LITTLE_DIALOG');

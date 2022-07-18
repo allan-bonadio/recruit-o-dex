@@ -11,14 +11,14 @@ export let simulateErrors = {};
 
 // download the whole thing.
 // Call the callback either like (null, allData) or (errorObj, null) depending on success
-export function moGetAll(collectionName, callback) {
+export function moGetAll(callback) {
 	if (simulateErrors.getError) {
 		setTimeout(() => callback(simulateErrors.getError, null), 100);
 		return;
 	}
 
-	// console.info(`------------------- RODEX_SERVER +'/getall/'+ collectionName`, RODEX_SERVER +'/getall/'+ collectionName);
-	fetch(RODEX_SERVER +'/getall/'+ collectionName, {})
+	console.info(`------------------- RODEX_SERVER +'/getall`, RODEX_SERVER +'/getall);
+	fetch(RODEX_SERVER +'/getall', {})
 	.then(resp => resp.json(),
 		err => {
 			err.message = "loading from database: "+ err.message;

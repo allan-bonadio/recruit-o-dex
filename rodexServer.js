@@ -5,167 +5,289 @@
 ** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
 
-let fs = require('fs');
-
-/**************************************************** starting up */
-let express = require('express');
-
-// the mongo interface
-let portNum = 5555;
-let mongoUrl = "mongodb://localhost/jobs";
-
-var ObjectID = require('mongodb').ObjectID;  // function we'll need to make record IDs
-var MongoClient = require('mongodb').MongoClient;  // the channel
-
-
-// run when starting up and every few hours after that
-generateAAT();
-setInterval(generateAAT, 3 * 3600e3);
-
-setupServer();
-
-// the end.
-
-/**************************************************** http interface */
-
-function setupServer() {
-	let app = express();
-
-	// this parses our json.  and it knows where to get the raw text.  recommended plugin.
-	var bodyParser = require('body-parser');
-	app.use(bodyParser.json());
-
-	// pass it a body on a PUT or POST request.  returns true if it failed.
-	function isBodyBad(req, res) {
-		if (! req.body) {
-			res.status(415).send("no body sent");
-			console.error(">> isBodyBad no body sent");
-			return true;
-		}
-		var noFields = true;
-		for (var k in req.body)
-			noFields = false;
-		if (noFields) {
-			res.status(422).send("no data in body");
-			console.error(">> isBodyBad no data in body");
-			return true;
-		}
-		//console.log(">> isBodyBad ... OK!  it's not.");
-		return false;  // ok
-	}
-
-	// Cross Origin Request System
-	let cors = require('cors');
-	app.use(cors());
-
-	app.options('*', cors())
-
-	app.get('/getall/:collectionName', function (req, res) {
-	// console.info(`---------------------  apt.get req:`, req);
-	// console.info(`---------------------  apt.get req.body:`, req.body);
-		getAllRecords(req.params.collectionName, function(records) {
-			if (records.error)
-				res.status(500).send({error: records.error});
-			else
-				res.json(records);  // an array
-		});
-	})
-
-	// put.  update.
-	app.put('/one/:id', function (req, res) {
-		// console.log("|| app.put /one: req started");    // too much text     , req);
-		// console.log("|| %s %s %s", req.method, req.hostname, req.path);
-		// console.log("    req.params: %j", req.params);
-		// console.log("    req.body: %j", req.body);
-		//console.log("    req.headers: %j", req.headers);
-		//console.log("|| the whole req: ", req, '------');
-
-		if (isBodyBad(req, res))
-			return;
-
-		delete req.body._id;
-		saveOneRecord(req.body, req.params.id, function(results) {
-			console.log("    saveOneRecord() gave me results %j", results);
-			if (results.error)
-				res.status(500).send({error: results.error});
-			else
-				res.sendStatus(204);
-		});
-	})
-
-	// add.  insert.  post.
-	app.post('/one', function (req, res) {
-		// console.log("|| app.post /one: req started");    // too much text     , req);
-		// console.log("|| %s %s %s", req.method, req.hostname, req.path);
-		// console.log("    req.params: %j", req.params);
-		// console.log("    req.body: %j", req.body);
-		//console.log("    req.headers: %j", req.headers);
-
-		if (isBodyBad(req, res))
-			return;
-
-		addOneRecord(req.body, function(overall, results) {
-			//console.log("    addOneRecord() gave me results ‹%s› %j", overall, results);
-			if (results.error)
-				res.status(500).send({error: records.error});
-			else
-				res.sendStatus(201);
-		});
-	})
-
-
-
-	// actually start the server
-	app.listen(portNum, function() {
-		console.log("Server now accepting connections on http://localhost:"+ portNum +
-			'\n\n\n');
-	});
-}
-
-
-
+const fs = require('fs');
+const express = require('express');
+const mongodb = require('mongodb');
 
 /**************************************************** mongo interface */
 
-// take care of Mongo details, I just want to write the code for col.find() or similar
-function AskMongo(collectionName, inquirer) {
-	MongoClient.connect(mongoUrl, function(err, db) {
-		if (err) {
-			console.error(err);
-			process.exit(9);
-		}
+const mongoServerPortNum = 27017;  // the default for mongo
+const mongoUrl = `mongodb://localhost:${mongoServerPortNum}/Jobs`;
 
-		// inquirer must call this function when it's done with all its callbacks
-		function doneFunc() {
-			db.close();
-		}
+const ObjectID = mongodb.ObjectID;  // function we'll need to make record IDs
 
-		var col = db.collection(collectionName || 'recruiters');
-		//console.info(`--------------------- :142 collectionName`, collectionName, col);
-		inquirer(col, doneFunc);
+const MongoClient = mongodb.MongoClient;
 
-		// must close ... later.  After all the callbacks in inquirer().  try this for now...
-		setTimeout(() => db.close(), 300);
-		//setTimeout(() => db.close(), 1000);
-	});
+
+
+
+
+
+/**
+ * Print the names of all available databases
+ * @param {MongoClient} client A MongoClient that is connected to a cluster
+ */
+async function listDatabases1(client) {
+    databasesList = await client.db().admin().listDatabases();
+
+    console.log("Databases:");
+    databasesList.databases.forEach(db => console.log(` - ${db.name}`));
+};
+
+async function main1() {
+    /**
+     * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
+     * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
+     */
+//     const uri = "mongodb+srv://<username>:<password>@<your-cluster-url>/sample_airbnb?retryWrites=true&w=majority";
+
+    /**
+     * The Mongo Client you will use to interact with your database
+     * See https://mongodb.github.io/node-mongodb-native/3.6/api/MongoClient.html for more details
+     * In case: '[MONGODB DRIVER] Warning: Current Server Discovery and Monitoring engine is deprecated...'
+     * pass option { useUnifiedTopology: true } to the MongoClient constructor.
+     * const client =  new MongoClient(mongoUrl, {useUnifiedTopology: true})
+     */
+    const client = new MongoClient(mongoUrl);
+
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+
+        // Make the appropriate DB calls
+        await listDatabases1(client);
+
+    } catch (e) {
+        console.error(e);
+    } finally {
+        // Close the connection to the MongoDB cluster
+        await client.close();
+    }
 }
 
-function getAllRecords(collectionName, callback) {
+main1().catch(console.error);
+
+
+//process.exit(0);
+
+
+
+
+//
+// let client;
+// //let Jobs;  // the Jobs database, aka 'db'
+// // let recruiters;  // the collection
+//
+// // call this to start a query.
+// // returns the recruiters collection object
+// function startQuery() {
+// 	client = new mongodb.MongoClient(mongoUrl);
+// 	const db = client.db('Jobs');
+// 	const collProm = db.collection('recruiters');
+// 	return collProm;
+// }
+//
+// // when you're done... do we really need to do this?   doc is unclear. IN fact,
+// // the doc kindof sucks.  Nowhere does it say if you can reuse a client obj, db
+// // object or col object.  What if you never close, is that OK?  Looks like the
+// // docs were written by a robot.
+// function finishQuery() {
+// 	// returns a promise but we don't care
+// 	return client.close();
+// }
+//
+// // take care of Mongo details, I just want to write the code for col.find() or similar
+// function AskMongo(collectionName, inquirer) {
+// // 	console.info(`--- 🐕  AskMongo()${collectionName}) ${__filename} inquirer:`, inquirer);
+// //
+// // 	mongodb.MongoClient.connect(mongoUrl, function(err, db) {
+// // 		if (err) {
+// // 			console.error(err);
+// // 			process.exit(9);
+// // 		}
+// //
+// // 		// inquirer must call this function when it's done with all its callbacks
+// // 		function doneFunc() {
+// // 			db.close();
+// // 		}
+// //
+// // 		var col = db.collection(collectionName || 'recruiters');
+// // 		console.info(`--- 🐕  AskMongo() got collection`, col);
+// // 		inquirer(col, doneFunc);
+// //
+// // 		// must close ... later.  After all the callbacks in inquirer().  try this for now...
+// // 		setTimeout(() => db.close(), 1000);
+// // 		//setTimeout(() => db.close(), 300);
+// // 	});
+// }
+//
+
+
+function getAllRecords3(callback) {
+    const client = new MongoClient(mongoUrl);
+	console.log(`client:`, client);
+
+	let connProm =  client.connect();
+	console.log(`connProm:`, connProm);
+	connProm
+	.then(conn => {
+		console.log(`conn:`, conn);
+
+		let db = client.db();
+		console.log(`db:`, db);
+
+		let recruiters = db.collection('recruiters');
+		console.log("recruiters:", recruiters);
+
+		let findings = recruiters.find();
+		console.log("findings:", findings);
+
+		let listProm = findings.toArray();
+		console.log("listProm:", listProm);
+		return listProm;
+	})
+	.then(list => {
+		console.log("list:", list);
+		callback(null, list);
+	})
+	.catch(err => callback(err, null));
+}
+
+
+async function allRecs2() {
+    const client = new MongoClient(mongoUrl);
+	console.log(`client:`, client);
+
+    try {
+        let connProm =  client.connect();
+        console.log(`connProm:`, connProm);
+        let conn = await connProm;
+        console.log(`conn:`, conn);
+
+		let dbProm = client.db();
+        console.log(`dbProm:`, dbProm);
+		let db = await dbProm;
+        console.log(`db:`, db);
+
+		let recruitersProm = db.collection('recruiters');
+		console.log("recruitersProm:", recruitersProm);
+		let recruiters = await recruitersProm;
+		console.log("recruiters:", recruiters);
+
+		let findingsProm = recruiters.find();
+		console.log("findingsProm:", findingsProm);
+		let findings = await findingsProm;
+		console.log("findings:", findings);
+
+		let listProm = findings.toArray();
+		console.log("listProm:", listProm);
+		let list = await listProm;
+		console.log("list:", list);
+		console.dir(list);
+
+		//list.forEach(doc => console.log(` - ${db.name}`));
+    } catch (ex) {
+        console.error(`error in getAllRecords/allRecs: `, ex.stack || ex.message || ex);
+    } finally {
+        await client.close();
+    }
+}
+
+function getAllRecords2(callback) {
+	console.info(`--------------------- getAllRecords2`);
+	allRecs2()
+	.catch(console.error);
+}
+
+
+//     const client = new MongoClient(mongoUrl);
+//
+//     try {
+//         // Connect to the MongoDB cluster
+//         await client.connect();
+//
+//         // Make the appropriate DB calls
+//         await listDatabases1(client);
+//
+//     } catch (e) {
+//         console.error(e);
+//     } finally {
+//         // Close the connection to the MongoDB cluster
+//         await client.close();
+//     }
+
+
+
+
+
+
+// 		client = new mongodb.MongoClient(mongoUrl);
+// 		client.connect()
+// 		.then(stuff => {
+// 			// according to example: listDatabases1(client)
+// 			let databasesProm = client.db().admin().listDatabases1();
+// 			databasesProm
+// 			.then( databasesList => {
+// 				console.log("Databases:");
+// 				databasesList.databases.forEach(db => console.log(` - ${db.name}`));
+// 			})
+// 			.catch(err => {
+// 				console.error(`error in databasesProm:79`, err.stack || err.message || err);  // includes traceback
+// 				debugger;
+// 				callback({error: err.name +': '+ err.message});  // polite back to the user
+// 			})
+
+
+
+
+
+// 			const db = client.db('Jobs');
+// 			console.info(`connectet to Jobs`);
+// 			const coll = db.collection('recruiters');
+//
+// 			const cursor = coll.find({})
+// 			const a = cursor.toArray()
+// 			a.then(ar => {
+// 				//debugger;
+// 				callback(ar);
+// 			})
+// 			.catch(err => {
+// 				//debugger;
+// 				console.error(`error in getAllRecords():`, err.stack || err.message || err);  // includes traceback
+// 				callback({error: err.name +': '+ err.message});  // polite back to the user
+// 			})
+// 			.finally(() =>
+// 				// returns a promise but we don't care
+// 				return client.close();
+// 			);
+//		})
+// 	} catch(ex) {
+// 		console.error(`error in getAllRecords():95`, err.stack || err.message || err);  // includes traceback
+// 		debugger;
+// //		callback({error: err.name +': '+ err.message});  // polite back to the user
+// 	} finally {
+// 		// returns a promise but we don't care
+// 		return client.close();  // ??
+// 	}
+	//return collProm;
+
+
+	//const coll = startQuery()
+
 	//console.info(`--------------------- getAllRecords: collectionName`, collectionName);
-	AskMongo(collectionName, (col, doneFunc) => {
-		col.find({}).sort({company_name:1}).toArray(function(err, docs) {
-			if (err) {
-				console.error(err);  // includes traceback
-				callback({error: err.name +': '+ err.message});  // polite back to the user
-			}
-			else {
-				callback(docs);
-			}
-			doneFunc();
-		});
-
-	});
-}
+// 	AskMongo(collectionName, (col, doneFunc) => {
+// 		col.find({}).sort({company_name:1}).toArray(function(err, docs) {
+// 			if (err) {
+// 				console.error(err);  // includes traceback
+// 				callback({error: err.name +': '+ err.message});  // polite back to the user
+// 			}
+// 			else {
+// 				callback(docs);
+// 			}
+// 			doneFunc();
+// 		});
+//
+// 	});
 
 // save this record data under the id given.
 function saveOneRecord(record, id, callback) {
@@ -178,7 +300,7 @@ function saveOneRecord(record, id, callback) {
 		return;
 	}
 
-	//console.log("\n\nsaveOneRecord: actually saving this record %j", record);
+	console.log("\n\nsaveOneRecord: actually saving this record %j", record);
 
 	// always to the current db!  even if it originated on some other.
 	AskMongo('recruiters', (col, doneFunc) => {
@@ -248,31 +370,142 @@ function generateAAT() {
 	console.log("============");
 	console.log("generateAAT()");
 	console.log("============");
-	AskMongo('recruiters', (col, doneFunc) => {
+// 	AskMongo('recruiters', (col, doneFunc) => {
+//
+// 		// find, in the recruiters collection, all records, but just take the company names, sort, and then...
+// 		col
+// 				.find({}, {company_name: 1})  // just the company name
+// 				.collation({locale: "en"})      //  case-insensitive
+// 				.sort({company_name:1})  // sort on the only field
+// 				.toArray(
+// 		function(err, docs) {
+// 			if (err) {
+// 				console.log('=================================== Error in generateAAT() =====');
+// 				console.error(err);
+// 				console.log('================================================================');
+// 			}
+// 			else {
+// 				var content = docs
+// 							.map(doc => doc.company_name)
+// 							.filter(cname => cname)
+// 							.join('\n');
+//
+// 				// and get it out there before something else fails
+// 				fs.writeFileSync(process.env.RODEX_AAT_TARGET, content);
+// 				fs.chmodSync(process.env.RODEX_AAT_TARGET, 0o666);
+// 			}
+// 		});
+// 	});
+}
 
-		// find, in the recruiters collection, all records, but just take the company names, sort, and then...
-		col
-				.find({}, {company_name: 1})  // just the company name
-				.collation({locale: "en"})      //  case-insensitive
-				.sort({company_name:1})  // sort on the only field
-				.toArray(
-		function(err, docs) {
-			if (err) {
-				console.log('=================================== Error in generateAAT() =====');
-				console.error(err);
-				console.log('================================================================');
-			}
-			else {
-				var content = docs
-							.map(doc => doc.company_name)
-							.filter(cname => cname)
-							.join('\n');
 
-				// and get it out there before something else fails
-				fs.writeFileSync(process.env.RODEX_AAT_TARGET, content);
-				fs.chmodSync(process.env.RODEX_AAT_TARGET, 0o666);
-			}
+// run when starting up and every few hours after that
+generateAAT();
+setInterval(generateAAT, 3 * 3600e3);
+
+
+/**************************************************** http interface */
+
+const rodexServerPortNum = 5555;
+
+
+function setupServer() {
+	let app = express();
+
+	// this parses our json.  and it knows where to get the raw text.  recommended plugin.
+	var bodyParser = require('body-parser');
+	app.use(bodyParser.json());
+
+	// pass it a body on a PUT or POST request.  returns true if it failed.
+	function isBodyBad(req, res) {
+		if (! req.body) {
+			res.status(415).send("no body sent");
+			console.error(">> isBodyBad no body sent");
+			return true;
+		}
+		var noFields = true;
+		for (var k in req.body)
+			noFields = false;
+		if (noFields) {
+			res.status(422).send("no data in body");
+			console.error(">> isBodyBad no data in body");
+			return true;
+		}
+		//console.log(">> isBodyBad ... OK!  it's not.");
+		return false;  // ok
+	}
+
+	// Cross Origin Request System
+	let cors = require('cors');
+	app.use(cors());
+
+	app.options('*', cors())
+
+	app.get('/getall', function (req, res) {
+	// console.info(`---------------------  apt.get req:`, req);
+	// console.info(`---------------------  apt.get req.body:`, req.body);
+		getAllRecords3(function(err, records) {
+			if (err)
+				res.status(500).send({error: err});
+			else
+				res.json(records);  // an array
 		});
+	})
+
+	// put.  update.
+	app.put('/one/:id', function (req, res) {
+		// console.log("|| app.put /one: req started");    // too much text     , req);
+		// console.log("|| %s %s %s", req.method, req.hostname, req.path);
+		// console.log("    req.params: %j", req.params);
+		// console.log("    req.body: %j", req.body);
+		//console.log("    req.headers: %j", req.headers);
+		//console.log("|| the whole req: ", req, '------');
+
+		if (isBodyBad(req, res))
+			return;
+
+		delete req.body._id;
+		saveOneRecord(req.body, req.params.id, function(results) {
+			console.log("    saveOneRecord() gave me results %j", results);
+			if (results.error)
+				res.status(500).send({error: results.error});
+			else
+				res.sendStatus(204);
+		});
+	})
+
+	// add.  insert.  post.
+	app.post('/one', function (req, res) {
+		// console.log("|| app.post /one: req started");    // too much text     , req);
+		// console.log("|| %s %s %s", req.method, req.hostname, req.path);
+		// console.log("    req.params: %j", req.params);
+		// console.log("    req.body: %j", req.body);
+		//console.log("    req.headers: %j", req.headers);
+
+		if (isBodyBad(req, res))
+			return;
+
+		addOneRecord(req.body, function(overall, results) {
+			//console.log("    addOneRecord() gave me results ‹%s› %j", overall, results);
+			if (results.error)
+				res.status(500).send({error: records.error});
+			else
+				res.sendStatus(201);
+		});
+	})
+
+
+
+	// actually start the server
+	app.listen(rodexServerPortNum, function() {
+		console.log(`rodexServer now accepting connections on `+
+			`http://localhost:${rodexServerPortNum}\n\n\n`);
 	});
 }
+
+
+setupServer();
+
+
+
 
