@@ -17,7 +17,7 @@ export function moGetAll(callback) {
 		return;
 	}
 
-	console.info(`------------------- RODEX_SERVER +'/getall`, RODEX_SERVER +'/getall);
+	console.info(`------------------- RODEX_SERVER +'/getall`, RODEX_SERVER +'/getall');
 	fetch(RODEX_SERVER +'/getall', {})
 	.then(resp => resp.json(),
 		err => {

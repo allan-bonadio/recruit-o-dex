@@ -7,7 +7,11 @@
 
 const fs = require('fs');
 const express = require('express');
+const cors = require('cors');
 const mongodb = require('mongodb');
+
+
+getErrMsg = (err) => err.stack || err.message || err;
 
 /**************************************************** mongo interface */
 
@@ -122,8 +126,11 @@ main1().catch(console.error);
 // }
 //
 
-
-function getAllRecords3(callback) {
+// general interface to Mongo.  Callbacks:
+// queryCallback(recruiters) - pass it collection object, must return a promise
+// finshCallback(reply) - pass it some sort of reply object...??, returns nothing
+// errorCallback(err) -
+function AskMongo(queryCallback, finshCallback, errorCallback) {
     const client = new MongoClient(mongoUrl);
 	console.log(`client:`, client);
 
@@ -139,65 +146,115 @@ function getAllRecords3(callback) {
 		let recruiters = db.collection('recruiters');
 		console.log("recruiters:", recruiters);
 
+		// it returns a prom to wait for
+		return queryCallback(recruiters);
+	})
+	.then(resp => {
+		console.log("AskMongo resp:", resp);
+		finshCallback(resp);
+	})
+	.catch(err => errorCallback(err));
+}
+
+function getAllRecords4(recordsCallback, errorCallback) {
+	AskMongo(recruiters => {
+		// query callback
 		let findings = recruiters.find();
 		console.log("findings:", findings);
 
 		let listProm = findings.toArray();
 		console.log("listProm:", listProm);
 		return listProm;
-	})
-	.then(list => {
-		console.log("list:", list);
-		callback(null, list);
-	})
-	.catch(err => callback(err, null));
+	},
+	list => {
+		// finish callback
+		console.log("getAllRecords4 list:", list);
+		recordsCallback(list)
+	},
+	err => {
+		console.error(`error in getAllRecords:`, getErrMsg(err));
+		errorCallback(err);
+	});
 }
 
+// yes it took a lot of tries
 
-async function allRecs2() {
-    const client = new MongoClient(mongoUrl);
-	console.log(`client:`, client);
 
-    try {
-        let connProm =  client.connect();
-        console.log(`connProm:`, connProm);
-        let conn = await connProm;
-        console.log(`conn:`, conn);
-
-		let dbProm = client.db();
-        console.log(`dbProm:`, dbProm);
-		let db = await dbProm;
-        console.log(`db:`, db);
-
-		let recruitersProm = db.collection('recruiters');
-		console.log("recruitersProm:", recruitersProm);
-		let recruiters = await recruitersProm;
-		console.log("recruiters:", recruiters);
-
-		let findingsProm = recruiters.find();
-		console.log("findingsProm:", findingsProm);
-		let findings = await findingsProm;
-		console.log("findings:", findings);
-
-		let listProm = findings.toArray();
-		console.log("listProm:", listProm);
-		let list = await listProm;
-		console.log("list:", list);
-		console.dir(list);
-
-		//list.forEach(doc => console.log(` - ${db.name}`));
-    } catch (ex) {
-        console.error(`error in getAllRecords/allRecs: `, ex.stack || ex.message || ex);
-    } finally {
-        await client.close();
-    }
-}
-
-function getAllRecords2(callback) {
-	console.info(`--------------------- getAllRecords2`);
-	allRecs2()
-	.catch(console.error);
-}
+// function getAllRecords3(callback) {
+//     const client = new MongoClient(mongoUrl);
+// 	console.log(`client:`, client);
+//
+// 	let connProm =  client.connect();
+// 	console.log(`connProm:`, connProm);
+// 	connProm
+// 	.then(conn => {
+// 		console.log(`conn:`, conn);
+//
+// 		let db = client.db();
+// 		console.log(`db:`, db);
+//
+// 		let recruiters = db.collection('recruiters');
+// 		console.log("recruiters:", recruiters);
+//
+// 		let findings = recruiters.find();
+// 		console.log("findings:", findings);
+//
+// 		let listProm = findings.toArray();
+// 		console.log("listProm:", listProm);
+// 		return listProm;
+// 	})
+// 	.then(list => {
+// 		console.log("list:", list);
+// 		callback(null, list);
+// 	})
+// 	.catch(err => callback(err, null));
+// }
+//
+//
+// async function allRecs2() {
+//     const client = new MongoClient(mongoUrl);
+// 	console.log(`client:`, client);
+//
+//     try {
+//         let connProm =  client.connect();
+//         console.log(`connProm:`, connProm);
+//         let conn = await connProm;
+//         console.log(`conn:`, conn);
+//
+// 		let dbProm = client.db();
+//         console.log(`dbProm:`, dbProm);
+// 		let db = await dbProm;
+//         console.log(`db:`, db);
+//
+// 		let recruitersProm = db.collection('recruiters');
+// 		console.log("recruitersProm:", recruitersProm);
+// 		let recruiters = await recruitersProm;
+// 		console.log("recruiters:", recruiters);
+//
+// 		let findingsProm = recruiters.find();
+// 		console.log("findingsProm:", findingsProm);
+// 		let findings = await findingsProm;
+// 		console.log("findings:", findings);
+//
+// 		let listProm = findings.toArray();
+// 		console.log("listProm:", listProm);
+// 		let list = await listProm;
+// 		console.log("list:", list);
+// 		console.dir(list);
+//
+// 		//list.forEach(doc => console.log(` - ${db.name}`));
+//     } catch (ex) {
+//         console.error(`error in getAllRecords/allRecs: `, ex.stack || ex.message || ex);
+//     } finally {
+//         await client.close();
+//     }
+// }
+//
+// function getAllRecords2(callback) {
+// 	console.info(`--------------------- getAllRecords2`);
+// 	allRecs2()
+// 	.catch(console.error);
+// }
 
 
 //     const client = new MongoClient(mongoUrl);
@@ -232,7 +289,7 @@ function getAllRecords2(callback) {
 // 				databasesList.databases.forEach(db => console.log(` - ${db.name}`));
 // 			})
 // 			.catch(err => {
-// 				console.error(`error in databasesProm:79`, err.stack || err.message || err);  // includes traceback
+// 				console.error(`error in databasesProm:79`, getErrMsg(err));  // includes traceback
 // 				debugger;
 // 				callback({error: err.name +': '+ err.message});  // polite back to the user
 // 			})
@@ -253,7 +310,7 @@ function getAllRecords2(callback) {
 // 			})
 // 			.catch(err => {
 // 				//debugger;
-// 				console.error(`error in getAllRecords():`, err.stack || err.message || err);  // includes traceback
+// 				console.error(`error in getAllRecords():`, getErrMsg(err));  // includes traceback
 // 				callback({error: err.name +': '+ err.message});  // polite back to the user
 // 			})
 // 			.finally(() =>
@@ -262,7 +319,7 @@ function getAllRecords2(callback) {
 // 			);
 //		})
 // 	} catch(ex) {
-// 		console.error(`error in getAllRecords():95`, err.stack || err.message || err);  // includes traceback
+// 		console.error(`error in getAllRecords():95`, getErrMsg(err));  // includes traceback
 // 		debugger;
 // //		callback({error: err.name +': '+ err.message});  // polite back to the user
 // 	} finally {
@@ -289,8 +346,11 @@ function getAllRecords2(callback) {
 //
 // 	});
 
+
+
+
 // save this record data under the id given.
-function saveOneRecord(record, id, callback) {
+function saveOneRecord(record, id, finishCallback, errorCallback) {
 	var debug = false;
 	if (debug) {
 		console.log("saveOneRecord: pretending to save this record %j", record);
@@ -300,42 +360,61 @@ function saveOneRecord(record, id, callback) {
 		return;
 	}
 
-	console.log("\n\nsaveOneRecord: actually saving this record %j", record);
-
-	// always to the current db!  even if it originated on some other.
-	AskMongo('recruiters', (col, doneFunc) => {
-		// it took me half a day to write the following line of code cuz it's nowhere in the docs
-		var query =  {_id: new ObjectID(id)};
-		// as in db.getCollection('recruiters').find({"_id" : ObjectId("5a0e0e81a45ced6059aa145d")})
-
-		////console.log("|| Gonna search for same id="+ record._id +".");
-		col.find(
-			query
-		).toArray(function(err, docs) {
-			if (err) {
-				console.error(err);
-				callback({error: err.name +': '+ err.message});  // polite back to the user
-				doneFunc();
-				return;
-			}
-		});
+	console.log("\n\nsaveOneRecord: actually saving this record", record);
 
 
-		col.updateOne(
-			query,
-			{$set: record}, // what to change it to
-			function(err, result) {  // when done
-				if (err) {
-					console.error(err);
-					callback({error: err.name +': '+ err.message});  // polite back to the user
-				}
-				else {
-					callback(result);
-				}
-			}
-		);
+	AskMongo(recruiters => {
+		// query callback
+		let query =  {_id: new ObjectID(id)};
 
+		let updateProm = recruiters.updateOne(query, {$set: record})
+		console.log("updateProm:", updateProm);
+		return updateProm;
+	},
+	res => {
+		// finish callback
+		console.log(`saveOneRecord: ${res.matchedCount} docs matched, updated ${res.modifiedCount} docs`);
+		finishCallback();  // if you care about when it finishes
+	},
+	err => {
+		console.error(`error in saveOneRecord:`, getErrMsg(err));
+		errorCallback(err);
 	});
+
+// 	// always to the current db!  even if it originated on some other.
+// 	AskMongo('recruiters', (col, doneFunc) => {
+// 		// it took me half a day to write the following line of code cuz it's nowhere in the docs
+// 		var query =  {_id: new ObjectID(id)};
+// 		// as in db.getCollection('recruiters').find({"_id" : ObjectId("5a0e0e81a45ced6059aa145d")})
+//
+// 		////console.log("|| Gonna search for same id="+ record._id +".");
+// 		col.find(
+// 			query
+// 		).toArray(function(err, docs) {
+// 			if (err) {
+// 				console.error(err);
+// 				callback({error: err.name +': '+ err.message});  // polite back to the user
+// 				doneFunc();
+// 				return;
+// 			}
+// 		});
+//
+//
+// 		col.updateOne(
+// 			query,
+// 			{$set: record}, // what to change it to
+// 			function(err, result) {  // when done
+// 				if (err) {
+// 					console.error(err);
+// 					callback({error: err.name +': '+ err.message});  // polite back to the user
+// 				}
+// 				else {
+// 					callback(result);
+// 				}
+// 			}
+// 		);
+//
+// 	});
 }
 
 function addOneRecord(record, callback) {
@@ -435,22 +514,29 @@ function setupServer() {
 		return false;  // ok
 	}
 
+	const corsOpts = {
+		origin: 'http://localhost:3300/',
+		methods: 'GET,PUT,POST',
+	};
+
 	// Cross Origin Request System
-	let cors = require('cors');
 	app.use(cors());
 
-	app.options('*', cors())
+	app.options('*', cors());
 
-	app.get('/getall', function (req, res) {
-	// console.info(`---------------------  apt.get req:`, req);
-	// console.info(`---------------------  apt.get req.body:`, req.body);
-		getAllRecords3(function(err, records) {
-			if (err)
-				res.status(500).send({error: err});
-			else
+	app.get('/getall',
+		//cors(corsOpts),  // optional - no, breaks it
+		function (req, res) {
+			// console.info(`---------------------  apt.get req:`, req);
+			// console.info(`---------------------  apt.get req.body:`, req.body);
+			getAllRecords4(records => {
 				res.json(records);  // an array
-		});
-	})
+			},
+			err => {
+				res.status(500).send({error: err});
+			});
+		}
+	);
 
 	// put.  update.
 	app.put('/one/:id', function (req, res) {
@@ -465,12 +551,12 @@ function setupServer() {
 			return;
 
 		delete req.body._id;
-		saveOneRecord(req.body, req.params.id, function(results) {
-			console.log("    saveOneRecord() gave me results %j", results);
-			if (results.error)
-				res.status(500).send({error: results.error});
-			else
-				res.sendStatus(204);
+		saveOneRecord(req.body, req.params.id, function finish(results) {
+			console.log("    saveOneRecord() gave me results", results);
+			res.sendStatus(204);
+		},
+		function error(err) {
+			res.sendStatus(500).send({error: err});
 		});
 	})
 
