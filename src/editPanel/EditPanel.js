@@ -37,7 +37,21 @@ class EditPanel extends Component {
 
 		this.cPanelX = 100;
 		this.cPanelY = 200;  // for doing it quickly
-console.info('constructed EditPanel');
+		console.info('constructed EditPanel');
+	}
+
+	tabs = {
+		{title: 'info', code: 'info', Code: 'info', vlup, doink, simmz}
+		{title: 'JD', code: 'JD', Code: 'JD', vlup, doink, simmz}
+		{title: 'notes', code: 'notes', Code: 'notes', vlup, doink, simmz}
+		{title: 'engagements', code: 'engagements', Code: 'engagements', vlup, doink, simmz}
+		{title: 'JSON', code: 'JSON', Code: 'JSON', vlup, doink, simmz}
+	};
+
+	renderTabBar() {
+		return (<div className='tabBar'>
+
+		</div>);
 	}
 
 	render() {
