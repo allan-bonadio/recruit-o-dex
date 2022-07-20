@@ -5,7 +5,7 @@
 ** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
 */
 
-const fs = require('fs');
+const fsp = require('fs/promises');
 const express = require('express');
 const cors = require('cors');
 const mongodb = require('mongodb');
@@ -69,7 +69,7 @@ async function main1() {
     }
 }
 
-main1().catch(console.error);
+//main1().catch(console.error);
 
 
 //process.exit(0);
@@ -132,25 +132,25 @@ main1().catch(console.error);
 // errorCallback(err) -
 function AskMongo(queryCallback, finshCallback, errorCallback) {
     const client = new MongoClient(mongoUrl);
-	console.log(`client:`, client);
+	//console.log(`client:`, client);
 
 	let connProm =  client.connect();
-	console.log(`connProm:`, connProm);
+	//console.log(`connProm:`, connProm);
 	connProm
 	.then(conn => {
-		console.log(`conn:`, conn);
+		//console.log(`conn:`, conn);
 
 		let db = client.db();
-		console.log(`db:`, db);
+		//console.log(`db:`, db);
 
 		let recruiters = db.collection('recruiters');
-		console.log("recruiters:", recruiters);
+		//console.log("recruiters:", recruiters);
 
 		// it returns a prom to wait for
 		return queryCallback(recruiters);
 	})
 	.then(resp => {
-		console.log("AskMongo resp:", resp);
+		//console.log("AskMongo resp:", resp);
 		finshCallback(resp);
 	})
 	.catch(err => errorCallback(err));
@@ -160,15 +160,15 @@ function getAllRecords4(recordsCallback, errorCallback) {
 	AskMongo(recruiters => {
 		// query callback
 		let findings = recruiters.find();
-		console.log("findings:", findings);
+		//console.log("findings:", findings);
 
 		let listProm = findings.toArray();
-		console.log("listProm:", listProm);
+		//console.log("listProm:", listProm);
 		return listProm;
 	},
 	list => {
 		// finish callback
-		console.log("getAllRecords4 list:", list);
+		//console.log("getAllRecords4 list:", list);
 		recordsCallback(list)
 	},
 	err => {
@@ -210,143 +210,6 @@ function getAllRecords4(recordsCallback, errorCallback) {
 // 	.catch(err => callback(err, null));
 // }
 //
-//
-// async function allRecs2() {
-//     const client = new MongoClient(mongoUrl);
-// 	console.log(`client:`, client);
-//
-//     try {
-//         let connProm =  client.connect();
-//         console.log(`connProm:`, connProm);
-//         let conn = await connProm;
-//         console.log(`conn:`, conn);
-//
-// 		let dbProm = client.db();
-//         console.log(`dbProm:`, dbProm);
-// 		let db = await dbProm;
-//         console.log(`db:`, db);
-//
-// 		let recruitersProm = db.collection('recruiters');
-// 		console.log("recruitersProm:", recruitersProm);
-// 		let recruiters = await recruitersProm;
-// 		console.log("recruiters:", recruiters);
-//
-// 		let findingsProm = recruiters.find();
-// 		console.log("findingsProm:", findingsProm);
-// 		let findings = await findingsProm;
-// 		console.log("findings:", findings);
-//
-// 		let listProm = findings.toArray();
-// 		console.log("listProm:", listProm);
-// 		let list = await listProm;
-// 		console.log("list:", list);
-// 		console.dir(list);
-//
-// 		//list.forEach(doc => console.log(` - ${db.name}`));
-//     } catch (ex) {
-//         console.error(`error in getAllRecords/allRecs: `, ex.stack || ex.message || ex);
-//     } finally {
-//         await client.close();
-//     }
-// }
-//
-// function getAllRecords2(callback) {
-// 	console.info(`--------------------- getAllRecords2`);
-// 	allRecs2()
-// 	.catch(console.error);
-// }
-
-
-//     const client = new MongoClient(mongoUrl);
-//
-//     try {
-//         // Connect to the MongoDB cluster
-//         await client.connect();
-//
-//         // Make the appropriate DB calls
-//         await listDatabases1(client);
-//
-//     } catch (e) {
-//         console.error(e);
-//     } finally {
-//         // Close the connection to the MongoDB cluster
-//         await client.close();
-//     }
-
-
-
-
-
-
-// 		client = new mongodb.MongoClient(mongoUrl);
-// 		client.connect()
-// 		.then(stuff => {
-// 			// according to example: listDatabases1(client)
-// 			let databasesProm = client.db().admin().listDatabases1();
-// 			databasesProm
-// 			.then( databasesList => {
-// 				console.log("Databases:");
-// 				databasesList.databases.forEach(db => console.log(` - ${db.name}`));
-// 			})
-// 			.catch(err => {
-// 				console.error(`error in databasesProm:79`, getErrMsg(err));  // includes traceback
-// 				debugger;
-// 				callback({error: err.name +': '+ err.message});  // polite back to the user
-// 			})
-
-
-
-
-
-// 			const db = client.db('Jobs');
-// 			console.info(`connectet to Jobs`);
-// 			const coll = db.collection('recruiters');
-//
-// 			const cursor = coll.find({})
-// 			const a = cursor.toArray()
-// 			a.then(ar => {
-// 				//debugger;
-// 				callback(ar);
-// 			})
-// 			.catch(err => {
-// 				//debugger;
-// 				console.error(`error in getAllRecords():`, getErrMsg(err));  // includes traceback
-// 				callback({error: err.name +': '+ err.message});  // polite back to the user
-// 			})
-// 			.finally(() =>
-// 				// returns a promise but we don't care
-// 				return client.close();
-// 			);
-//		})
-// 	} catch(ex) {
-// 		console.error(`error in getAllRecords():95`, getErrMsg(err));  // includes traceback
-// 		debugger;
-// //		callback({error: err.name +': '+ err.message});  // polite back to the user
-// 	} finally {
-// 		// returns a promise but we don't care
-// 		return client.close();  // ??
-// 	}
-	//return collProm;
-
-
-	//const coll = startQuery()
-
-	//console.info(`--------------------- getAllRecords: collectionName`, collectionName);
-// 	AskMongo(collectionName, (col, doneFunc) => {
-// 		col.find({}).sort({company_name:1}).toArray(function(err, docs) {
-// 			if (err) {
-// 				console.error(err);  // includes traceback
-// 				callback({error: err.name +': '+ err.message});  // polite back to the user
-// 			}
-// 			else {
-// 				callback(docs);
-// 			}
-// 			doneFunc();
-// 		});
-//
-// 	});
-
-
 
 
 // save this record data under the id given.
@@ -366,10 +229,7 @@ function saveOneRecord(record, id, finishCallback, errorCallback) {
 	AskMongo(recruiters => {
 		// query callback
 		let query =  {_id: new ObjectID(id)};
-
-		let updateProm = recruiters.updateOne(query, {$set: record})
-		console.log("updateProm:", updateProm);
-		return updateProm;
+		return recruiters.updateOne(query, {$set: record});
 	},
 	res => {
 		// finish callback
@@ -417,23 +277,23 @@ function saveOneRecord(record, id, finishCallback, errorCallback) {
 // 	});
 }
 
-function addOneRecord(record, callback) {
-	//console.log("\n\n|| addOneRecord: actually saving this record %j", record);
+function addOneRecord(record, finishCallback, errorCallback) {
+	console.log("\n\n|| addOneRecord: actually saving this record %j", record);
 
-	AskMongo('recruiters', (col, doneFunc) => {
-
+	AskMongo(recruiters  => {
+		// query callback
 		console.log("|| Gonna addOne on company_name="+ record.company_name +".");
-		col.insertOne(
-			record,
-			function(err, result) {  // when done
-				if (err) {
-					console.error(err);
-					callback({error: err.name +': '+ err.message});  // polite back to the user
-				}
-				else {
-					callback('success', result);
-				}
-			});
+		return recruiters.insertOne(record)
+	},
+	res => {
+		// final callback
+		console.log(`addOneRecord: added? ${res.acknowledged}`, res);
+		finishCallback(res);
+	},
+	err => {
+		// error callback
+		console.error(`error in addOneRecord:`, getErrMsg(err));
+		errorCallback(err);
 	});
 }
 
@@ -449,32 +309,32 @@ function generateAAT() {
 	console.log("============");
 	console.log("generateAAT()");
 	console.log("============");
-// 	AskMongo('recruiters', (col, doneFunc) => {
-//
-// 		// find, in the recruiters collection, all records, but just take the company names, sort, and then...
-// 		col
-// 				.find({}, {company_name: 1})  // just the company name
-// 				.collation({locale: "en"})      //  case-insensitive
-// 				.sort({company_name:1})  // sort on the only field
-// 				.toArray(
-// 		function(err, docs) {
-// 			if (err) {
-// 				console.log('=================================== Error in generateAAT() =====');
-// 				console.error(err);
-// 				console.log('================================================================');
-// 			}
-// 			else {
-// 				var content = docs
-// 							.map(doc => doc.company_name)
-// 							.filter(cname => cname)
-// 							.join('\n');
-//
-// 				// and get it out there before something else fails
-// 				fs.writeFileSync(process.env.RODEX_AAT_TARGET, content);
-// 				fs.chmodSync(process.env.RODEX_AAT_TARGET, 0o666);
-// 			}
-// 		});
-// 	});
+	AskMongo(recruiters  => {
+			// query callback
+			// find, in the recruiters collection, all records, but just take the company names, sort, and then...
+			return recruiters
+				.find({}, {company_name: 1})  // just the company name
+				.collation({locale: "en"})      //  case-insensitive
+				.sort({company_name:1})  // sort on the only field
+				.toArray();
+		},
+		list => {
+			var content = list
+						.map(doc => doc.company_name)
+						.filter(cname => cname)
+						.join('\n');
+
+			// and get it out there before something else fails
+			return fsp.fsPromises.writeFile(process.env.RODEX_AAT_TARGET, content, 'utf8');
+			// promise... don't care
+			// not needed fsp.chmod(process.env.RODEX_AAT_TARGET, 0o666);
+		},
+		err => {
+			console.error('=================================== Error in generateAAT() =====');
+			console.error(getErrMsg(err));
+			console.error('================================================================');
+		}
+	);
 }
 
 
@@ -530,7 +390,7 @@ function setupServer() {
 			// console.info(`---------------------  apt.get req:`, req);
 			// console.info(`---------------------  apt.get req.body:`, req.body);
 			getAllRecords4(records => {
-				res.json(records);  // an array
+				res.status(200).json(records);  // send back an array
 			},
 			err => {
 				res.status(500).send({error: err});
@@ -558,7 +418,7 @@ function setupServer() {
 		function error(err) {
 			res.sendStatus(500).send({error: err});
 		});
-	})
+	});
 
 	// add.  insert.  post.
 	app.post('/one', function (req, res) {
@@ -571,16 +431,14 @@ function setupServer() {
 		if (isBodyBad(req, res))
 			return;
 
-		addOneRecord(req.body, function(overall, results) {
-			//console.log("    addOneRecord() gave me results ‹%s› %j", overall, results);
-			if (results.error)
-				res.status(500).send({error: records.error});
-			else
-				res.sendStatus(201);
+		addOneRecord(req.body, function finish(results) {
+			console.log("    addOneRecord() gave me results", results);
+			res.sendStatus(201);
+		},
+		function error(err) {
+			res.sendStatus(500).send({error: err});
 		});
-	})
-
-
+	});
 
 	// actually start the server
 	app.listen(rodexServerPortNum, function() {
