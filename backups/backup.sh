@@ -21,16 +21,19 @@ cd `dirname $0`
 # if the database has no changes since the last BU archive, bag it
 if [ /usr/local/var/mongodb -ot /tibusiness/recruit-o-dex/backups/archives ]
 then
-	# OR, no output means no email, right?
+	# OR, no output means no email, right? someday when I'm more confident about it
 	echo "backup not needed: " `date '+%F %R'`
-	ls -lt /usr/local/var/mongodb  /tibusiness/recruit-o-dex/backups/archives
+	ls -ltT /usr/local/var/mongodb  /tibusiness/recruit-o-dex/backups/archives
 	exit 0
 fi
 
 
-echo "backup needed.  now backing up..." `date`
+echo "backup needed.  now backing up..." `date '+%F %R'`
 
-# default creates dump/Jobs/twofiles
+# make sure this works!
+mkdir -pv ./dump ./archives
+
+# default creates dump/Jobs/recruiters.bson and recruiters.metadata.json
 /usr/local/bin/mongodump \
 	--db=Jobs --collection=recruiters
 
@@ -41,9 +44,6 @@ echo "backup needed.  now backing up..." `date`
 #/dvl/mongodb/mongodb-osx-ssl/bin/
 /usr/local/bin/mongoexport \
 	--db=Jobs --collection=recruiters --out=dump/Jobs/recruiters.json
-
-# make sure this works!
-mkdir -pv ./dump ./archives
 
 # so label and store them
 d=`date +%Y-%m-%d,%H.%M`
