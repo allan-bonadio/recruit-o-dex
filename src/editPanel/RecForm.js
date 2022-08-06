@@ -85,18 +85,57 @@ console.info('constructed RecForm');
 		console.error("componentDidCatch(%o, %o)", error, info);
 	}
 
+		// take apart an email with name of the form ` "My Name" <myname@wherever.what>`
+		// If such a string is pasted into recruiter name or email, parse and fill in both
+		// optional quote, grouped name chars, optional quote, <, grouped email, >
+	gobbleNameEmail(tValue) {
+		// matches 'Joe M. de Blow <joe-blow@wher.e-ver.what>' or
+		// ' "Joe M. de Blow" <joe-blow@wher.e-ver.what>'
+		let m = /"?([-\w ,.()]+)"? <([-\w+@.]+)>/i.exec(tValue);
+		if (m) {
+			let name = m[1];
+			if (name.indexOf(',')) {
+				name = name.replace(/^([-\w .()]+), ?([-\w .()]+)$/, '$2 $1');
+			}
+			let email = m[2];
+			rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: 'recruiter_name',
+				newValue: name});
+			rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: 'recruiter_email',
+				newValue: email});
+			return true;
+		}
+		return false;
+	}
+
+	// see if user pasted in text witha  phone number in it, if so, chop out everything
+	// else and register the change
+	gobblePhone(tValue) {
+		let ma = /\b(\d\d\d)\D?\D?(\d\d\d)\D?(\d\d\d\d)\b/i.exec(tValue);
+		if (ma) {
+			rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: 'recruiter_phone',
+				newValue: `${ma[1]}.${ma[2]}.${ma[3]}`});
+			return true;
+		}
+		return false;
+	}
+
 	// keystroke handler - for all the text boxes in the form.  Also gets paste, etc
 	typeInBlank(ev) {
 		var targ = ev.target;
+		let tValue = targ.value;
 
-		// special: take apart an email with name of the form ` "My Name" <myname@wherever.what>`
-		// If such a string is pasted into recruiter name/email, parse and fill in both
-		// optional quote, grouped name chars, optional quote, <, grouped email, >
-		let m = /"?([-\w ,.()]+)"? <([-\w+@.]+)>/i.exec(targ.value);
-		if ((targ.name == 'recruiter_name' || targ.name == 'recruiter_email') && m) {
-			rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: 'recruiter_name', newValue: m[1]});
-			rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: 'recruiter_email', newValue: m[2]});
-			return;
+		switch(targ.name) {
+		case 'recruiter_name':
+		case 'recruiter_email':
+			if (this.gobbleNameEmail(tValue))
+				return;
+			break;
+
+		case 'recruiter_phone':
+			if (this.gobblePhone(tValue))
+				return;
+			break;
+
 		}
 
 		// normal change to some record
