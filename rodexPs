@@ -1,0 +1,6 @@
+#!/bin/bash
+
+pgrep -fl mongod
+pgrep -fl react-startup
+pgrep -fl rodexServer
+
