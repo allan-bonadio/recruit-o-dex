@@ -302,7 +302,7 @@ function addOneRecord(record, finishCallback, errorCallback) {
 // generate a list of companies in the db. ANd store it in the alreadyappliedto.txt file.
 function generateAAT() {
 	if (! process.env.RODEX_AAT_TARGET) {
-		console.warn("process.env.RODEX_AAT_TARGET undefined so no AAT file generated");
+		console.warn("🦑  🦑  process.env.RODEX_AAT_TARGET undefined so no AAT file generated 🦑  🦑 ");
 		return;
 	}
 
@@ -323,22 +323,26 @@ function generateAAT() {
 						.map(doc => doc.company_name)
 						.filter(cname => cname)
 						.join('\n');
+			// console.log(` the list from generateAAS:`, list);
+			// console.log(` the content from generateAAS:`, content);
 
 			// and get it out there before something else fails
-			return fsp.fsPromises.writeFile(process.env.RODEX_AAT_TARGET, content, 'utf8');
+			return fsp.writeFile(process.env.RODEX_AAT_TARGET, content, 'utf8');
 			// promise... don't care
-			// not needed fsp.chmod(process.env.RODEX_AAT_TARGET, 0o666);
+			// not needed cuz that's the default
+			//fsp.chmod(process.env.RODEX_AAT_TARGET, 0o666);
 		},
 		err => {
-			console.error('=================================== Error in generateAAT() =====');
+			console.error('================= 🦑  🦑  Error in generateAAT() =====');
 			console.error(getErrMsg(err));
-			console.error('================================================================');
+			console.error('====================== 🦑  🦑  =========');
 		}
 	);
 }
 
 
 // run when starting up and every few hours after that
+// as long as panama isn't asleep
 generateAAT();
 setInterval(generateAAT, 3 * 3600e3);
 
