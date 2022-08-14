@@ -1,19 +1,23 @@
 /*
-** Control Panel -- the floating blue box on the page
+** Edit Panel -- the floating blue box on the page
 **
-** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
+/* eslint-disable eqeqeq */
 
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import $ from "jquery";
+
+import {rxStore} from '../reducer';
+import RecField from './RecField';
 
 import GlobalList, {globalListUpdateList} from '../globalList/GlobalList';
 import LoadSave from '../LoadSave';
 import LittleDialog from '../LittleDialog';
 import JsonForm from './JsonForm';
 import RecForm from './RecForm';
-import {rxStore} from '../reducer';
+import {Engagements} from './Engagements';
 
 import './EditPanel.scss';
 
@@ -22,10 +26,22 @@ import './EditPanel.scss';
 export let theEditPanel;
 
 class EditPanel extends Component {
+	static propTypes = {
+	};
+
+	static defaultProps = {
+	};
+
 	constructor() {
 		super();
+
 		theEditPanel = this;
 		window.theEditPanel = this;
+
+		this.state = {
+			currentTab: 'info',
+			editingRecord: null,
+		};
 
 		this.mouseDown = this.mouseDown.bind(this);
 		this.mouseMove = this.mouseMove.bind(this);
@@ -40,27 +56,54 @@ class EditPanel extends Component {
 		console.info('constructed EditPanel');
 	}
 
-	tabs = {
-		{title: 'info', code: 'info', Code: 'info', vlup, doink, simmz}
-		{title: 'JD', code: 'JD', Code: 'JD', vlup, doink, simmz}
-		{title: 'notes', code: 'notes', Code: 'notes', vlup, doink, simmz}
-		{title: 'engagements', code: 'engagements', Code: 'engagements', vlup, doink, simmz}
-		{title: 'JSON', code: 'JSON', Code: 'JSON', vlup, doink, simmz}
-	};
-
 	renderTabBar() {
-		return (<div className='tabBar'>
+		const aTab =
+		name => {
+			let isSelected = (name == this.state.currentTab) ? 'selected' : '';
+			return <li className={`tab ${isSelected}`} onClick={ev => this.setState({currentTab: name})}>{name}</li>;
+		}
 
-		</div>);
+		return (<ul className='tabBar'>
+			{aTab('info')}
+			{aTab('jd')}
+			{aTab('notes')}
+			{aTab('engagements')}
+			{aTab('json')}
+		</ul>);
 	}
 
-	render() {
-		//console.info('rendering EditPanel');
-		let sel = this.props;
-		if (!sel) return [];  // too early
-		////console.log("control pan sel:", sel);
+	renderTabs() {
+		let s = this.props;
+		let rec = s.editingRecord;
 
-		let ButtonArea = <section className='button-area' >
+		switch (this.state.currentTab) {
+			// big form
+			case 'info': return <RecForm rec={rec} />;
+
+			// big box
+			case 'jd': return (<RecField rec={rec} label='JD:' fieldName='job_desc_url'
+				element='textarea' placeholder='whole job description' />);
+
+			// big box
+			case 'notes': return (<RecField rec={rec} label='notes:' fieldName='notes'
+				element='textarea' placeholder='where, and what they do' />);
+
+			// big list of forms
+			case 'engagements': return (
+				<Engagements engagements={rec.engagements || rec.events}
+						dispatch={this.props.dispatch}
+						rec={rec}
+				 />);
+;
+			// big box; has everything
+			case 'json': return <JsonForm/>;
+
+			default: throw new Error('bad currentTab');
+		}
+	}
+
+	renderButtonArea(sel) {
+		return (<section className='button-area' >
 			<div style={{display: sel.selectedSerial >= 0 ? 'block' :  'none'}}>
 				<button type='button'
 							className='save-button main-button'
@@ -89,8 +132,16 @@ class EditPanel extends Component {
 					Dup
 				</button>
 			</div>
-		</section>;
+		</section>);
+	}
 
+	render() {
+		//console.info('rendering EditPanel');
+		let sel = this.props;
+		if (!sel) return [];  // too early
+		//let rec = this.state.editingRecord;
+
+		////console.log("control pan sel:", sel);
 
 		// The top level organization of the control panel
 		return <div
@@ -99,9 +150,10 @@ class EditPanel extends Component {
 						style={{
 							display: sel.editingRecord ? 'block' : 'none',
 						}} >
-				<RecForm></RecForm>
-				<JsonForm></JsonForm>
-				{ButtonArea}
+
+				{this.renderTabBar()}
+				{this.renderTabs()}
+				{this.renderButtonArea(sel)}
 			</div>
 	}
 
