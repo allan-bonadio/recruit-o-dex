@@ -153,6 +153,7 @@ export class Engagements extends Component {
 				<option value='googlev' >Google Video Interview</option>
 				<option value='msteams' >MS Teams Interview</option>
 				<option value='onsite' >On-Site Interview</option>
+				<option value='canceled' >canceled</option>
 			</datalist>
 			<table>
 				<tbody>
