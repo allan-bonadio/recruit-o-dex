@@ -1,7 +1,7 @@
 /*
 ** JsonForm -- json-entry pane
 **
-** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
 
 import React, { Component } from 'react';
@@ -21,6 +21,12 @@ const IN_JSON_RE = /in JSON at position (\d+)/;
 
 // raw JSON, editable
 export class JsonForm extends Component {
+	static propTypes = {
+	};
+
+	static defaultProps = {
+	};
+
 	constructor(props) {
 		super(props);
 		////console.log('JsonForm cons this.props', props);////

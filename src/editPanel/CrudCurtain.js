@@ -12,6 +12,12 @@ import LoadSave from '../LoadSave';
 
 // the white translucent sheet behind the control panel; signifies you're changing a record
 export class CrudCurtain extends Component {
+	static propTypes = {
+	};
+
+	static defaultProps = {
+	};
+
 	constructor(props) {
 		super(props);
 		CrudCurtain.me = this;
