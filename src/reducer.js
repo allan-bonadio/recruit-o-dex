@@ -1,7 +1,7 @@
 /*
 ** reducer -- redux reducer case stmts
 **
-** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
 /* eslint-disable eqeqeq, default-case */
 

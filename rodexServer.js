@@ -2,7 +2,7 @@
 /*
 ** recruit o dex server -- the MongoDB interface and server for the Recruit-o-dex page
 **
-** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
 
 const fsp = require('fs/promises');

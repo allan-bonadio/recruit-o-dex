@@ -1,7 +1,7 @@
 /*
 ** CrudCurtain -- foggy background for control panel
 **
-** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
 
 import React, { Component } from 'react';

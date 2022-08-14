@@ -1,7 +1,7 @@
 /*
 ** App -- the main code for the Recruit-O-Dex page
 **
-** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
 
 import React from 'react';

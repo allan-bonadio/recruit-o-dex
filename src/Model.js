@@ -1,7 +1,7 @@
 /*
 ** Model -- ajax calls for RecruitMan page
 **
-** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
 
 // same place we get the website from, just a different port

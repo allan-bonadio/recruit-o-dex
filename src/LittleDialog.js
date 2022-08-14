@@ -1,7 +1,7 @@
 /*
 ** LittleDialog -- a dialog for things like alerts and quick messages
 **
-** Copyright (C) 2017-2019 Allan Bonadio   All Rights Reserved
+** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
 
 import 'bootstrap/dist/css/bootstrap.min.css';
