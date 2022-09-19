@@ -16,12 +16,17 @@ function RecField(props) {
 	let placeholder = props.placeholder;
 	//console.log(":: field %s depicted with value %s", fieldName, dval);
 
-	// form the <input or <textarea.  Keystroke handler in RecForm, not here.
+	const passThru = () => {};
+
+	// form the <input or <textarea.
+	// Keystroke handler in RecForm, not here.  But, react gets snappy if no handler here.
 	let entryElement;
 	if (props.element != 'textarea')  // eslint-disable-line
-		entryElement = <input value={dval} name={fieldName} onChange={() => {}} placeholder={placeholder} />;
+		entryElement = <input value={dval} name={fieldName} placeholder={placeholder}
+			onChange={passThru}/>;
 	else
-		entryElement = <textarea value={dval} name={fieldName} onChange={() => {}} placeholder={placeholder}  />;
+		entryElement = <textarea value={dval} name={fieldName} placeholder={placeholder}
+			onChange={passThru}/>;
 
 	return <div key={fieldName}>
 		<label className="edit-label">{props.label}</label>

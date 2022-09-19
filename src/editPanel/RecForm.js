@@ -46,7 +46,7 @@ export class RecForm extends Component {
 // 		this.state = {record: {recruiter_name:'',  recruiter_email:'',  recruiter_phone:'',
 // 					agency:'',  company_name:'',  job_desc_url: '', status: 'active',  notes:''},
 // 					display: 'none'};
-		this.typeInBlank = this.typeInBlank.bind(this);
+		//this.typeInBlank = this.typeInBlank.bind(this);
 //		this.changeEngagements = this.changeEngagements.bind(this);
 		window.recForm = this;
 		RecForm.me = this;  // for singleton objects only
@@ -63,7 +63,7 @@ console.info('constructed RecForm');
 		if (! rec)
 			return [];
 
-		return <section className='edit-col edit-form' onChange={this.typeInBlank}>
+		return <section className='edit-col edit-form' onChange={this.typeInBlank} onBlur={this.deFocusBlank}>
 
 			<RecField rec={rec} label='Recruiter:' fieldName='recruiter_name' placeholder='Ashish' />
 			<RecField rec={rec} label='email:' fieldName='recruiter_email' placeholder='t@t.tt' />
@@ -108,20 +108,36 @@ console.info('constructed RecForm');
 		return false;
 	}
 
-	// see if user pasted in text witha  phone number in it, if so, chop out everything
+	// see if user pasted in text with a phone number in it, if so, chop out everything
 	// else and register the change
 	gobblePhone(tValue) {
-		let ma = /\b(\d\d\d)\D?\D?(\d\d\d)\D?(\d\d\d\d)\b/i.exec(tValue);
+		// area code ... first three ... last 4 ... optional extension
+		let ma = /\b(\d\d\d)\D{0,2}(\d\d\d)\D?(\d\d\d\d)(\D+(\d*))?/i.exec(tValue);
 		if (ma) {
+			console.info(`you got ma match length ${ma.length}: ‹${ma[1]}•${ma[2]}•${ma[3]}›‹${ma[4]}›‹${ma[5]}›‹${ma[6]}›`);
+			let newVal = `${ma[1]}.${ma[2]}.${ma[3]}`;
+			if (ma[5])
+				newVal += ` x ${ma[5]}`;  // optional extension, any numbers of digits
 			rxStore.dispatch({type: 'CHANGE_TO_RECORD', fieldName: 'recruiter_phone',
-				newValue: `${ma[1]}.${ma[2]}.${ma[3]}`});
+				newValue: newVal});
 			return true;
 		}
+		else
+			console.log(`no phone ext in  '${tValue}'`)
 		return false;
 	}
 
+	// blur handler - for all the text boxes in the form.  trim off leading and trailing whitespace.
+	deFocusBlank =
+	(ev) => {
+		var targ = ev.target;
+		rxStore.dispatch({type: 'CHANGE_TO_RECORD',
+			fieldName: targ.name, newValue: targ.value.trim()});
+	}
+
 	// keystroke handler - for all the text boxes in the form.  Also gets paste, etc
-	typeInBlank(ev) {
+	typeInBlank =
+	(ev) => {
 		var targ = ev.target;
 		let tValue = targ.value;
 
