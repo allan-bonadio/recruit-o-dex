@@ -28,7 +28,7 @@ then
 fi
 
 
-echo "backup needed.  now backing up..." `date '+%F %R'`
+echo "Rodex backup needed.  now backing up..." `date '+%F %R'`
 
 # make sure this works!
 mkdir -pv ./dump ./archives

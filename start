@@ -6,7 +6,7 @@ echo "This starts up all the servers.  Checks so it won't start a second process
 
 # old
 #if [ ! -f "$mongoconf" ]
-#then mongoconf=/dvl/mongodb/mongod.conf
+#then mongoconf=/opt/dvl/mongodb/mongod.conf
 #	   # flores
 #fi
 
@@ -18,7 +18,7 @@ if ! pgrep -f mongod
 then
 	echo ":::::::::::::::::::::::::::::::::::: Starting up mongo DB server"
 
-	MONGODCMD="/dvl/mongo/startMongo.sh"
+	MONGODCMD="/opt/dvl/mongo/startMongo.sh"
 	#MONGODCMD="mongod --config $mongoconf"
 	echo mongo launch cmd: $MONGODCMD
 
@@ -44,7 +44,7 @@ if ! pgrep -f recruit-o-dex/node_modules/react-scripts/script
 then
 	echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
 	# pipe this through cat so it won't clear the screen all the time
-	PORT=3300 EDITOR= TERM= node_modules/.bin/react-scripts start | cat &
+	PORT=7700 EDITOR= TERM= node_modules/.bin/react-scripts start | cat &
 	sleep 2
 else
 	echo "react server already running"
