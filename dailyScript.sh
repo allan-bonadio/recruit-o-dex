@@ -8,20 +8,20 @@
 # backup Rodex db
 echo
 echo "Rodex backups"
-/tibusiness/recruit-o-dex/backups/backup.sh
+/opt/tibusiness/recruit-o-dex/backups/backup.sh
 
 # see if nakoda is serving pages as it should.
 # if no problems, never shows html file.
 echo
 echo "test jobsearching server"
-/dvl/nakoda/testing/test.sh
+/opt/dvl/nakoda/testing/test.sh
 
 # I really have to upload alreadyAppliedTo regularly.
 echo
 echo "upload AAT"
-/tibusiness/jobsearching/resume/uploadAAT.sh
+/opt/tibusiness/jobsearching/resume/uploadAAT.sh
 
 # and the resume in case I made some changes
 echo
 echo "upload Resume"
-/tibusiness/jobsearching/resume/uploadResume.sh
+/opt/tibusiness/jobsearching/resume/uploadResume.sh
