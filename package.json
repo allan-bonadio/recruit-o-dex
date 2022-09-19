@@ -1,6 +1,7 @@
 {
   "name": "recruit-o-dex",
   "version": "0.6.0",
+  "author": "Allan Bonadio <bojnac@tactileint.org> (http://portfolio.tactileint.org)",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.18.6",
