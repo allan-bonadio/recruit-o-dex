@@ -38,7 +38,7 @@ export class JsonForm extends Component {
 
 		this.typeInJson = this.typeInJson.bind(this);
 		JsonForm.me = this;
-console.info('constructed JsonForm');
+		//console.info('constructed JsonForm');
 	}
 
 	// a change event (keystroke/cut/paste/etc) in the Json box
