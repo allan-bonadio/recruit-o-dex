@@ -1,5 +1,5 @@
 /*
-** RecForm -- Recruiter form, misc fields
+** EmplForm -- Employer form, misc fields
 **
 ** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
@@ -9,13 +9,10 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-////import {userChangedRecord} from './EditPanel';
 import RecField from './RecField';
-//import {Engagements} from './Engagements';
-
 
 // a small table of recruiter info, fixed field names
-export class RecForm extends Component {
+export class EmplForm extends Component {
 	static propTypes = {
 		rec: PropTypes.object,
 	};
@@ -28,16 +25,15 @@ export class RecForm extends Component {
 // 		this.state = {record: {recruiter_name:'',  recruiter_email:'',  recruiter_phone:'',
 // 					agency:'',  company_name:'',  job_desc_url: '', status: 'active',  notes:''},
 // 					display: 'none'};
-		//RecField.typeInBlank = RecField.typeInBlank.bind(this);
 //		this.changeEngagements = this.changeEngagements.bind(this);
 		window.recForm = this;
-		RecForm.me = this;  // for singleton objects only
-		console.info('constructed RecForm');
+		EmplForm.me = this;  // for singleton objects only
+		console.info('constructed EmplForm');
 	}
 
 	// render the form with all the blanks and data populated in them
 	render() {
-		//console.info('rendering RecForm');
+		//console.info('rendering EmplForm');
 		////redux let rec = this.state.record;
 		////console.log('this.props', this.props);////
 		let p = this.props;
@@ -46,12 +42,11 @@ export class RecForm extends Component {
 			return [];
 
 		return (<section className='edit-col edit-form' onChange={RecField.typeInBlank} onBlur={RecField.deFocusBlank}>
+			<RecField rec={rec} label='company:' fieldName='company_name'  placeholder='unsure' />
+			<RecField rec={rec} label='status:' fieldName='status' />
 
-			<RecField rec={rec} label='Recruiter:' fieldName='recruiter_name' placeholder='Ashish' />
-			<RecField rec={rec} label='email:' fieldName='recruiter_email' placeholder='ashish@microawsome.io' />
-			<RecField rec={rec} label='phone:' fieldName='recruiter_phone' placeholder='111.111.1111 x11' />
-			<RecField rec={rec} label='agency:' fieldName='agency'  placeholder='Micro Awsome'  />
-			<div style={{height: '10px'}} />
+			<RecField rec={rec} label='notes:' fieldName='notes'
+				element='textarea' placeholder='where, and what they do' />);
 
 		</section>);
 	}
@@ -60,19 +55,19 @@ export class RecForm extends Component {
 		console.error("componentDidCatch(%o, %o)", error, info);
 	}
 
-	// this does stuff for RecForm and also EmplForm
-	static changeToRecord(editPanel, action) {
-		// action.fieldName and .newValue tells you what changed,
-		editPanel = {...editPanel,
-			editingRecord: {...editPanel.editingRecord,
-				[action.fieldName]: action.newValue}};
-		return editPanel;
-	}
 
+	// static changeToRecord(editPanel, action) {
+	// 	// action.fieldName and .newValue tells you what changed,
+	// 	editPanel = {...editPanel,
+	// 		editingRecord: {...editPanel.editingRecord,
+	// 			[action.fieldName]: action.newValue}};
+	// 	return editPanel;
+	// }
 }
 
 function mapStateToProps(state) {
+	//console.info("MS2P rec form");
 	return state.editPanel;
 }
 
-export default connect(mapStateToProps)(RecForm);
+export default connect(mapStateToProps)(EmplForm);
