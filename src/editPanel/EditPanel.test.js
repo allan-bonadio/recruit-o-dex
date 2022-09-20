@@ -26,7 +26,7 @@ xdescribe('<EditPanel', () => {
 	it('should be a div', () => {
 		let cp = <EditPanel />;
 		const wrapper = shallow(cp);
-		expect(wrapper.is('div#control-panel')).toBeTruthy();
+		expect(wrapper.is('div#edit-panel')).toBeTruthy();
 	});
 
 	it('should have some buttons', () => {

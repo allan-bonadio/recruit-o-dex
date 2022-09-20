@@ -40,7 +40,7 @@ describe('<App', () => {
 		wrapper.unmount();
 	});
 
-	it('should have a control-panel', () => {
+	it('should have a edit-panel', () => {
 		const wrapper = mount(<App />);
 		////console.log(wrapper.debug());
 		expect(wrapper.find('EditPanel').length).toEqual(1);
