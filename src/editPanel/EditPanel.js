@@ -10,13 +10,15 @@ import {connect} from 'react-redux';
 import $ from "jquery";
 
 import {rxStore} from '../reducer';
-import RecField from './RecField';
+//import RecField from './RecField';
 
 import GlobalList, {globalListUpdateList} from '../globalList/GlobalList';
+import BoxForm from './BoxForm';
 import LoadSave from '../LoadSave';
 import LittleDialog from '../LittleDialog';
 import JsonForm from './JsonForm';
 import RecForm from './RecForm';
+import EmplForm from './EmplForm';
 import {Engagements} from './Engagements';
 
 import './EditPanel.scss';
@@ -39,7 +41,7 @@ class EditPanel extends Component {
 		window.theEditPanel = this;
 
 		this.state = {
-			currentTab: 'info',
+			currentTab: 'recInfo',
 			editingRecord: null,
 		};
 
@@ -64,9 +66,9 @@ class EditPanel extends Component {
 		}
 
 		return (<ul className='tabBar'>
-			{aTab('info')}
+			{aTab('recInfo')}
+			{aTab('emplInfo')}
 			{aTab('jd')}
-			{aTab('notes')}
 			{aTab('engagements')}
 			{aTab('json')}
 		</ul>);
@@ -78,19 +80,16 @@ class EditPanel extends Component {
 
 		switch (this.state.currentTab) {
 			// big form
-			case 'info': return <RecForm rec={rec} />;
+			case 'recInfo': return <RecForm rec={rec} />;
+			case 'emplInfo': return <EmplForm rec={rec} />;
 
 			// big box
-			case 'jd': return (<RecField rec={rec} label='JD:' fieldName='job_desc_url'
+			case 'jd': return (<BoxForm rec={rec} label='JD:' fieldName='job_desc_url'
 				element='textarea' placeholder='whole job description' />);
-
-			// big box
-			case 'notes': return (<RecField rec={rec} label='notes:' fieldName='notes'
-				element='textarea' placeholder='where, and what they do' />);
 
 			// big list of forms
 			case 'engagements': return (
-				<Engagements engagements={rec.engagements || rec.events}
+				<Engagements engagements={rec.engagements}
 						dispatch={this.props.dispatch}
 						rec={rec}
 				 />);
@@ -98,7 +97,7 @@ class EditPanel extends Component {
 			// big box; has everything
 			case 'json': return <JsonForm/>;
 
-			default: throw new Error('bad currentTab');
+			default: throw new Error(`bad currentTab '${this.state.currentTab}'`);
 		}
 	}
 
@@ -145,7 +144,7 @@ class EditPanel extends Component {
 
 		// The top level organization of the control panel
 		return <div
-						id="control-panel" onMouseDown={this.mouseDown}
+						id="edit-panel" onMouseDown={this.mouseDown}
 						className={sel.selectedSerial < 0 ? 'adding' : ''}
 						style={{
 							display: sel.editingRecord ? 'block' : 'none',
@@ -224,7 +223,7 @@ class EditPanel extends Component {
 		// through normal fast means
 		this.cPanelX += ev.clientX - this.lastX;
 		this.cPanelY += ev.clientY - this.lastY;
-		$('#control-panel').css({left: this.cPanelX + 'px', top: this.cPanelY + 'px'})
+		$('#edit-panel').css({left: this.cPanelX + 'px', top: this.cPanelY + 'px'})
 
 		// ready for next nudge
 		this.lastX = ev.clientX;

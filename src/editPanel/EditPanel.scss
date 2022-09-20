@@ -1,10 +1,10 @@
 /*
-** App -- most css for recruit-o-dex
+** Edit Panel -- css for the blue popup window
 **
 ** Copyright (C) 2017-2022 Allan Bonadio   All Rights Reserved
 */
 
-#control-panel {
+#edit-panel {
 	position: fixed;
 	z-index: 30;
 	left: 100px;
@@ -17,12 +17,12 @@
 	/*background-image: linear-gradient(45deg, rgba(170, 200, 255, 0.5), rgba(200, 170, 255, 0.5));*/
 }
 
-#control-panel.adding {
+#edit-panel.adding {
 	background-color: rgba(101, 231, 101, 0.5);
 }
 
 
-#control-panel input, #control-panel textarea {
+#edit-panel input, #edit-panel textarea {
 	background-color: rgba(255, 255, 255, .85);
 }
 
@@ -42,7 +42,7 @@ label.edit-label {
 	margin: 6px 0;
 	background-color: rgb(213, 228, 255);
 }
-#control-panel.adding label.edit-label {
+#edit-panel.adding label.edit-label {
 	background-color: rgba(178, 243, 178, 0.5);
 }
 
@@ -72,6 +72,19 @@ textarea.json-edit {
 	margin: 5px;
 }
 
+.job_desc_url textarea {
+	width: 27em;
+	height: 18em;
+
+	margin: 5px;
+}
+
+.notes textarea {
+	height: 12em;
+	width: 27em;
+
+}
+
 div.json-errors {
 	width: 27em;
 	line-height: 2em;
@@ -96,19 +109,25 @@ div.crud-curtain {
 
 /********************************************** tab bar and tabs */
 
-li.tab {
-	border: 1px inset #aaa;
-	border-radius: .3em .3em 0 0;
-	list-style: none;
-	float: left;
-	padding: 2px 1em;
+ul.tabBar {
+	width: 100%;
+	display: flex;
+	padding-left: 0;
 
-	/* all odd so avg with white is even integer */
-	background-color: rgba(200, 200, 100, 0.5);
+	li.tab {
+		border: 1px inset #aaa;
+		border-radius: .3em .3em 0 0;
+		list-style: none;
+		flex: 1 1 auto;
+		padding: 2px 2em;
+		//padding-inline-start: 0;
 
-	&.selected {
-		background-color: rgba(100, 200, 100, 0.5);
-		border-style: outset outset none;
+		/* all odd so avg with white is even integer */
+		background-color: rgba(200, 200, 100, 0.5);
+
+		&.selected {
+			background-color: rgba(100, 200, 100, 0.5);
+			border-style: outset outset none;
+		}
 	}
 }
-
