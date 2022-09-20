@@ -87,7 +87,7 @@ console.info('constructed SummaryRec');
 			return;
 
 		// yes this was a click - open the edit panel
-		debugger;
+		//debugger;
 		this.down = null;
 		rxStore.dispatch({
 			type: 'START_EDIT_RECORD',

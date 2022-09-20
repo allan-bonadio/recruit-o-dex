@@ -112,7 +112,7 @@ function editPanelReducer(editPanel = initialState.wholeList, action) {
 
 	case 'START_EDIT_RECORD':
 		// select and load a record into control panel (after user clicks it in the GlobalList)
-		debugger;
+		//debugger;
 		return LoadSave.startEditRecord(editPanel, action);
 
 	case 'START_DUP_RECORD':

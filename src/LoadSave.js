@@ -61,7 +61,7 @@ export class LoadSave {
 	// called by reducer()
 	static startEditRecord(editPanel, action) {
 		let record = action.record;
-		debugger;
+		//debugger;
 
 		// the NEW selection to be handed in to state
 		return {
