@@ -6,6 +6,8 @@
 
 cd `dirname $0`
 
+myPath=/opt/dvl/mongo/mongodb-database-tools-macos-x86_64-100.6.0/bin/
+
 # canceled always
 # if [ "$1" == '--onceTodayOnly' ]
 # then
@@ -18,7 +20,7 @@ cd `dirname $0`
 # 	fi
 # fi
 
-# if the database has no changes since the last BU archive, bag it
+# if the database has no changes since the last BU archive, skip it
 if [ /usr/local/var/mongodb -ot /tibusiness/recruit-o-dex/backups/archives ]
 then
 	# OR, no output means no email, right? someday when I'm more confident about it
@@ -34,20 +36,28 @@ echo "Rodex backup needed.  now backing up..." `date '+%F %R'`
 mkdir -pv ./dump ./archives
 
 # default creates dump/Jobs/recruiters.bson and recruiters.metadata.json
-/usr/local/bin/mongodump \
+/opt/dvl/mongo/mongoTools/mongodump \
 	--db=Jobs --collection=recruiters
 
 # i also want a text json copy.  This isn't really json, it's json for each
 # document, separated by newlines.
 # Must convert it if you want to make it really json: \n => , wrap with [ ]
 # but I think mongoimport will read this.
-#/dvl/mongodb/mongodb-osx-ssl/bin/
-/usr/local/bin/mongoexport \
+echo •••••••••••••••••••••••••••••••••••••••••••••••••• mongoexport
+/opt/dvl/mongo/mongoTools/mongoexport \
+	--verbose \
 	--db=Jobs --collection=recruiters --out=dump/Jobs/recruiters.json
 
 # so label and store them
 d=`date +%Y-%m-%d,%H.%M`
 mv ./dump/Jobs ./archives/Jobs$d
+
+# so allan can read it on email
+ls -l@a archives/Jobs$d
+
+# let allan see it cuz he's almost certainly hunting and
+# needs to search recent rodex data
+/usr/local/bin/bbedit --new-window archives/Jobs$d/recruiters.json
 
 # now delete an old one.  Randomly chosen, but keep around the most recent 2.
 # NO NO NO I just deleted my whole archive directory. cuz $fileName was empty.
@@ -55,6 +65,6 @@ mv ./dump/Jobs ./archives/Jobs$d
 #fileName=` ls -1t archives | tail -n +$lineNum | head -1 `
 #/bin/rm -rfv archives/$fileName
 
-# tell Allan
+# tell Allan.  He'll get rid of old ones ... someday.
 open -a "Google Chrome" backedUp.html
 
