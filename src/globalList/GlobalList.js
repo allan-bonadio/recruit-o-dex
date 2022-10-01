@@ -5,6 +5,7 @@
 */
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
 
 import SummaryRec from './SummaryRec';
 import {moGetAll} from '../Model';
@@ -19,6 +20,8 @@ const CHECKING_PERIOD = 3600 * 1000;
 const MOUSE_INACTION_DELAY = 60 * 1000 ;
 const PAGE_LOAD_AGE = 3 * 3600 * 1000;
 
+
+let traceMustBeAfter = false;
 
 /* *************************************************************************** sorters */
 
@@ -77,10 +80,6 @@ export class GlobalList extends Component {
 		super(props);
 		GlobalList.me = this;
 
-		this.clickNewRec = this.clickNewRec.bind(this);
-		this.changeSearchQueryEv = this.changeSearchQueryEv.bind(this);
-		this.changeSortCriterionEv = this.changeSortCriterionEv.bind(this);
-// 		this.changeCollectionNameEv = this.changeCollectionNameEv.bind(this);
 		console.info('constructed GlobalList');////
 	}
 
@@ -116,11 +115,11 @@ export class GlobalList extends Component {
 			if (err)
 				p.dispatch({type: 'ERROR_GET_ALL', errorObj: err})
 			else {
-				let list = GlobalList.sortRecords(newRecs, this.props.wholeList.sortCriterion);
+				let list = GlobalList.sortRecords(newRecs, p.wholeList.sortCriterion);
 
 			 	// triggers a repaint, using this list of new raw data presumably from mongo
-				this.props.dispatch({type: 'SET_WHOLE_LIST', recs: list});
-				this.props.dispatch({type: 'RESET_SELECTION'});
+				p.dispatch({type: 'SET_WHOLE_LIST', recs: list});
+				p.dispatch({type: 'RESET_SELECTION'});
 			}
 		});
 	}
@@ -136,9 +135,9 @@ export class GlobalList extends Component {
 	}
 
 	// a click on the New Rec button to raise the control panel with a prospective rec
-	clickNewRec(ev) {
-		this.props.dispatch({type: 'START_ADD_RECORD'});
-	}
+	clickNewRec=
+	(ev) => this.props.dispatch({type: 'START_ADD_RECORD'});
+
 
 	/* *********************************************************** refresher */
 	// reload the page every so often so the colors don't misrepresent the ages
@@ -181,9 +180,8 @@ export class GlobalList extends Component {
 
 	/* *********************************************************** searching */
 	// any input in the search box
-	changeSearchQueryEv(ev) {
-		this.props.dispatch({type: 'CHANGE_SEARCH_QUERY', newQuery: ev.target.value});
-	}
+	changeSearchQueryEv =
+	(ev) => this.props.dispatch({type: 'CHANGE_SEARCH_QUERY', newQuery: ev.target.value});
 
 	static changeSearchQuery(wholeList, action) {
 		return {
@@ -192,16 +190,29 @@ export class GlobalList extends Component {
 		};
 	}
 
+	/* *********************************************************** only recent */
+	// any input in the search box
+	changeOnlyRecentEv =
+	(ev) => this.props.dispatch({type: 'CHANGE_ONLY_RECENT', newOnlyRecent: ev.target.checked});
+
+
+	static changeOnlyRecent(wholeList, action) {
+		return {
+			...wholeList,
+			onlyRecent: action.newOnlyRecent,
+		};
+	}
+
+
 	/* *********************************************************** sorting */
 	static sortRecords(recs, criterion) {
 		return [...recs].sort(sorters[criterion].compare);
 	}
 
 	// any change in the menu, direct event handler
-	changeSortCriterionEv(ev) {
-		this.props.dispatch({type: 'CHANGE_SORT_CRITERION',
+	changeSortCriterionEv =
+	(ev) => this.props.dispatch({type: 'CHANGE_SORT_CRITERION',
 			newCriterion: ev.target.value});
-	}
 
 	// same, called from the resolver
 	static changeSortCriterion(wholeList, action) {
@@ -220,7 +231,8 @@ export class GlobalList extends Component {
 	}
 
 	/* *********************************************************** which collection */
-//	changeCollectionNameEv(ev) {
+//	changeCollectionNameEv =
+// (ev) => {
 // 		this.props.dispatch({type: 'CHANGE_COLLECTION_NAME',
 // 			newName: ev.target.value});
 //	}
@@ -257,7 +269,14 @@ export class GlobalList extends Component {
 				<p>
 					<big><span aria-label='search' role='img'>🔍</span></big>
 					<input className='search-box' placeholder='search (not yet impl)'
-						onChange={this.changeSearchQueryEv} defaultValue={p.searchQuery} />
+						onChange={this.changeSearchQueryEv} value={p.searchQuery} />
+				</p>
+				<p>
+					<label>
+						<input type='checkbox' className='only-recent' aria-label='Only Recent'
+							onChange={this.changeOnlyRecentEv} checked={p.wholeList.onlyRecent} />
+						&nbsp; Only Recent (month)
+					</label>
 				</p>
 				<p>
 					sort:&nbsp;
@@ -267,8 +286,8 @@ export class GlobalList extends Component {
 					</select>
 				</p>
 				<p>
-					database:&nbsp;
-{/*					<select id='database-name' onChange={this.changeCollectionNameEv}
+{/*					database:&nbsp;
+					<select id='database-name' onChange={this.changeCollectionNameEv}
 						value={localStorage.collectionName || 'recruiters'} >
 						<option key='recruiters' value='recruiters'>recruiters</option>
 						<option key='rec2020' value='rec2020'>rec2020</option>
@@ -292,8 +311,32 @@ export class GlobalList extends Component {
 			</section>];
 		}
 		else {
+			let mustBeAfter = p.wholeList.onlyRecent
+				? (new Date(Date.now() - (60000 * 60 * 24 * 30))).toISOString().replace(/T/, '.')
+				: '1970-01-01.01:01:01.001Z';
+
+			if (traceMustBeAfter) {
+				console.info(`the mustBeAfter = ${mustBeAfter}, whole list length is `, p.wholeList.recs.length)
+
+				console.info(`\nwhole list::::::::::::::::::::::::::::::::::: ${p.wholeList.recs.length} total`)
+				p.wholeList.recs
+				.forEach((rec, i) => console.info(`${i} co name: ${rec.company_name} updated{} ${(rec.updated || rec.created)}`))
+				let llist = p.wholeList.recs
+				.filter(rec => {
+					console.info(`rec.updated=${rec.updated} || rec.created=${rec.created}) > mustBeAfter=${mustBeAfter}`);
+					let res = (rec.updated || rec.created) > mustBeAfter;
+					console.info(`rec.updated || rec.created=${rec.updated || rec.created}   res=${res}`);
+					return res;
+				});
+
+				console.info(`\njust selected ::::::::::::::::::::::::::::::::::: ${llist.length}`)
+				llist.forEach((rec, i) => console.info(`${i} co name: ${rec.company_name} updated: ${(rec.updated || rec.created)}`))
+			}
+
 			// all the other cells with records in them
-			return p.wholeList.recs.map(function(rec, ix) {
+			return p.wholeList.recs
+			.filter(rec => (rec.updated || rec.created) > mustBeAfter)
+			.map(function(rec, ix) {
 				return <SummaryRec key={ix.toString()} serial={ix}
 					record={rec} selectedSerial={p.selectedSerial} ></SummaryRec>;
 			});
@@ -305,6 +348,7 @@ export class GlobalList extends Component {
 		//console.info('rendering GlobalList');
 		let titleCell = this.renderTitleCell();
 		let list = this.renderBodyCells();
+		//console.info(`renderBodyCells returned length = ${list.length}`)
 
 		// stick in the header cell in the upper left with the photo
 		list.unshift(titleCell);
@@ -313,6 +357,13 @@ export class GlobalList extends Component {
 	}
 
 }
+
+GlobalList.propTypes = {
+	wholeList: PropTypes.object,
+	selectedSerial: PropTypes.number,
+	dispatch: PropTypes.func,
+	onlyRecent: PropTypes.bool,
+};
 
 function mapStateToProps(state) {
 	//console.info("MS2P global list");

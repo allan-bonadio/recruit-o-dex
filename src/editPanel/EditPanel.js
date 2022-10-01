@@ -7,6 +7,7 @@
 
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
 import $ from "jquery";
 
 import {rxStore} from '../reducer';
@@ -28,30 +29,37 @@ import './EditPanel.scss';
 export let theEditPanel;
 
 class EditPanel extends Component {
+	// all of these come from the redux store
 	static propTypes = {
-	};
+		// which rec being edited, or <0 if adding new one.  ignored if !editingRecord
+		selectedSerial: PropTypes.number,
 
+		// null if panel not displayed (and no rec is selected), otherwise, rec being edited
+		editingRecord: PropTypes.object,
+	};
 	static defaultProps = {
+		selectedSerial: null,
+		editingRecord: null,
 	};
 
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 
 		theEditPanel = this;
 		window.theEditPanel = this;
 
 		this.state = {
 			currentTab: 'recInfo',
-			editingRecord: null,
+			//editingRecord: null,
 		};
 
-		this.mouseDown = this.mouseDown.bind(this);
-		this.mouseMove = this.mouseMove.bind(this);
-		this.mouseUp = this.mouseUp.bind(this);
-
-		this.saveAddClick = this.saveAddClick.bind(this);
-		this.saveEditClick = this.saveEditClick.bind(this);
-		this.dupRecClick = this.dupRecClick.bind(this);
+		//this.mouseDown = this.mouseDown.bind(this);
+		//this.mouseMove = this.mouseMove.bind(this);
+		//this.mouseUp = this.mouseUp.bind(this);
+		//
+		//this.saveAddClick = this.saveAddClick.bind(this);
+		//this.saveEditClick = this.saveEditClick.bind(this);
+		//this.dupRecClick = this.dupRecClick.bind(this);
 
 		this.cPanelX = 100;
 		this.cPanelY = 200;  // for doing it quickly
@@ -75,8 +83,10 @@ class EditPanel extends Component {
 	}
 
 	renderTabs() {
-		let s = this.props;
-		let rec = s.editingRecord;
+		let p = this.props;
+		let rec = p.editingRecord;
+		if (!rec)
+			return '';
 
 		switch (this.state.currentTab) {
 			// big form
@@ -84,7 +94,7 @@ class EditPanel extends Component {
 			case 'emplInfo': return <EmplForm rec={rec} />;
 
 			// big box
-			case 'jd': return (<BoxForm rec={rec} label='JD:' fieldName='job_desc_url'
+			case 'jd': return (<BoxForm rec={rec} label='JD:' fieldName='job_desc_url' lines={30}
 				element='textarea' placeholder='whole job description' />);
 
 			// big list of forms
@@ -136,39 +146,44 @@ class EditPanel extends Component {
 
 	render() {
 		//console.info('rendering EditPanel');
-		let sel = this.props;
-		if (!sel) return [];  // too early
+		let p = this.props;
+		if (!p) return [];  // too early
+		//if (!p.editingRecord) return [];  // right after EditPanel closed?
 		//let rec = this.state.editingRecord;
 
-		////console.log("control pan sel:", sel);
+		////console.log("control pan p:", p);
 
 		// The top level organization of the control panel
 		return <div
-						id="edit-panel" onMouseDown={this.mouseDown}
-						className={sel.selectedSerial < 0 ? 'adding' : ''}
-						style={{
-							display: sel.editingRecord ? 'block' : 'none',
-						}} >
+				id="edit-panel" onMouseDown={this.mouseDown}
+				className={p.selectedSerial < 0 ? 'adding' : ''}
+				style={{
+					display: p.editingRecord ? 'block' : 'none',
+				}}
+			>
 
-				{this.renderTabBar()}
-				{this.renderTabs()}
-				{this.renderButtonArea(sel)}
-			</div>
+			{this.renderTabBar()}
+			{this.renderTabs()}
+			{this.renderButtonArea(p)}
+		</div>
 	}
 
 
 	// a click event on Save, save existing rec, pre-dispatch
-	saveEditClick(ev) {
+	saveEditClick =
+	(ev) => {
 		LoadSave.saveAddEditRecord(this.props.selectedSerial);
 	}
 
 	// a click event on Add to save a new rec, just click handler that dispatches
-	saveAddClick(ev) {
+	saveAddClick =
+	(ev) => {
 		////console.log("saveAddClick starting...");
 		LoadSave.saveAddEditRecord(-1);
 	}
 
-	dupRecClick(ev) {
+	dupRecClick =
+	(ev) => {
 		LoadSave.dupCurrentRecord(this.props.selectedSerial);
 	}
 
@@ -201,7 +216,8 @@ class EditPanel extends Component {
 	/****************************************************** drag around cpanel */
 
 	// click down on the control panel - so user can drag it around
-	mouseDown(ev) {
+	mouseDown =
+	(ev) => {
 		// a click on the panel, not in its text blanks
 		let nn = ev.target.nodeName;
 		if (nn != 'INPUT' && nn != 'TEXTAREA') {  // eslint-disable-line
@@ -217,7 +233,8 @@ class EditPanel extends Component {
 	}
 
 	// every yank of the sleeve comes through here
-	mouseMove(ev) {
+	mouseMove =
+	(ev) => {
 		GlobalList.mouseMoved();
 
 		// through normal fast means
@@ -233,7 +250,8 @@ class EditPanel extends Component {
 	}
 
 	// called when it's the end and we're done, either by mouse up or mouse out of the page, or any other reason
-	mouseUp(ev) {
+	mouseUp =
+	(ev) => {
 		this.mouseMove(ev);
 
 		// turn off event handlers and that'll disable dragging.  That's all, no cleanup needed; side effects all done.

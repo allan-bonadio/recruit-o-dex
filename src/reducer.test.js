@@ -77,6 +77,7 @@ describe('reducer ', () => {
 		testReducerAction(Engagements, 'PASTE_TO_ENGAGEMENT');
 
 		testReducerAction(GlobalList, 'CHANGE_SEARCH_QUERY');
+		testReducerAction(GlobalList, 'CHANGE_ONLY_RECENT');
 		testReducerAction(GlobalList, 'CHANGE_SORT_CRITERION');
 // 		testReducerAction(GlobalList, 'CHANGE_COLLECTION_NAME');
 

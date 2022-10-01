@@ -45,6 +45,8 @@ export const initialState = {
 
 		searchQuery: '',  // someday
 
+		onlyRecent: true,
+
 		// all the records, for the GlobalList
 		recs: [],
 
@@ -85,6 +87,10 @@ function wholeListReducer(wholeList = initialState.wholeList, action) {
 	case 'CHANGE_SEARCH_QUERY':
 		// user typed etc into the JSON box
 		return GlobalList.changeSearchQuery(wholeList, action);
+
+	case 'CHANGE_ONLY_RECENT':
+		// user typed etc into the JSON box
+		return GlobalList.changeOnlyRecent(wholeList, action);
 
 	case 'CHANGE_SORT_CRITERION':
 		return GlobalList.changeSortCriterion(wholeList, action);
