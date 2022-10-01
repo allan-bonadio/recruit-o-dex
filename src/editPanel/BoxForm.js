@@ -21,18 +21,24 @@ export function BoxForm(props) {
 	return (
 		<section className={`edit-col edit-form box-${p.fieldName}`}
 				onChange={RecField.typeInBlank} onBlur={RecField.deFocusBlank}>
-			<RecField element='textarea' fieldName={p.fieldName}   label={p.label}
+			<RecField element='textarea' fieldName={p.fieldName}   label={p.label} lines={p.lines}
 				 placeholder={p.placeholder} rec={rec} />
 		</section>);
 }
 
 BoxForm.propTypes = {
-	fieldName: PropTypes.string.isRequired,
-	label: PropTypes.string,
+	fieldName: PropTypes.string.isRequired,  // which one from the rec
+
+	label: PropTypes.string,  // top of box
+
 	placeholder: PropTypes.string,
 	rec: PropTypes.object.isRequired,
+	lines: PropTypes.number,  // number of lines high for a textarea
 };
 BoxForm.defaultProps = {
+	lines: 20,
+	placeholder: '',
+	label: '',
 };
 
 export default BoxForm;

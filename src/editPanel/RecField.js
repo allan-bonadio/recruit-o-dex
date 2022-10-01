@@ -44,11 +44,13 @@ RecField.propTypes = {
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
 	rec: PropTypes.object.isRequired,
+	lines: PropTypes.number,  // number of lines high for a textarea
 };
 
 RecField.defaultValues = {
 	placeholder: '',
 	element: 'input',
+	lines: 20,
 };
 
 
