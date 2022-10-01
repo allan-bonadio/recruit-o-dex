@@ -16,7 +16,7 @@ export class SummaryRec extends Component {
 		this.mouseDownEv = this.mouseDownEv.bind(this);
 		this.mouseMoveEv = this.mouseMoveEv.bind(this);
 		this.mouseUpEv = this.mouseUpEv.bind(this);
-console.info('constructed SummaryRec');
+		//console.info('constructed SummaryRec');
 	}
 
 	render() {
@@ -48,7 +48,7 @@ console.info('constructed SummaryRec');
 					ageClass}
 				onMouseDown={this.mouseDownEv} onMouseMove={this.mouseMoveEv}
 				onMouseUp={this.mouseUpEv} onMouseLeave={this.mouseUpEv}
-				serial={this.props.serial} key={this.props.serial} >
+				serial={this.props.serial} key={this.props.record._id} >
 			<Field record={r} name='company_name' />
 			<Field record={r} name='recruiter_name' />
 			<br clear="left" />
