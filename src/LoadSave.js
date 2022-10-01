@@ -54,6 +54,7 @@ export class LoadSave {
 			originalBeforeChanges: initial,  // brand new
 			editingRecord: initial,
 			selectedSerial: -1,    // says this is add, not edit
+			openingAddPanel: true,
 		};
 	}
 
@@ -71,6 +72,7 @@ export class LoadSave {
 			// setting the editingRecord will cause the control panel to appear
 			editingRecord: _.cloneDeep(record),  // this copy gets changed during editing
 			selectedSerial: action.serial,
+			openingAddPanel: false,
 		};
 	}
 
