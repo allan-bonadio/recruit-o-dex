@@ -28,10 +28,12 @@ function EngagementRow(props) {
 	// console.log("EngagementRow:", props);
 	let startTime = props.engagement.when;  // ISO datetime or local if no Z
 	if (startTime && startTime.length <= 10)
-		startTime = startTime.replace(/Z$/, '') + 'T12:00Z';  // compat with legacy data (6am=legacy) ???
+		startTime = startTime.replace(/Z$/, '') + 'T21:00Z';
 
 	let calStr = '';
-	if (startTime) {
+	if (!startTime)
+		startTime = '';
+	else {
 		// calculate the calendar string that i can cop/paste to Calendar + box.
 		// SOme of these are ISO times (end in Z) and some pacific times (don't)
 		// Date does the right thing
@@ -54,7 +56,7 @@ function EngagementRow(props) {
 
 	return <tr className='engagement' serial={props.serial}>
 		<td>
-			<input name='what' list='engagement-whats' size='12' placeholder='choose what'
+			<input name='what' list='engagement-whats' size='20' placeholder='choose what'
 					defaultValue={props.engagement.what}
 					onChange={props.changeEngagement}  onPaste={props.pasteEngagement} />
 		</td>
@@ -86,7 +88,7 @@ function EngagementRow(props) {
 		</td>
 		<td>
 			<input readOnly='1' className='calendarDesc' value={calStr}
-				onClick={ev => ev.target.select()} size='2'/>
+				onClick={ev => ev.target.select()} size='5'/>
 		</td>
 	</tr>;
 }
@@ -100,7 +102,7 @@ function defaultEngagement() {
 	return {
 		what: '',
 		when: tomorrow.getFullYear() +'-'+ twoDigit(tomorrow.getMonth()+1) +'-'+
-					twoDigit(tomorrow.getDate()) +'T11:00',
+					twoDigit(tomorrow.getDate()) +'T13:00',
 		howLong: '60',
 		notes: '',
 		// serial added at creation time
@@ -123,7 +125,7 @@ export class Engagements extends Component {
 	render() {
 		//console.info('rendering Engagements');
 		let p = this.props;
-		let es = p.engagements || [];  // the saved ones for this rec or undefined if none
+		let es = p.engagements || [];  // the saved ones for this rec or empty if none
 
 		// additional row at the bottom so you can make a new one
 		// will be inserted into engagements array upon first keystroke or change
@@ -154,12 +156,14 @@ export class Engagements extends Component {
 				<option value='msteams' >MS Teams Interview</option>
 				<option value='onsite' >On-Site Interview</option>
 				<option value='canceled' >canceled</option>
+				<option value='deleted' >deleted</option>
 			</datalist>
 			<table>
 				<tbody>
 					{eRows}
 				</tbody>
 			</table>
+			<small>To delete one, choose 'delete' type, or delete its type and the notes, and save.</small>
 		</div>;
 	}
 
@@ -207,13 +211,16 @@ export class Engagements extends Component {
 	// this is done just before saving
 	static cleanEngagementsList(engs) {
 		if (!engs)
-			return undefined;
+			return [];
 
-		let newEngs = engs.filter(eng => eng.what || eng.notes);
-		if (newEngs.length <= 0)
-			return undefined;
-		else
-			return newEngs;
+		// deletion never seems to work; like it's a mongo server problem
+		//let newEngs = engs.filter(eng => {
+		//	let res = (eng.what || eng.notes) && eng.what != 'deleted';
+		//	console.log(res);
+		//	return res;
+		//});
+		let newEngs = engs.filter(eng => (eng.what || eng.notes) && eng.what != 'deleted');
+		return newEngs;
 	}
 
 	// parses what was pasted
