@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # backs up your recruiter data.  The way I like it.  Use this for a cron job.
-# maybe like this: 47 11,18 * * 1-5 /dvl/recruit-o-dex/backups/backup.sh
+# maybe like this: 47 11,18 * * 1-5 /opt/dvl/recruit-o-dex/backups/backup.sh
 # '--onceTodayOnly' will make it quit if there's already an archive today.
 
 cd `dirname $0`
@@ -57,7 +57,8 @@ ls -l@a archives/Jobs$d
 
 # let allan see it cuz he's almost certainly hunting and
 # needs to search recent rodex data
-/usr/local/bin/bbedit --new-window archives/Jobs$d/recruiters.json
+open -a BBEdit14 archives/Jobs$d/recruiters.json
+#/usr/local/bin/bbedit --new-window archives/Jobs$d/recruiters.json
 
 # now delete an old one.  Randomly chosen, but keep around the most recent 2.
 # NO NO NO I just deleted my whole archive directory. cuz $fileName was empty.
