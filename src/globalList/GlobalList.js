@@ -7,7 +7,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import SummaryRec from './SummaryRec';
+import SummaryRec, {decideItsAge} from './SummaryRec';
 import {moGetAll} from '../Model';
 import {rxStore, initialState} from '../reducer';
 import {} from '../reducer';
@@ -50,12 +50,10 @@ let sorters = [
 	{
 		name: 'Latest Activity',
 		compare: function(aRec, bRec) {
-			// haha!  ISO dates sort alphanumerically.
-			// Older records don't have updated but they should all have created date
-			let aDate = aRec.updated || aRec.created || '2017-01-01';
-			let bDate = bRec.updated || bRec.created || '2017-01-01';
-			if (aDate < bDate) return 1;
-			if (aDate > bDate) return -1;
+			let aAge = decideItsAge(aRec);
+			let bAge = decideItsAge(bRec);
+			if (aAge > bAge) return 1;
+			if (aAge < bAge) return -1;
 			return 0;
 		},
 	},

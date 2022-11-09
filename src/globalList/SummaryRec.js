@@ -8,6 +8,16 @@ import {rxStore} from '../reducer';
 
 import GlobalList from './GlobalList';
 
+// return an integer that's a mix of creation and update age
+export function decideItsAge(rec) {
+	// Older records don't have updated but they should all have created date
+	let itsAge = (new Date(rec.created)).getTime();
+	if (rec.updated)
+		itsAge = (itsAge + (new Date(rec.updated)).getTime()) / 2;
+	itsAge = Date.now() - itsAge;
+	return itsAge / 86400000;  // to days
+}
+
 // each recruiter/job cell, shown in the Global List, the front page.
 // This is NOT a redux component because I need multiple ones of them.
 export class SummaryRec extends Component {
@@ -33,13 +43,15 @@ export class SummaryRec extends Component {
 
 		let r = this.props.record;
 
-		let itsAge = Date.now() - (new Date(r.updated || r.created)).getTime();
-		itsAge = itsAge / 86400000;  // to days
+		// bg color based on date.  Average created & updated if possible.
+		let itsAge = decideItsAge(r);
+
 		let ageClass = itsAge > 90 ? 'quarterOld'
 			: itsAge > 30 ? 'monthOld'
 				: itsAge > 7 ? 'weekOld'
 					: itsAge > 1 ? 'dayOld'
 						: itsAge > .08 ? 'hoursOld' : 'minutesOld';
+
 		return <section
 				className={'summary '+
 					(this.props.selectedSerial == this.props.serial
