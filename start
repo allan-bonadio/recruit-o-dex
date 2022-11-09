@@ -39,12 +39,16 @@ else
 	echo "rodex server already running"
 fi
 
+#echo "Mongo DB and Rodex server running... ^C to kill, or..."
+#read -p " Hit return if ready to start React-scripts > " ans
+
 # now run react server
 if ! pgrep -f recruit-o-dex/node_modules/react-scripts/script
 then
 	echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
 	# pipe this through cat so it won't clear the screen all the time
-	PORT=7700 EDITOR= TERM= node_modules/.bin/react-scripts start | cat &
+	# don't try to run in bg (&) cuz it'll crash on kbd input
+	PORT=7700 EDITOR= TERM= node_modules/.bin/react-scripts start | cat
 	sleep 2
 else
 	echo "react server already running"
