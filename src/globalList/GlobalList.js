@@ -269,13 +269,13 @@ export class GlobalList extends Component {
 					<input className='search-box' placeholder='search (not yet impl)'
 						onChange={this.changeSearchQueryEv} value={p.searchQuery} />
 				</p>
-				<p>
+				<div>
 					<label>
 						<input type='checkbox' className='only-recent' aria-label='Only Recent'
 							onChange={this.changeOnlyRecentEv} checked={p.wholeList.onlyRecent} />
 						&nbsp; Only Recent (month)
 					</label>
-				</p>
+				</div>
 				<p>
 					sort:&nbsp;
 					<select id='sort-criterion' onChange={this.changeSortCriterionEv}
