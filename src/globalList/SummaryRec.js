@@ -13,7 +13,7 @@ export function decideItsAge(rec) {
 	// Older records don't have updated but they should all have created date
 	let itsAge = (new Date(rec.created)).getTime();
 	if (rec.updated)
-		itsAge = (itsAge + (new Date(rec.updated)).getTime()) / 2;
+		itsAge = (itsAge + 2 * (new Date(rec.updated)).getTime()) / 3;
 	itsAge = Date.now() - itsAge;
 	return itsAge / 86400000;  // to days
 }
@@ -36,7 +36,7 @@ export class SummaryRec extends Component {
 		let Field = (props) => {
 			//console.info('executing Field');
 
-			return <div className={'summary-field '+ props.name}>
+			return <div className={'summary-field '+ props.name + (props.exCls ?? '')}>
 						{props.record ? props.record[props.name] : ''}
 					</div>;
 		}
@@ -52,6 +52,9 @@ export class SummaryRec extends Component {
 					: itsAge > 1 ? 'dayOld'
 						: itsAge > .08 ? 'hoursOld' : 'minutesOld';
 
+		let company_long_name = r.company_name?.length > 20 ? ' long_name' : '';
+		let recruiter_long_name = r.recruiter_name?.length > 20 ? ' long_name' : '';
+
 		return <section
 				className={'summary '+
 					(this.props.selectedSerial == this.props.serial
@@ -61,8 +64,8 @@ export class SummaryRec extends Component {
 				onMouseDown={this.mouseDownEv} onMouseMove={this.mouseMoveEv}
 				onMouseUp={this.mouseUpEv} onMouseLeave={this.mouseUpEv}
 				serial={this.props.serial} key={this.props.record._id} >
-			<Field record={r} name='company_name' />
-			<Field record={r} name='recruiter_name' />
+			<Field record={r} name='company_name' exCls={company_long_name} />
+			<Field record={r} name='recruiter_name' exCls={recruiter_long_name} />
 			<br clear="left" />
 
 			<Field record={r} name='recruiter_email' />
