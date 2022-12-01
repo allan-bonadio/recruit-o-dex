@@ -17,128 +17,137 @@ section.summary {
 	background-color: #ffd;
 	border: 1px solid #990;
 	border-radius: 6px;
+
+	// auto-scrollbar these so they tend to reset to the start
+	&:hover {
+		overflow-y: auto;
+	}
+
+	&.selected {
+		background-color: #bef;
+		// rgb(212, 227, 255)
+	}
+
+	// less than 2 hrs
+	&.minutesOld {
+		background-color: #fff;
+	}
+
+	// older than ... 2 hours?
+	&.hoursOld {
+		background-color: #ffd;
+	}
+
+	// older than a day
+	&.dayOld {
+		background-color: #ffa;
+	}
+
+	// older than a week
+	&.weekOld {
+		background-color: #ee9;
+	}
+
+	// older than a month
+	&.monthOld {
+		background-color: #dd7;
+	}
+
+	// older than 3 months
+	&.quarterOld {
+		background-color: #bb4;
+	}
+
+
+	.recruiter_name, .company_name {
+		font-size: 1.4em;
+		max-width: 11em;
+
+		&.long_name {
+			font-size: 1.2em;
+			max-width: 8em;
+		}
+	}
+	.recruiter_name {
+		float: left;
+		margin-right: .5em;
+	}
+	.company_name {
+		float: right;
+		text-align: right;
+		margin-left: .5em;
+	}
+
+
+	// title cell
+	// just like a summary but ... different
+	&.title-cell {
+		min-height: 412px;
+		width: 24.33em;
+		overflow-y: hidden;
+		background: url(shyster307.jpg) no-repeat bottom center #ffd;
+
+		border-width: 0 1px 1px 0;
+		border-radius: 0 0 6px 0;
+		padding: 11px 6px 6px 11px;
+		margin: 0 4px 4px 0;
+
+		button.add {
+			font-size: 18px;
+			/*position: relative;*/
+			float: left;
+			border-radius: 6px;
+			background-color: green;
+			color: #FFa;
+		}
+
+		aside {
+			float: right;
+			width: 15em;
+			text-align: right;
+		}
+
+		input.search-box {
+			float: right;
+			margin-bottom: .5em;
+			border: #fea solid 1px;
+			background-color: #fff;
+			text-align: right;
+		}
+
+		big {
+			float: right;
+			margin: 0 0 .5em .2em;
+		}
+
+		.sort-criterion {
+			float:right;
+		}
+
+		.database-name {
+			float:right;
+		}
+	}
 }
 
-/* auto-scrollbar these so they tend to reset to the start */
-section.summary:hover {
-	overflow-y: auto;
-}
-
-section.summary.selected {
-	background-color: #bef;
-	/* rgb(212, 227, 255) */
-}
-
-/* less than 2 hrs */
-section.summary.minutesOld {
-	background-color: #fff;
-}
-
-/* older than ... 2 hours? */
-section.summary.hoursOld {
-	background-color: #ffd;
-}
-
-/* older than a day */
-section.summary.dayOld {
-	background-color: #ffa;
-}
-
-/* older than a week */
-section.summary.weekOld {
-	background-color: #ee9;
-}
-
-/* older than a month */
-section.summary.monthOld {
-	background-color: #dd7;
-}
-
-/* older than 3 months */
-section.summary.quarterOld {
-	background-color: #bb4;
-}
-
-
-section.summary .recruiter_name {
-	font-size: 1.4em;
-	float: left;
-	max-width: 11em;
-}
-
-section.summary .company_name {
-	font-size: 1.4em;
-	float: right;
-	text-align: right;
-	max-width: 11em;
-}
-
-/* title cell */
-/* just like a summary but ... different */
-section.summary.title-cell {
-	min-height: 412px;
-	width: 24.33em;
-	overflow-y: hidden;
-	background: url(shyster307.jpg) no-repeat bottom center #ffd;
-
-	border-width: 0 1px 1px 0;
-	border-radius: 0 0 6px 0;
-	padding: 11px 6px 6px 11px;
-	margin: 0 4px 4px 0;
-}
-
-section.summary.title-cell button.add {
-	font-size: 18px;
-	/*position: relative;*/
-	float: left;
-	border-radius: 6px;
-	background-color: green;
-	color: #FFa;
-}
-
-section.title-cell aside {
-	float: right;
-	width: 14em;
-	text-align: right;
-}
-
-section.title-cell input.search-box {
-	float: right;
-	margin-bottom: .5em;
-	border: #fea solid 1px;
-	background-color: #fff;
-	text-align: right;
-}
-
-section.title-cell big {
-	float: right;
-	margin: 0 0 .5em .2em;
-}
-
-section.title-cell .sort-criterion {
-	float:right;
-}
-
-section.title-cell .database-name {
-	float:right;
-}
 
 section.button-area {
 	text-align: right;
 	float: left;
 	width: 7em;
 	height: 20em;
+
+	// the save and cancel buttons are all of this general type
+	button.main-button {
+		font-size: 141.42%;
+		border-radius: 5px;
+		border: outset 1px #aaa;
+		margin-top: 2em;
+		width: 4.2em;
+	}
+	button.save-button { color: #00c; background: #eef; }
+	button.add-button { color: #080; background: #efe; }
+	button.cancel-button { color: #800; background: #fee; }
 }
 
-/* the save and cancel buttons are all of this general type */
-section.button-area button.main-button {
-	font-size: 141.42%;
-	border-radius: 5px;
-	border: outset 1px #aaa;
-	margin-top: 2em;
-	width: 4.2em;
-}
-section.button-area button.save-button { color: #00c; background: #eef; }
-section.button-area button.add-button { color: #080; background: #efe; }
-section.button-area button.cancel-button { color: #800; background: #fee; }
 
