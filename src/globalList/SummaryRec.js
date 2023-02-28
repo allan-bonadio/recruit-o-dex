@@ -11,9 +11,9 @@ import GlobalList from './GlobalList';
 // return an integer that's a mix of creation and update age
 export function decideItsAge(rec) {
 	// Older records don't have updated but they should all have created date
-	let itsAge = (new Date(rec.created)).getTime();
+	let itsAge = (new Date(rec.created.replace('.','T'))).getTime();
 	if (rec.updated)
-		itsAge = (itsAge + 2 * (new Date(rec.updated)).getTime()) / 3;
+		itsAge = (itsAge + 2 * (new Date(rec.updated.replace('.','T'))).getTime()) / 3;
 	itsAge = Date.now() - itsAge;
 	return itsAge / 86400000;  // to days
 }

@@ -20,6 +20,8 @@ const CHECKING_PERIOD = 3600 * 1000;
 const MOUSE_INACTION_DELAY = 60 * 1000 ;
 const PAGE_LOAD_AGE = 3 * 3600 * 1000;
 
+const ONLY_RECENT_MONTHS = 2;
+const ONLY_RECENT_TIME = ONLY_RECENT_MONTHS * (60000 * 60 * 24 * 30);
 
 let traceMustBeAfter = false;
 
@@ -189,7 +191,7 @@ export class GlobalList extends Component {
 	}
 
 	/* *********************************************************** only recent */
-	// any input in the search box
+
 	changeOnlyRecentEv =
 	(ev) => this.props.dispatch({type: 'CHANGE_ONLY_RECENT', newOnlyRecent: ev.target.checked});
 
@@ -273,7 +275,7 @@ export class GlobalList extends Component {
 					<label>
 						<input type='checkbox' className='only-recent' aria-label='Only Recent'
 							onChange={this.changeOnlyRecentEv} checked={p.wholeList.onlyRecent} />
-						&nbsp; Only Recent (month)
+						&nbsp; Only Recent ({ONLY_RECENT_MONTHS} months)
 					</label>
 				</div>
 				<p>
@@ -310,7 +312,7 @@ export class GlobalList extends Component {
 		}
 		else {
 			let mustBeAfter = p.wholeList.onlyRecent
-				? (new Date(Date.now() - (60000 * 60 * 24 * 30))).toISOString().replace(/T/, '.')
+				? (new Date(Date.now() - ONLY_RECENT_TIME)).toISOString().replace(/T/, '.')
 				: '1970-01-01.01:01:01.001Z';
 
 			if (traceMustBeAfter) {
