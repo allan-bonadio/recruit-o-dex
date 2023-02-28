@@ -8,7 +8,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-/********************************************************************** engagement fields */
+/********************************************************************** date formatting */
 function two(n) { return (n + 100).toString().substr(-2) }
 
 // given a Date() date, gimme the time part, local tz 24hr, like 14:00
@@ -22,6 +22,77 @@ function dateToLocalDate(date) {
 			two(date.getDate());
 }
 
+
+/********************************************************************** date parsing */
+
+// returns a date broken down with deconstructDate3() above
+function parseDate(dateNTime) {
+	let m = dateNTime.match(/\w\w\w \d+, 20\d\d/);
+	if (m) {
+		// it can parse these dates, but... got to combine it with the time
+		let date3 = deconstructDate3(new Date(m[0]));
+		if (! isNaN(date3.day))
+			return date3;
+	}
+
+	console.error(`can't find date in '${dateNTime}, let's guess'`);
+	return deconstructDate3(new Date());
+}
+
+function deconstructDate3(d) {
+	return {
+		year: d.getFullYear(),
+		month: d.getMonth(),
+		day: d.getDate(),
+	};
+}
+
+const tzMap = {E: 3, C: 2, M: 1, P: 0, AK: -1, H: -2};
+const ampmMap = {AM: 0, PM: 12};
+
+// parse textual US or GMT time into Pacific time.  Will work with DST unless in the hours during which DST changes across the US.
+// warning: this is a big hack and US & Pacific time specific.
+function parseTimeInterval(dateNTime) {
+	let m = dateNTime.match(/ at (\d+):(\d\d) (\wM) to (\d+):(\d\d) (\wM), ([\w/]+)/);
+	if (m) {
+		// timezone: this is what to subtract from the time in the timestamp to get Pac time
+		let tzOffsetHrs = 0;
+		let t = m[7].match(/(E|C|M|P|AK|H)[SD]T/)
+		if (t) {
+			// eastern cnetral mt pacific alaska hawaii timezones.  Assume the
+			// Std/Daylight thing is current.  Hope it's not Indiana or Arizona.
+			tzOffsetHrs = tzMap[t[1]];
+		}
+		if ('GMT' == m[7])
+			tzOffsetHrs = (new Date()).getTimezoneOffset() / 60;
+		// otherwise we just say screwit and pretend its local time
+
+		return {
+			startHrs: +m[1] + ampmMap[m[3]] - tzOffsetHrs,
+			endHrs: +m[4] + ampmMap[m[6]] - tzOffsetHrs,
+			startMins: +m[2],
+			endMins: +m[5],
+		};
+	}
+
+	// we just don't know
+	return {
+		startHrs: 13,
+		endHrs: 14,
+		startMins: 0,
+		endMins: 0,
+	};
+}
+
+function parseScheduledTime(dateNTime) {
+	let da = parseDate(dateNTime);
+	let ti = parseTimeInterval(dateNTime);
+	let date = new Date(da.year, da.month, da.day, ti.startHrs, ti.startMins);
+	let howLong = (ti.endHrs * 60 + ti.endMins) - (ti.startHrs * 60 + ti.startMins);
+	return {date, howLong}
+}
+
+/********************************************************************** engagement fields */
 // a row in the Engagements table, that lets users enter new engagements
 function EngagementRow(props) {
 	// console.info('executing EngagementRow');
@@ -67,7 +138,7 @@ function EngagementRow(props) {
 					onChange={props.changeEngagement}  onPaste={props.pasteEngagement} />
 		</td>
 		<td>
-			<select name='howLong' defaultValue={props.engagement.howLong || 30}
+			<select name='howLong' value={props.engagement.howLong || 30}
 						onChange={props.changeEngagement} onPaste={props.pasteEngagement} >
 				<option value='15'>15 m</option>
 				<option value='30'>30 m</option>
@@ -110,7 +181,8 @@ function defaultEngagement() {
 }
 
 
-
+// Yeah, this should be a Function component.  No state,
+// no other functions besides Render and constructor
 export class Engagements extends Component {
 	constructor(props) {
 		super(props);
@@ -223,7 +295,11 @@ export class Engagements extends Component {
 		return newEngs;
 	}
 
-	// parses what was pasted
+
+	// parses what was pasted, eg:
+	//	Allan Bonadio  and Keith Swett
+	//	Scheduled: Aug 16, 2022 at 10:30 PM to 10:45 PM, GMT
+	//	Location: Google Meet (instructions in description)
 	parsePastedEngagement(clipBoardData) {
 		const ScheduledRegex =
 			/^Scheduled: (\w\w\w \d\d?, \d\d\d\d) at (\d\d?:\d\d [AP]M) to (\d\d?:\d\d [AP]M)$/m;
@@ -235,40 +311,75 @@ export class Engagements extends Component {
 		}
 
 		let pasteText = clipBoardData.getData('text/plain');
-		console.log("Pasted TExt\n", pasteText, '\n');
+		console.log(`Pasted Text'${pasteText}'`);
 
-		// look for stuff we recognize.
-		let m = pasteText.match(ScheduledRegex);
-		if (!m)
-			return;  // Otherwise, let the paste continue.
+		// don't depend on one big regex that'll probably not match cuz of a tiny discrepancy
+		// look for stuff we recognize.  First line is the title.
+		let m, subject = '', dateNTime = '';
+		m = pasteText.match(/^(.*?)\n/);
+		console.log(`pasted Subject: '${subject}'`);
+		if (m)
+			subject = m[1];
 
-		// m1 is the date, m2 and 3 are the time, each in a format Date() recognizes
-		let startTime = new Date(m[1] +' '+ m[2]);
-		let endTime = new Date(m[1] +' '+ m[3]);
-		let duration = (endTime.getTime() - startTime.getTime()) / 60000;  // in minutes
+		// next the date time
+		m = pasteText.match(/\n\s*Scheduled:\s*(.*)\n/)
+		if (m) {
+			dateNTime = m[1]
+			console.log(`pasted dateNTime: '${dateNTime}'`);
+			let {date, howLong} = parseScheduledTime(m[1]);
+			console.log(`resulting time: '${date.toString()}' duration ${howLong} mins`);
 
-		let notesText = pasteText.replace(m[0] + '\n', '');  // remove Scheduled: line
+			// figure how newWhat is
+			let newWhat = 'interview';
+			if (pasteText.match(/Location: Google Meet/i))
+				newWhat = 'google v';
+			if (pasteText.match(/Location: .*\.zoom\.us/i))
+				newWhat = 'zoom';
+			if (pasteText.match(/Location: .*teams/i))
+				newWhat = 'ms teams';
 
-		// try to guess what kind of interview
-		let newWhat = '';
-		if (pasteText.match(/skype/im))
-			newWhat = 'skype';
-		else if (pasteText.match(/zoom/im))
-			newWhat = 'zoom';
-		else if (pasteText.match(/webex/im))
-			newWhat = 'webex';
-		else if (pasteText.match(/google v/im))
-			newWhat = 'googlev';
-		else if (pasteText.match(/on-?site/im))
-			newWhat = 'onsite';
-		else if (pasteText.match(/f2f/im))
-			newWhat = 'onsite';
+			return {
+				newWhat,
+				newStart: date.toISOString(),  // ISO std
+				newDuration: howLong,
+				newNotes: subject,
+			}
+		}
 
-		return {
-			newWhat,
-			newStart: startTime.toISOString().replace(/:00\.00.*$/, 'Z'),  // ISO std
-			newDuration: duration,
-			newNotes: notesText,
+		if (false) {
+			// old code, didn't workwell
+			let m = pasteText.match(ScheduledRegex);
+			if (!m)
+				return;  // Otherwise, let the paste continue.
+
+			// m1 is the date, m2 and 3 are the time, each in a format Date() recognizes
+			let startTime = new Date(m[1] +' '+ m[2]);
+			let endTime = new Date(m[1] +' '+ m[3]);
+			let duration = (endTime.getTime() - startTime.getTime()) / 60000;  // in minutes
+
+			let notesText = pasteText.replace(m[0] + '\n', '');  // remove Scheduled: line
+
+			// try to guess what kind of interview
+			let newWhat = '';
+			if (pasteText.match(/skype/im))
+				newWhat = 'skype';
+			else if (pasteText.match(/zoom/im))
+				newWhat = 'zoom';
+			else if (pasteText.match(/webex/im))
+				newWhat = 'webex';
+			else if (pasteText.match(/google v/im))
+				newWhat = 'googlev';
+			else if (pasteText.match(/on-?site/im))
+				newWhat = 'onsite';
+			else if (pasteText.match(/f2f/im))
+				newWhat = 'onsite';
+
+			return {
+				newWhat,
+				newStart: startTime.toISOString().replace(/:00\.00.*$/, 'Z'),  // ISO std
+				newDuration: duration,
+				newNotes: notesText,
+			}
 		}
 	}
 
