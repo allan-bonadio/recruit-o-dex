@@ -349,7 +349,7 @@ setInterval(generateAAT, 3 * 3600e3);
 
 /**************************************************** http interface */
 
-const rodexServerPortNum = 5555;
+const rodexServerPortNum = 7701;
 
 
 function setupServer() {

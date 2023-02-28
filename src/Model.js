@@ -5,7 +5,7 @@
 */
 
 // same place we get the website from, just a different port
-const RODEX_SERVER = window.location.protocol +'//'+ window.location.hostname +':5555';
+const RODEX_SERVER = window.location.protocol +'//'+ window.location.hostname +':7701';
 
 export let simulateErrors = {};
 
