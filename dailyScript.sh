@@ -1,5 +1,7 @@
 #!/bin/bash
 
+resumeDir=/opt/tibusiness/jobsearching/resume
+
 # do ALL the daily scripts at the same time so I don't get a half dozen
 # emails every day.
 # Coordinate the time with the Energy Saver schedule , several minutes after daily wakeup
@@ -25,3 +27,10 @@ echo "upload AAT"
 echo
 echo "upload Resume"
 /opt/tibusiness/jobsearching/resume/uploadResume.sh
+
+# always float to the top left of the window please
+#touch /opt/tibusiness/jobsearching/resume/BonadioResume.docx
+# this will also set the date, and set the dot to Red
+cd $resumeDir
+./setToRed.sh BonadioResume.docx
+
