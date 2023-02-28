@@ -13,6 +13,11 @@ button {
 	cursor: pointer;
 }
 
+button:active {
+	background-color: #860;
+	color: #ff0;
+}
+
 .error {
 	float: left;
 	font-size: 3em;
