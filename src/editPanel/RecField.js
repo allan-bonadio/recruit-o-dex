@@ -13,7 +13,11 @@ import {rxStore} from '../reducer';
 function RecField(props) {
 	//console.info('executing RecField');
 	let fieldName = props.fieldName;
+
+	// what was wrong with trim()?
 	let dval = props.rec[fieldName] || '';
+	//let dval = (props.rec[fieldName] || '').trim();
+
 	let placeholder = props.placeholder;
 	//console.log(":: field %s depicted with value %s", fieldName, dval);
 
