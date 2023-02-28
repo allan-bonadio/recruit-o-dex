@@ -30,6 +30,13 @@ export class LoadSave {
 	// just before saving, clear out stuff, mostly empty fields
 	// has side effects on passed in record and returns same object
 	static cleanupRecord(record) {
+		// trim all fields.  All of em?  try all strings for now.
+		record = {...record};
+		for (let key in record) {
+			if (typeof record[key] == 'string')
+				record[key] = record[key].trim();
+		}
+
 		// clean out engagements; there's always at least one empty engagement
 		let e = Engagements.cleanEngagementsList(record.engagements);
 		if (e)
@@ -110,7 +117,7 @@ export class LoadSave {
 	/********************************************************************** add & edit */
 	// initiate commands
 
-		// call this to save the record after user is done filling in blanks.
+	// call this to save the record after user is done filling in blanks.
 	// selectedSerial = -1 for Add, 0...n for edit
 	static saveAddEditRecord(selectedSerial) {
 		let ep = rxStore.getState().editPanel;
