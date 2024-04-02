@@ -1,14 +1,11 @@
 # recruit-o-dex app
 
-This project is still early in development.  Sorry if it doesn't work for you.
+This project is a big hack.  Sorry if it doesn't work for you.
+
+Some of this info is old, sorry.
 
 ## To Run
 ### once to install
-#### install the software
-	git clone https://github.com/allan-bonadio/recruit-o-dex.git
-	cd recruit-o-dex
-	npm install
-
 #### install mongo
 
 read this:
@@ -40,10 +37,21 @@ depending on location of above config file, you'll use a daemon startup command 
 so go and edit the start script to change it.
 
 
+#### install the software
+	git clone https://github.com/allan-bonadio/recruit-o-dex.git
+	cd recruit-o-dex
+	npm install
+
 #### first run
 
-Start it up with `npm start`.  (And diagnose any probs.)  The app should show up in chrome, if not, surf to [recruit-o-dex port 3300](http://localhost:3300)
+Start it up with `npm start`.  (And diagnose any probs.)
+The app should show up in your browser, if not, surf to [recruit-o-dex port 7700](http://localhost:7700)
 
+#### suggested backups
+
+put this in your `crontab -e` file:
+
+`37 21 * * 1-5 /opt/tibusiness/recruit-o-dex/dailyScript.sh`
 
 ### each time to run
 
@@ -94,12 +102,12 @@ mongorestore --db=jobs --collection=rec2020  recruiters.bson
 whoa boy.  What new features do we want?
 
 - more automatic coordination between rodex and calendar
-- control panel: make tabs for different parts, it's too crouded!
-	- info for the initial/rec blanks
-	- one for JD only
-	- one for JSON only
-	- one for engagements
-	- notes
+√ - control panel: make tabs for different parts, it's too crouded!
+	√ - info for the initial/rec blanks
+	√ - one for JD only
+	√ - one for JSON only
+	√ - one for engagements
+	√ - notes
 - add fields: rate/salary, location, what company does
 - ability to search for string in ALL fields
 
