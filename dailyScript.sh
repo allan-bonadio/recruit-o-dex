@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo "Good morning!  daily script starting"
 resumeDir=/opt/tibusiness/jobsearching/resume
 
 # do ALL the daily scripts at the same time so I don't get a half dozen
@@ -9,7 +10,7 @@ resumeDir=/opt/tibusiness/jobsearching/resume
 
 # backup Rodex db
 echo
-echo "Rodex backups"
+echo "doing Rodex backups... calling backup.sh"
 /opt/tibusiness/recruit-o-dex/backups/backup.sh
 
 # see if nakoda is serving pages as it should.
@@ -28,8 +29,9 @@ echo
 echo "upload Resume"
 /opt/tibusiness/jobsearching/resume/uploadResume.sh
 
-# always float to the top left of the window please
-#touch /opt/tibusiness/jobsearching/resume/BonadioResume.docx
+# always float to the top left of the window please if sort by mod date
+# which its usually set to
+touch /opt/tibusiness/jobsearching/resume/BonadioResume.docx
 # this will also set the date, and set the dot to Red
 cd $resumeDir
 ./setToRed.sh BonadioResume.docx

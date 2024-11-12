@@ -2,7 +2,7 @@
 
 This project is a big hack.  Sorry if it doesn't work for you.
 
-Some of this info is old, sorry.
+Some of this info is old, sorry.  If you have up to date info from the mongo/react/node  people, use that instead.  Good luck.
 
 ## To Run
 ### once to install
@@ -61,7 +61,7 @@ To shut down all three, run `./stop` or `npm stop`.  It will stop all three, in 
 
 To mess with one or another independently, read the script and act accordingly.
 The start and stop scripts will carefully start up or shut down each
-of the three depending on whether they're running.
+of the three depending on whether they're already running or stopped.
 
 ### Concurrency
 

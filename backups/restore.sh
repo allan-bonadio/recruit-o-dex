@@ -10,7 +10,7 @@ echo
 
 echo "Copy and paste one of those names here, then hit return:"
 read bName
-
+echo "Got it, backup '$bName'"
 mongorestore \
 	--db=jobs --collection=recruiters archives/$bName/recruiters.bson
 
