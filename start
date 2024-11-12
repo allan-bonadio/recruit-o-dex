@@ -18,7 +18,15 @@ if ! pgrep -f mongod
 then
 	echo ":::::::::::::::::::::::::::::::::::: Starting up mongo DB server"
 
-	MONGODCMD="/opt/dvl/mongo/startMongo.sh"
+	# note both the port and mongod binary location changes
+	if [ `hostname` == 'dnipro.local' ]
+	then
+		MONGODCMD="mongod --config /opt/homebrew/etc/mongod.conf --fork"
+		export PORT=1100
+	else
+		MONGODCMD="/opt/dvl/mongo/startMongo.sh"
+		export PORT=7700
+	fi
 	#MONGODCMD="mongod --config $mongoconf"
 	echo mongo launch cmd: $MONGODCMD
 
@@ -48,10 +56,10 @@ then
 	echo ":::::::::::::::::::::::::::::::::::: Starting up React Server"
 	# pipe this through cat so it won't clear the screen all the time
 	# don't try to run in bg (&) cuz it'll crash on kbd input
-	PORT=7700 EDITOR= TERM= node_modules/.bin/react-scripts start | cat
+	EDITOR= TERM= node_modules/.bin/react-scripts --openssl-legacy-provider start | cat
 	sleep 2
 else
 	echo "react server already running"
 fi
-echo "Servers Started!  Go surf to http://localhost:3300"
+echo "Servers Started!  Go surf to http://localhost:3300 or whatever"
 
